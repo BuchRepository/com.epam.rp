@@ -22,19 +22,16 @@ jobs:
           dotnet-version: 8.0.x   # Use .NET 8 SDK
 
       # 3. Install Google Chrome
-      - name: Install fixed Chrome
-        run: |
-          wget https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_114.0.5735.199-1_amd64.deb
-          sudo dpkg -i google-chrome-stable_114.0.5735.199-1_amd64.deb
-          sudo apt-get install -f -y
+      - name: Install Chrome
+        uses: browser-actions/setup-chrome@v1
+        with:
+          chrome-version: '114.0.5735.199'
 
-      # 4. Install matching ChromeDriver
-      - name: Install matching ChromeDriver
-        run: |
-          wget -q https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip
-          unzip chromedriver_linux64.zip
-          sudo mv chromedriver /usr/local/bin/
-          chmod +x /usr/local/bin/chromedriver
+      # 4. Install ChromeDriver
+      - name: Install ChromeDriver
+        uses: nanasess/setup-chromedriver@v2
+        with:
+          version: '114.0.5735.90'
 
       # 5. Restore NuGet packages
       - name: Restore NuGet packages
