@@ -18,8 +18,8 @@ public class FilterTests :TestBase
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
             .Build();
 
-        LOGIN = configuration["Credentials:Login"];
-        PASSWORD = configuration["Credentials:Password"];
+        LOGIN = configuration["LOGIN"];
+        PASSWORD = configuration["PASSWORD"];
     }
 
     [Test]
