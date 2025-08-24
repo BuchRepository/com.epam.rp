@@ -21,18 +21,19 @@ public static class DriverFactory
                 break;
             case "chrome":
                 Console.WriteLine("Current Directory: " + Directory.GetCurrentDirectory());
+                var logPath = "/tmp/chrome_driver_log.txt";
                 ChromeDriverService service = ChromeDriverService.CreateDefaultService();
+                service.LogPath = logPath;
                 service.EnableVerboseLogging = true;
-                Console.WriteLine("Log file path: " + service.LogPath);
-                service.LogPath = "/tmp/chrome_driver_log.txt";
-                service.EnableVerboseLogging = true;
+                Console.WriteLine("ChromeDriver log path: " + logPath);
                 
                 var options = new ChromeOptions();
-                options.AddArgument("--start-maximized");
-                options.AddArgument("--headless");
+                options.AddArgument("--headless=new");
                 options.AddArgument("--no-sandbox");
                 options.AddArgument("--disable-dev-shm-usage");
                 options.AddArgument("--remote-allow-origins=*");
+                options.AddArgument("--disable-software-rasterizer");
+                options.AddArgument("--window-size=1920,1080");
                 options.AddArgument("--disable-gpu");
                 
                 driver = new ChromeDriver(service, options);
