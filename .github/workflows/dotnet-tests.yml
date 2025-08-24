@@ -21,25 +21,21 @@ jobs:
         with:
           dotnet-version: 8.0.x   # Use .NET 8 SDK
 
-      - name: Install jq
-        run: sudo apt-get update && sudo apt-get install -y jq
-
-      - name: List Chrome versions
-        run: |
-          curl -s https://raw.githubusercontent.com/browser-actions/setup-chrome/main/versions.json | jq .
-
-
       # 3. Install Google Chrome
       - name: Install Chrome
-        uses: browser-actions/setup-chrome@v1
+        uses: browser-actions/setup-chrome@v2
         with:
-          chrome-version: '114.0.5735.199'
+          chrome-version: 114
+          install-chromedriver: true
+          install-dependencies: true
 
-      # 4. Install ChromeDriver
-      - name: Install ChromeDriver
-        uses: nanasess/setup-chromedriver@v2
-        with:
-          version: '114.0.5735.90'
+      # 4. Show Chrome and ChromeDriver versions
+      - name: Show Chrome and ChromeDriver versions
+        run: |
+          echo "Chrome path: ${{ steps.setup-chrome.outputs.chrome-path }}"
+          echo "Chrome version: ${{ steps.setup-chrome.outputs.chrome-version }}"
+          echo "ChromeDriver path: ${{ steps.setup-chrome.outputs.chromedriver-path }}"
+          echo "ChromeDriver version: ${{ steps.setup-chrome.outputs.chromedriver-version }}"
 
       # 5. Restore NuGet packages
       - name: Restore NuGet packages
