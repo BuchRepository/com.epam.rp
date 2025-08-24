@@ -40,15 +40,15 @@ jobs:
 
       # 6. Restore NuGet packages
       - name: Restore NuGet packages
-        run: dotnet restore
+        run: dotnet restore ./ReportPortal/ReportPortal.csproj
 
       # 7. Build the solution
       - name: Build solution
-        run: dotnet build --no-restore --configuration Release
+        run: dotnet build ./ReportPortal/ReportPortal.csproj --no-restore --configuration Release
 
       # 8. Run NUnit tests
       - name: Run tests
-        run: dotnet test --no-build --configuration Release --logger "trx;LogFileName=test_results.trx"
+        run: dotnet test ./ReportPortal/ReportPortal.csproj --no-build --configuration Release --logger "trx;LogFileName=test_results.trx"
 
       # 9. Upload test results as artifact
       - name: Upload test results
