@@ -45,7 +45,11 @@ jobs:
       # 7. Build the solution
       - name: Build solution
         working-directory: ./ReportPortal
-        run: dotnet build ReportPortal.csproj --no-restore --configuration Release
+        run: |
+          echo "{
+            \"LOGIN\": \"${{ secrets.TEST_LOGIN }}\",
+            \"PASSWORD\": \"${{ secrets.TEST_PASSWORD }}\"
+          }" > appsettings.json
 
       # 8. Run NUnit tests
       - name: Run tests
