@@ -2,6 +2,7 @@ using Microsoft.Extensions.Configuration;
 using ReportPortal.Business.Models;
 using ReportPortal.Business.Pages;
 using ReportPortal.Core;
+using Serilog;
 
 namespace ReportPortal.Tests;
 
@@ -20,6 +21,10 @@ public class FilterTests :TestBase
 
         LOGIN = configuration["LOGIN"];
         PASSWORD = configuration["PASSWORD"];
+        
+        Log.Logger = new LoggerConfiguration()
+            .ReadFrom.Configuration(configuration)
+            .CreateLogger();
     }
 
     [Test]
@@ -31,7 +36,21 @@ public class FilterTests :TestBase
         }
             
         var loginPage = new LoginPage(Driver);
-        loginPage.Login(LOGIN, PASSWORD);
+        try
+        {
+            Log.Information("Start test");
+            Log.Debug("Debug information here");
+            
+            loginPage.Login(LOGIN, PASSWORD);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "The test encountered an error.");
+        }
+        finally
+        {
+            Log.CloseAndFlush();
+        }
 
         var filtersPage = new FiltersPage(Driver);
         filtersPage.OpenFiltersSection();

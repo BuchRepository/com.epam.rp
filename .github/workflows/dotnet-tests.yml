@@ -38,8 +38,37 @@ jobs:
         run: |
           echo "{
             \"LOGIN\": \"${{ secrets.TEST_LOGIN }}\",
-            \"PASSWORD\": \"${{ secrets.TEST_PASSWORD }}\"
+            \"PASSWORD\": \"${{ secrets.TEST_PASSWORD }}\",
+            \"Serilog\": {
+              \"Using\": [\"Serilog.Sinks.Console\", \"Serilog.Sinks.File\"],
+              \"MinimumLevel\": {
+                \"Default\": \"Information\",
+                \"Override\": {
+                  \"Microsoft\": \"Warning\",
+                  \"System\": \"Warning\"
+                }
+              },
+              \"WriteTo\": [
+                {
+                  \"Name\": \"Console\"
+                },
+                {
+                  \"Name\": \"File\",
+                  \"Args\": {
+                    \"path\": \"logs/logfile.log\",
+                    \"rollingInterval\": \"Day\",
+                    \"restrictedToMinimumLevel\": \"Information\"
+                  }
+                }
+              ]
+            }
           }" > appsettings.json
+
+      - name: Upload Logs
+        uses: actions/upload-artifact@v3
+        with:
+          name: Test Logs
+          path: ./ReportPortal/logs/logfile.log
 
       - name: Run tests
         working-directory: ./ReportPortal
