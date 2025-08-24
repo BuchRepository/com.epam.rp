@@ -25,13 +25,11 @@ jobs:
       - name: Install Chrome
         run: |
           sudo apt-get update
-          sudo apt-get install -y google-chrome-stable
+          sudo apt-get install -y wget unzip
+          wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+          sudo dpkg -i google-chrome-stable_current_amd64.deb || sudo apt-get install -f -y
 
-      # 4. Check Chrome version
-      - name: Check Chrome version
-        run: google-chrome --version
-
-      # 5. Install ChromeDriver (compatible with installed Chrome)
+      # 4. Install ChromeDriver (compatible with installed Chrome)
       - name: Install ChromeDriver
         run: |
           CHROME_VERSION=$(google-chrome --version | awk '{print $3}')
@@ -41,16 +39,16 @@ jobs:
           unzip chromedriver_linux64.zip
           sudo mv chromedriver /usr/local/bin/
 
-      # 6. Restore NuGet packages
+      # 5. Restore NuGet packages
       - name: Restore NuGet packages
         run: dotnet restore ./ReportPortal/ReportPortal.csproj
 
-      # 7. Build the solution
+      # 6. Build the solution
       - name: Build solution
         working-directory: ./ReportPortal
         run: dotnet build ReportPortal.csproj --configuration Release
 
-      # 8. Create appsettings.json dynamically
+      # 7. Create appsettings.json dynamically
       - name: Create appsettings.json
         working-directory: ./ReportPortal
         run: |
@@ -59,12 +57,12 @@ jobs:
             \"PASSWORD\": \"${{ secrets.TEST_PASSWORD }}\"
           }" > appsettings.json
 
-      # 9. Run tests
+      # 8. Run tests
       - name: Run tests
         working-directory: ./ReportPortal
         run: dotnet test ReportPortal.csproj --configuration Release --logger "trx;LogFileName=test_results.trx"
 
-      # 10. Upload test results as artifact
+      # 9. Upload test results as artifact
       - name: Upload test results
         uses: actions/upload-artifact@v4
         with:
