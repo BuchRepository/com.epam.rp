@@ -36,7 +36,10 @@ jobs:
         run: |
           CHROME_VERSION=$(google-chrome --version | awk '{print $3}')
           echo "Detected Chrome version: $CHROME_VERSION"
-          sudo apt-get install -y chromium-chromedriver
+          CHROMEDRIVER_VERSION=$(curl -sS https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION)
+          wget -q https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip
+          unzip chromedriver_linux64.zip
+          sudo mv chromedriver /usr/local/bin/
 
       # 6. Restore NuGet packages
       - name: Restore NuGet packages
@@ -56,7 +59,7 @@ jobs:
             \"PASSWORD\": \"${{ secrets.TEST_PASSWORD }}\"
           }" > appsettings.json
 
-      # 9. Run NUnit tests
+      # 9. Run tests
       - name: Run tests
         working-directory: ./ReportPortal
         run: dotnet test ReportPortal.csproj --configuration Release --logger "trx;LogFileName=test_results.trx"
