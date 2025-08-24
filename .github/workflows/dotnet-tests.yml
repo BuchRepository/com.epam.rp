@@ -10,8 +10,8 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
     container:
-      image: selenium/standalone-chrome:latest  # контейнер з Chrome + ChromeDriver
-      options: --shm-size=2g  # рекомендовано для стабільної роботи Chrome
+      image: selenium/standalone-chrome:latest
+      options: --user root --shm-size=2g
 
     env:
       DOTNET_ROOT: /usr/share/dotnet
