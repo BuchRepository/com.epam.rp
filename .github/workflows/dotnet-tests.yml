@@ -21,6 +21,14 @@ jobs:
         with:
           dotnet-version: 8.0.x   # Use .NET 8 SDK
 
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: List Chrome versions
+        run: |
+          curl -s https://raw.githubusercontent.com/browser-actions/setup-chrome/main/versions.json | jq .
+
+
       # 3. Install Google Chrome
       - name: Install Chrome
         uses: browser-actions/setup-chrome@v1
