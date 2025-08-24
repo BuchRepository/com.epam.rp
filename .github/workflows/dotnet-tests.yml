@@ -1,52 +1,35 @@
-name: Run Selenium Tests
+name: .NET Tests in Chrome Container
 
 on:
   push:
-    branches:
-      - main       # Trigger workflow on push to the main branch
-  pull_request:   # Trigger workflow on any pull request
+    branches: [main]
+  pull_request:
 
 jobs:
-  build-and-test:
-    runs-on: ubuntu-latest   # Use the latest Ubuntu runner
-
+  test:
+    runs-on: ubuntu-latest
+    container:
+      image: selenium/standalone-chrome:114.0
     steps:
-      # 1. Checkout the repository
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2. Setup .NET SDK
-      - name: Setup .NET SDK
-        uses: actions/setup-dotnet@v4
+      # 1. Setup .NET
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: 8.0.x   # Use .NET 8 SDK
+          dotnet-version: 8.0.x
 
-      # 3. Install Google Chrome
-      - name: Install Chrome
-        uses: browser-actions/setup-chrome@v2
-        with:
-          chrome-version: 114
-          install-chromedriver: true
-          install-dependencies: true
-
-      # 4. Show Chrome and ChromeDriver versions
-      - name: Show Chrome and ChromeDriver versions
-        run: |
-          echo "Chrome path: ${{ steps.setup-chrome.outputs.chrome-path }}"
-          echo "Chrome version: ${{ steps.setup-chrome.outputs.chrome-version }}"
-          echo "ChromeDriver path: ${{ steps.setup-chrome.outputs.chromedriver-path }}"
-          echo "ChromeDriver version: ${{ steps.setup-chrome.outputs.chromedriver-version }}"
-
-      # 5. Restore NuGet packages
+      # 2. Restore NuGet packages
       - name: Restore NuGet packages
         run: dotnet restore ./ReportPortal/ReportPortal.csproj
 
-      # 6. Build the solution
+      # 3. Build solution
       - name: Build solution
         working-directory: ./ReportPortal
-        run: dotnet build ReportPortal.csproj --configuration Release
+        run: dotnet build ReportPortal.csproj --no-restore --configuration Release
 
-      # 7. Create appsettings.json dynamically
+      # 4. Create appsettings.json with secrets
       - name: Create appsettings.json
         working-directory: ./ReportPortal
         run: |
@@ -55,14 +38,7 @@ jobs:
             \"PASSWORD\": \"${{ secrets.TEST_PASSWORD }}\"
           }" > appsettings.json
 
-      # 8. Run tests
+      # 5. Run NUnit tests
       - name: Run tests
         working-directory: ./ReportPortal
-        run: dotnet test ReportPortal.csproj --configuration Release --logger "trx;LogFileName=test_results.trx"
-
-      # 9. Upload test results as artifact
-      - name: Upload test results
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results
-          path: '**/test_results.trx'
+        run: dotnet test ReportPortal.csproj --no-build --configuration Release --logger "trx;LogFileName=test_results.trx"
