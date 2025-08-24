@@ -24,8 +24,9 @@ jobs:
       # 3. Install Google Chrome
       - name: Install fixed Chrome
         run: |
-          sudo apt-get update
-          sudo apt-get install -y google-chrome-stable=114.0.5735.199-1
+          wget https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_114.0.5735.199-1_amd64.deb
+          sudo dpkg -i google-chrome-stable_114.0.5735.199-1_amd64.deb
+          sudo apt-get install -f -y
 
       # 4. Install matching ChromeDriver
       - name: Install matching ChromeDriver
