@@ -44,11 +44,13 @@ jobs:
 
       # 7. Build the solution
       - name: Build solution
-        run: dotnet build ./ReportPortal/ReportPortal.csproj --no-restore --configuration Release
+        working-directory: ./ReportPortal
+        run: dotnet build ReportPortal.csproj --no-restore --configuration Release
 
       # 8. Run NUnit tests
       - name: Run tests
-        run: dotnet test ./ReportPortal/ReportPortal.csproj --no-build --configuration Release --logger "trx;LogFileName=test_results.trx"
+        working-directory: ./ReportPortal
+        run: dotnet test ReportPortal.csproj --no-build --configuration Release --logger "trx;LogFileName=test_results.trx"
 
       # 9. Upload test results as artifact
       - name: Upload test results
