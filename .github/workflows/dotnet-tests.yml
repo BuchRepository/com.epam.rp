@@ -65,7 +65,7 @@ jobs:
           }" > appsettings.json
 
       - name: Upload Logs
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Test Logs
           path: ./ReportPortal/logs/logfile.log
