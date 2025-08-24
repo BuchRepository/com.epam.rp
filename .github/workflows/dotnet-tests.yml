@@ -1,36 +1,39 @@
-name: .NET Tests in Chrome Container
+name: CI - .NET Tests with Chrome
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
   pull_request:
 
 jobs:
-  test:
+  build-and-test:
     runs-on: ubuntu-latest
     container:
-      image: selenium/standalone-chrome:114.0
+      image: selenium/standalone-chrome:latest  # контейнер з Chrome + ChromeDriver
+      options: --shm-size=2g  # рекомендовано для стабільної роботи Chrome
+
+    env:
+      DOTNET_ROOT: /usr/share/dotnet
+
     steps:
-      - name: Checkout repository
+      - name: Checkout repo
         uses: actions/checkout@v3
 
-      # 1. Setup .NET
-      - name: Setup .NET
+      - name: Setup .NET SDK
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 8.0.x
 
-      # 2. Restore NuGet packages
-      - name: Restore NuGet packages
-        run: dotnet restore ./ReportPortal/ReportPortal.csproj
+      - name: Restore dependencies
+        working-directory: ./ReportPortal
+        run: dotnet restore
 
-      # 3. Build solution
       - name: Build solution
         working-directory: ./ReportPortal
-        run: dotnet build ReportPortal.csproj --no-restore --configuration Release
+        run: dotnet build --configuration Release --no-restore
 
-      # 4. Create appsettings.json with secrets
-      - name: Create appsettings.json
+      - name: Create appsettings.json from secrets
         working-directory: ./ReportPortal
         run: |
           echo "{
@@ -38,7 +41,6 @@ jobs:
             \"PASSWORD\": \"${{ secrets.TEST_PASSWORD }}\"
           }" > appsettings.json
 
-      # 5. Run NUnit tests
       - name: Run tests
         working-directory: ./ReportPortal
-        run: dotnet test ReportPortal.csproj --no-build --configuration Release --logger "trx;LogFileName=test_results.trx"
+        run: dotnet test --configuration Release --logger "trx;LogFileName=test_results.trx"
