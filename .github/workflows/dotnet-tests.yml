@@ -3,45 +3,56 @@ name: Run Selenium Tests
 on:
   push:
     branches:
-      - main
-  pull_request:
+      - main       # Trigger workflow on push to the main branch
+  pull_request:   # Trigger workflow on any pull request
 
 jobs:
   build-and-test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest   # Use the latest Ubuntu runner
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      # 1. Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Setup .NET SDK
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 8.0.x
+      # 2. Setup .NET SDK
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x   # Use .NET 8 SDK
 
-    - name: Install Chrome
-      run: sudo apt-get update && sudo apt-get install -y google-chrome-stable
+      # 3. Install Google Chrome
+      - name: Install Chrome
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y google-chrome-stable
 
-    - name: Check Chrome version
-      run: google-chrome --version
+      # 4. Check Chrome version
+      - name: Check Chrome version
+        run: google-chrome --version
 
-    - name: Install ChromeDriver
-      uses: nanasess/setup-chromedriver@v2
-      with:
-        chromedriver-version: 'latest'
+      # 5. Install ChromeDriver (compatible with installed Chrome)
+      - name: Install ChromeDriver
+        run: |
+          CHROME_VERSION=$(google-chrome --version | awk '{print $3}')
+          echo "Detected Chrome version: $CHROME_VERSION"
+          sudo apt-get install -y chromium-chromedriver
 
-    - name: Restore NuGet packages
-      run: dotnet restore
+      # 6. Restore NuGet packages
+      - name: Restore NuGet packages
+        run: dotnet restore
 
-    - name: Build solution
-      run: dotnet build --no-restore
+      # 7. Build the solution
+      - name: Build solution
+        run: dotnet build --no-restore --configuration Release
 
-    - name: Run tests
-      run: dotnet test --no-build --configuration Release --logger "trx;LogFileName=test_results.trx"
+      # 8. Run NUnit tests
+      - name: Run tests
+        run: dotnet test --no-build --configuration Release --logger "trx;LogFileName=test_results.trx"
 
-    - name: Upload test results
-      uses: actions/upload-artifact@v4
-      with:
-        name: test-results
-        path: '**/test_results.trx'
-
+      # 9. Upload test results as artifact
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: '**/test_results.trx'
