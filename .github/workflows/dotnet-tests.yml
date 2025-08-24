@@ -45,18 +45,23 @@ jobs:
       # 7. Build the solution
       - name: Build solution
         working-directory: ./ReportPortal
+        run: dotnet build ReportPortal.csproj --configuration Release
+
+      # 8. Create appsettings.json dynamically
+      - name: Create appsettings.json
+        working-directory: ./ReportPortal
         run: |
           echo "{
             \"LOGIN\": \"${{ secrets.TEST_LOGIN }}\",
             \"PASSWORD\": \"${{ secrets.TEST_PASSWORD }}\"
           }" > appsettings.json
 
-      # 8. Run NUnit tests
+      # 9. Run NUnit tests
       - name: Run tests
         working-directory: ./ReportPortal
-        run: dotnet test ReportPortal.csproj --no-build --configuration Release --logger "trx;LogFileName=test_results.trx"
+        run: dotnet test ReportPortal.csproj --configuration Release --logger "trx;LogFileName=test_results.trx"
 
-      # 9. Upload test results as artifact
+      # 10. Upload test results as artifact
       - name: Upload test results
         uses: actions/upload-artifact@v4
         with:
