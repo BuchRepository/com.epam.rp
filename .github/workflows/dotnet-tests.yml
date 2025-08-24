@@ -64,6 +64,17 @@ jobs:
             }
           }" > appsettings.json
 
+      - name: Print working directory
+        run: pwd
+
+      - name: Create logs folder
+        working-directory: ./ReportPortal
+        run: mkdir -p logs
+
+      - name: Check logs directory
+        working-directory: ./ReportPortal
+        run: ls -l logs
+
       - name: Upload Logs
         uses: actions/upload-artifact@v4
         with:
