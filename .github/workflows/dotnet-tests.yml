@@ -74,13 +74,13 @@ jobs:
       - name: Move logfile.log to ReportPortal/logs
         working-directory: ./ReportPortal
         run: |
-        mkdir -p logs
-        if [ -f ./bin/Release/net8.0/logs/logfile.log ]; then
-        mv ./bin/Release/net8.0/logs/logfile.log ./logs/logfile.log;
-        echo "Log file moved to ReportPortal/logs";
-        else
-        echo "LOG FILE NOT FOUND in bin/Release/net8.0/logs";
-        fi
+          mkdir -p logs
+          if [ -f ./bin/Release/net8.0/logs/logfile.log ]; then
+          mv ./bin/Release/net8.0/logs/logfile.log ./logs/logfile.log;
+          echo "Log file moved to ReportPortal/logs";
+          else
+          echo "LOG FILE NOT FOUND in bin/Release/net8.0/logs";
+          fi
 
       - name: Check logs folder
         working-directory: ./ReportPortal
