@@ -45,7 +45,7 @@ public class FilterTests :TestBase
             loginPage.Login(LOGIN, PASSWORD);
             
             Console.WriteLine($"AppContext.BaseDirectory: {AppContext.BaseDirectory}");
-            Console.WriteLine($"Expected path for logfile: {Path.Combine(AppContext.BaseDirectory, "logs/logfile.log")}");
+            Console.WriteLine($"Expected path for logfile: {Path.Combine(AppContext.BaseDirectory, "../../../logs/logfile.log")}");
             /*try
             {
                 string testLogFilePath = Path.Combine(AppContext.BaseDirectory, "logs/test-logfile.log");
