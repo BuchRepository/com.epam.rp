@@ -3,6 +3,7 @@ using ReportPortal.Business.Models;
 using ReportPortal.Business.Pages;
 using ReportPortal.Core;
 using Serilog;
+using Serilog.Debugging;
 
 namespace ReportPortal.Tests;
 
@@ -25,6 +26,9 @@ public class FilterTests :TestBase
         Log.Logger = new LoggerConfiguration()
             .ReadFrom.Configuration(configuration)
             .CreateLogger();
+        SelfLog.Enable(Console.Out);
+        Console.WriteLine($"AppContext.BaseDirectory: {AppContext.BaseDirectory}");
+        Console.WriteLine($"Expected path for logfile: {Path.Combine(AppContext.BaseDirectory, "logs/logfile.log")}");
     }
 
     [Test]
@@ -42,6 +46,17 @@ public class FilterTests :TestBase
             Log.Debug("Debug information here");
             
             loginPage.Login(LOGIN, PASSWORD);
+            
+            try
+            {
+                string testLogFilePath = Path.Combine(AppContext.BaseDirectory, "logs/test-logfile.log");
+                File.WriteAllText(testLogFilePath, "Test log file creation works.");
+                Console.WriteLine($"Test logfile created: {testLogFilePath}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to create test logfile: {ex.Message}");
+            }
         }
         catch (Exception ex)
         {
@@ -51,7 +66,7 @@ public class FilterTests :TestBase
         {
             Log.CloseAndFlush();
         }
-
+        
         var filtersPage = new FiltersPage(Driver);
         filtersPage.OpenFiltersSection();
 
