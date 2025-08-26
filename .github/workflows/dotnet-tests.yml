@@ -55,7 +55,7 @@ jobs:
                 {
                   \"Name\": \"File\",
                   \"Args\": {
-                    \"path\": \"logs/logfile.log\",
+                    \"path\": \"../logs/logfile.log\",
                     \"rollingInterval\": \"Day\",
                     \"restrictedToMinimumLevel\": \"Information\"
                   }

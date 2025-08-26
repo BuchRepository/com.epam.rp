@@ -26,9 +26,6 @@ public class FilterTests :TestBase
         Log.Logger = new LoggerConfiguration()
             .ReadFrom.Configuration(configuration)
             .CreateLogger();
-        SelfLog.Enable(Console.Out);
-        Console.WriteLine($"AppContext.BaseDirectory: {AppContext.BaseDirectory}");
-        Console.WriteLine($"Expected path for logfile: {Path.Combine(AppContext.BaseDirectory, "logs/logfile.log")}");
     }
 
     [Test]
@@ -47,7 +44,9 @@ public class FilterTests :TestBase
             
             loginPage.Login(LOGIN, PASSWORD);
             
-            try
+            Console.WriteLine($"AppContext.BaseDirectory: {AppContext.BaseDirectory}");
+            Console.WriteLine($"Expected path for logfile: {Path.Combine(AppContext.BaseDirectory, "logs/logfile.log")}");
+            /*try
             {
                 string testLogFilePath = Path.Combine(AppContext.BaseDirectory, "logs/test-logfile.log");
                 File.WriteAllText(testLogFilePath, "Test log file creation works.");
@@ -56,7 +55,7 @@ public class FilterTests :TestBase
             catch (Exception ex)
             {
                 Console.WriteLine($"Failed to create test logfile: {ex.Message}");
-            }
+            }*/
         }
         catch (Exception ex)
         {
