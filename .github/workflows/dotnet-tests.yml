@@ -71,9 +71,17 @@ jobs:
         working-directory: ./ReportPortal
         run: mkdir -p logs
 
-      - name: Check logs directory
+      - name: Check logs folder
         working-directory: ./ReportPortal
-        run: ls -l logs
+        run: |
+          echo "Checking contents of ./logs:" &&
+          ls -l logs &&
+          if [ -f ./logs/logfile.log ]; then
+          echo "Log file exists:" &&
+          cat ./logs/logfile.log;
+          else
+          echo "LOG FILE DOES NOT EXIST!";
+          fi
 
       - name: Upload Logs
         uses: actions/upload-artifact@v4
