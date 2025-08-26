@@ -70,7 +70,6 @@ jobs:
       - name: Create logs folder
         working-directory: ./ReportPortal
         run: mkdir -p logs
-        echo "Logs folder created at: $(pwd)/logs"
 
       - name: Check logs folder
         working-directory: ./ReportPortal
