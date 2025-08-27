@@ -67,39 +67,23 @@ jobs:
       - name: Print working directory
         run: pwd
 
-      - name: Create logs folder
-        working-directory: ./ReportPortal
-        run: mkdir -p logs
-
-      - name: Move logfile.log to ReportPortal/logs
-        working-directory: ./ReportPortal
-        run: |
-          mkdir -p logs
-          if [ -f ./bin/Release/net8.0/logs/logfile.log ]; then
-          mv ./bin/Release/net8.0/logs/logfile.log ./logs/logfile.log;
-          echo "Log file moved to ReportPortal/logs";
-          else
-          echo "LOG FILE NOT FOUND in bin/Release/net8.0/logs";
-          fi
-
       - name: Check logs folder
         working-directory: ./ReportPortal
         run: |
-          echo "Checking contents of ./logs:" &&
-          ls -l logs &&
-          if [ -f ./logs/logfile.log ]; then
-          echo "Log file exists:" &&
-          cat ./logs/logfile.log;
+          echo "Checking contents of ./bin/Release/net8.0/logs:" &&
+          if [ -d ./bin/Release/net8.0/logs ]; then
+            ls -l ./bin/Release/net8.0/logs;
           else
-          echo "LOG FILE DOES NOT EXIST!";
+            echo "Logs folder does not exist!";
           fi
+
+      - name: Run tests
+        working-directory: ./ReportPortal
+        run: dotnet test --configuration Release --logger "trx;LogFileName=test_results.trx"
 
       - name: Upload Logs
         uses: actions/upload-artifact@v4
         with:
           name: Test Logs
-          path: ./ReportPortal/logs/logfile.log
-
-      - name: Run tests
-        working-directory: ./ReportPortal
-        run: dotnet test --configuration Release --logger "trx;LogFileName=test_results.trx"
+          path: ./ReportPortal/bin/Release/net8.0/logs/logfile.log
+      
