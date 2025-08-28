@@ -20,13 +20,6 @@ public static class DriverFactory
                 driver = new SafariDriver();
                 break;
             case "chrome":
-                Console.WriteLine("Current Directory: " + Directory.GetCurrentDirectory());
-                var logPath = "/tmp/chrome_driver_log.txt";
-                ChromeDriverService service = ChromeDriverService.CreateDefaultService();
-                service.LogPath = logPath;
-                service.EnableVerboseLogging = true;
-                Console.WriteLine("ChromeDriver log path: " + logPath);
-                
                 var options = new ChromeOptions();
                 options.AddArgument("--headless=new");
                 options.AddArgument("--no-sandbox");
@@ -36,7 +29,7 @@ public static class DriverFactory
                 options.AddArgument("--window-size=1920,1080");
                 options.AddArgument("--disable-gpu");
                 
-                driver = new ChromeDriver(service, options);
+                driver = new ChromeDriver(options);
                 break;
             
             default:
