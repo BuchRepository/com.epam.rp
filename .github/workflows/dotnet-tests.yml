@@ -73,9 +73,14 @@ jobs:
           name: Test Logs
           path: ./ReportPortal/bin/Release/net8.0/logs/logfile.log
 
-      - name: Find log files
-        working-directory: ./ReportPortal
-        run: |
-          echo "Searching for log files in ./bin/Release/net8.0/logs:" &&
-          find ./bin/Release/net8.0/logs -name "*.log"
-      
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: Test Results
+          path: ./ReportPortal/TestResults/test_results.trx
+
+      - name: Upload ChromeDriver Logs
+        uses: actions/upload-artifact@v4
+        with:
+          name: ChromeDriver Logs
+          path: /tmp/chrome_driver_log.txt
