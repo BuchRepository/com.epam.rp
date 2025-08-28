@@ -23,7 +23,7 @@ public class FilterTests :TestBase
         LOGIN = configuration["LOGIN"];
         PASSWORD = configuration["PASSWORD"];
         
-        SelfLog.Enable(Console.Out);
+        //SelfLog.Enable(Console.Out);
         
         Log.Logger = new LoggerConfiguration()
             .ReadFrom.Configuration(configuration)
@@ -42,17 +42,8 @@ public class FilterTests :TestBase
         try
         {
             Log.Information("Start test");
-            Log.Debug("Debug information here");
             
             loginPage.Login(LOGIN, PASSWORD);
-            
-            Console.WriteLine($"AppContext.BaseDirectory: {AppContext.BaseDirectory}");
-            Console.WriteLine($"Expected path for logfile: {Path.Combine(AppContext.BaseDirectory, "logs/logfile.log")}");
-            
-            var testFilePath = Path.Combine(AppContext.BaseDirectory, "logs/test-logfile.log");
-            Directory.CreateDirectory(Path.GetDirectoryName(testFilePath));
-            File.WriteAllText(testFilePath, "This is a test log message.");
-            Console.WriteLine($"Test log file path: {testFilePath}");
         }
         catch (Exception ex)
         {

@@ -63,27 +63,6 @@ jobs:
             }
           }" > appsettings.json
 
-      - name: Print working directory
-        run: pwd
-
-      - name: Check logs folder
-        working-directory: ./ReportPortal
-        run: |
-          echo "Current working directory:" &&
-          pwd &&
-          echo "Checking contents of ./bin/Release/net8.0/logs:" &&
-          if [ -d ./bin/Release/net8.0/logs ]; then
-          ls -l ./bin/Release/net8.0/logs &&
-          if [ -f ./bin/Release/net8.0/logs/logfile.log ]; then
-          echo "Log file exists:";
-          cat ./bin/Release/net8.0/logs/logfile.log;
-          else
-          echo "LOG FILE DOES NOT EXIST!";
-          fi
-          else
-          echo "Logs folder does not exist!";
-          fi
-
       - name: Run tests
         working-directory: ./ReportPortal
         run: dotnet test --configuration Release --logger "trx;LogFileName=test_results.trx"
