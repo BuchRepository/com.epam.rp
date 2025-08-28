@@ -1,14 +1,16 @@
+using Allure.Net.Commons;
+using Allure.NUnit.Attributes;
 using Microsoft.Extensions.Configuration;
 using ReportPortal.Business.Models;
 using ReportPortal.Business.Pages;
 using ReportPortal.Core;
 using Serilog;
-using Serilog.Debugging;
 
 namespace ReportPortal.Tests;
 
 [TestFixture]
-public class FilterTests :TestBase
+[AllureSuite("Filters Suite")]
+public class FilterTests : TestBase
 {
     private readonly string LOGIN;
     private readonly string PASSWORD;
@@ -23,14 +25,16 @@ public class FilterTests :TestBase
         LOGIN = configuration["LOGIN"];
         PASSWORD = configuration["PASSWORD"];
         
-        //SelfLog.Enable(Console.Out);
-        
         Log.Logger = new LoggerConfiguration()
             .ReadFrom.Configuration(configuration)
             .CreateLogger();
     }
 
-    [Test]
+    [Test(Description = "Verify that a specific filter is displayed in the filters list.")]
+    [AllureSeverity(SeverityLevel.critical)]
+    [AllureEpic("Filters Management")]
+    [AllureStory("Filter Display")]
+    [AllureTag("Filters", "UI", "Regression")]
     public void Filter_ShouldBeDisplayedInList()
     {
         if (Driver == null)
