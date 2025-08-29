@@ -1,7 +1,9 @@
+using Allure.NUnit;
 using OpenQA.Selenium;
 
 namespace ReportPortal.Core;
 
+[AllureNUnit]
 public class TestBase
 {
     protected IWebDriver? Driver;
