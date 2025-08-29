@@ -11,12 +11,16 @@ public class TestBase
     protected static ExtentReports extent;
     protected ExtentTest test;
     
-    private static string reportPath = Path.Combine(AppContext.BaseDirectory, "ExtentReports.html");
+    protected static string extentReportPath = "";
+    //private static string reportPath = Path.Combine(AppContext.BaseDirectory, "ExtentReports.html");
     
     [OneTimeSetUp]
     public void OneTimeSetup()
     {
-        var htmlReporter = new ExtentHtmlReporter(reportPath);
+        extentReportPath = Path.Combine(AppContext.BaseDirectory, "ExtentReports.html");
+        Console.WriteLine($"[LOG] ExtentReports path: {extentReportPath}");
+        
+        var htmlReporter = new ExtentHtmlReporter(extentReportPath);
         htmlReporter.Config.DocumentTitle = "Test Report";
         htmlReporter.Config.ReportName = "UI Test Report";
         htmlReporter.Config.Theme = AventStack.ExtentReports.Reporter.Configuration.Theme.Standard;
