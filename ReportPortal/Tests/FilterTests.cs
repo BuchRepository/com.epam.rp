@@ -16,7 +16,7 @@ public class FilterTests : TestBase
 {
     private readonly string LOGIN;
     private readonly string PASSWORD;
-
+    
     public FilterTests()
     {
         var configuration = new ConfigurationBuilder()
@@ -30,6 +30,14 @@ public class FilterTests : TestBase
         Log.Logger = new LoggerConfiguration()
             .ReadFrom.Configuration(configuration)
             .CreateLogger();
+    }
+    
+    [Test]
+    [AllureSuite("Dummy Suite")]
+    [AllureStory("Dummy Story")]
+    public void DummyTest()
+    {
+        Assert.Pass();
     }
 
     [Test(Description = "Verify that a specific filter is displayed in the filters list.")]
