@@ -1,4 +1,5 @@
 using Allure.Net.Commons;
+using Allure.NUnit;
 using Allure.NUnit.Attributes;
 using Microsoft.Extensions.Configuration;
 using ReportPortal.Business.Models;
@@ -8,6 +9,7 @@ using Serilog;
 
 namespace ReportPortal.Tests;
 
+[AllureNUnit]
 [TestFixture]
 [AllureSuite("Filters Suite")]
 public class FilterTests : TestBase
@@ -28,19 +30,6 @@ public class FilterTests : TestBase
         Log.Logger = new LoggerConfiguration()
             .ReadFrom.Configuration(configuration)
             .CreateLogger();
-    }
-    
-    [OneTimeSetUp]
-    public void CleanupAllureResults()
-    {
-        var resultsDir = AllureLifecycle.Instance.ResultsDirectory;
-
-        if (!Directory.Exists(resultsDir))
-        {
-            Directory.CreateDirectory(resultsDir);
-        }
-        
-        AllureLifecycle.Instance.CleanupResultDirectory();
     }
 
     [Test(Description = "Verify that a specific filter is displayed in the filters list.")]
