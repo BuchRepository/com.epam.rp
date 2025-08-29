@@ -11,7 +11,7 @@ public class TestBase
     protected static ExtentReports extent;
     protected ExtentTest test;
     
-    private static string reportPath = "ReportPortal/ExtentReports.html";
+    private static string reportPath = Path.Combine(AppContext.BaseDirectory, "ExtentReports.html");
     
     [OneTimeSetUp]
     public void OneTimeSetup()
