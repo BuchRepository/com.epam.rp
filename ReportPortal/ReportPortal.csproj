@@ -18,9 +18,9 @@
         <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="10.0.0-preview.7.25380.108" />
         <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.0-preview.7.25380.108" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
-        <PackageReference Include="NUnit" Version="4.4.0" />
+        <PackageReference Include="NUnit" Version="3.14.0" />
         <PackageReference Include="NUnit.Analyzers" Version="3.9.0" />
-        <PackageReference Include="NUnit3TestAdapter" Version="5.1.0" />
+        <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
         <PackageReference Include="Selenium.Firefox.WebDriver" Version="0.27.0" />
         <PackageReference Include="Selenium.Support" Version="4.35.0" />
         <PackageReference Include="Selenium.WebDriver" Version="4.35.0" />
