@@ -67,8 +67,11 @@ jobs:
         working-directory: ./ReportPortal
         run: dotnet test --configuration Release --logger "console;verbosity=detailed" --logger "trx;LogFileName=test-results.trx"
 
+      - name: List files in Release folder
+        run: ls -lah ./ReportPortal/bin/Release/net8.0/
+
       - name: Upload Extent Report
         uses: actions/upload-artifact@v4
         with:
           name: extent-report
-          path: ReportPortal/bin/Release/net8.0/ExtentReports.html
+          path: .ReportPortal/bin/Release/net8.0/*.html
