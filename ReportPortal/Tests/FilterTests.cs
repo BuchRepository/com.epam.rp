@@ -1,6 +1,3 @@
-using Allure.Net.Commons;
-using Allure.NUnit;
-using Allure.NUnit.Attributes;
 using Microsoft.Extensions.Configuration;
 using ReportPortal.Business.Models;
 using ReportPortal.Business.Pages;
@@ -9,9 +6,7 @@ using Serilog;
 
 namespace ReportPortal.Tests;
 
-[AllureNUnit]
 [TestFixture]
-[AllureSuite("Filters Suite")]
 public class FilterTests : TestBase
 {
     private readonly string LOGIN;
@@ -33,10 +28,6 @@ public class FilterTests : TestBase
     }
 
     [Test(Description = "Verify that a specific filter is displayed in the filters list.")]
-    [AllureSeverity(SeverityLevel.critical)]
-    [AllureEpic("Filters Management")]
-    [AllureStory("Filter Display")]
-    [AllureTag("Filters", "UI", "Regression")]
     public void Filter_ShouldBeDisplayedInList()
     {
         if (Driver == null)

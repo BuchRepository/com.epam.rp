@@ -1,4 +1,3 @@
-using Allure.Net.Commons;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using SeleniumExtras.WaitHelpers;
@@ -9,7 +8,6 @@ public abstract class BasePage
 {
     protected readonly IWebDriver _driver;
     protected readonly WebDriverWait _wait;
-    protected AllureLifecycle Allure => AllureLifecycle.Instance;
 
     protected BasePage(IWebDriver driver, int defaultTimeout = 20)
     {

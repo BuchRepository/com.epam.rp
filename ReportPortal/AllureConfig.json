@@ -1,9 +1,0 @@
-{
-  "allure": {
-    "directory": "Allure", 
-    "links": [
-      "issue:{issue}",
-      "tms:{tms}"
-    ]
-  }
-}
