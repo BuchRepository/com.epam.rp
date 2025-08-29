@@ -65,7 +65,7 @@ jobs:
 
       - name: Run tests
         working-directory: ./ReportPortal
-        run: dotnet test --configuration Release --logger "trx;LogFileName=test_results.trx" --results-directory allure-results
+        run: dotnet test --configuration Release --logger "trx;LogFileName=test_results.trx" --results-directory Allure
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
@@ -76,7 +76,7 @@ jobs:
         run: npm install -g allure-commandline --save-dev
       
       - name: Generate Allure Report
-        run: allure generate allure-results --clean -o allure-report
+        run: allure generate Allure --clean -o allure-report
   
       - name: Debug allure-report directory
         run: ls -la allure-report
