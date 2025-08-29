@@ -29,6 +29,12 @@ public class FilterTests : TestBase
             .ReadFrom.Configuration(configuration)
             .CreateLogger();
     }
+    
+    [OneTimeSetUp]
+    public void CleanupAllureResults()
+    {
+        AllureLifecycle.Instance.CleanupResultDirectory();
+    }
 
     [Test(Description = "Verify that a specific filter is displayed in the filters list.")]
     [AllureSeverity(SeverityLevel.critical)]

@@ -65,7 +65,7 @@ jobs:
 
       - name: Run tests
         working-directory: ./ReportPortal
-        run: dotnet test --configuration Release --logger "trx;LogFileName=test_results.trx" --results-directory Allure
+        run: dotnet test --configuration Release --results-directory Allure
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
@@ -78,8 +78,11 @@ jobs:
       - name: Generate Allure Report
         run: allure generate Allure --clean -o allure-report
   
-      - name: Debug allure-report directory
-        run: ls -la allure-report
+      - name: Debug allure report directory
+        run: ls -la Allure
+
+      - name: Show JSON files
+        run: find Allure -type f -name "*.json"
 
       - name: Upload Allure Report as Artifact
         uses: actions/upload-artifact@v4
