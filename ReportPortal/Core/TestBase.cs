@@ -18,7 +18,7 @@ public class TestBase
     public void OneTimeSetup()
     {
         extentReportPath = Path.Combine(AppContext.BaseDirectory, "ExtentReports.html");
-        Console.WriteLine($"[LOG] ExtentReports path: {extentReportPath}");
+        TestContext.Progress.WriteLine($"[LOG] ExtentReports path: {extentReportPath}");
         
         var htmlReporter = new ExtentHtmlReporter(extentReportPath);
         htmlReporter.Config.DocumentTitle = "Test Report";
