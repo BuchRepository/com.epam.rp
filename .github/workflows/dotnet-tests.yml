@@ -29,9 +29,6 @@ jobs:
         working-directory: ./ReportPortal
         run: dotnet restore
 
-      - name: Create Allure results folder
-        run: mkdir -p Allure
-
       - name: Build solution
         working-directory: ./ReportPortal
         run: dotnet build --configuration Release --no-restore
@@ -74,4 +71,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: extent-report
-          path: ./ReportPortal/bin/Release/net8.0/ExtentReports.html
+          path: ./bin/Release/net8.0/ExtentReports.html
