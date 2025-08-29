@@ -71,8 +71,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: extent-report
-          path: - name: Upload ExtentReports HTML
-  uses: actions/upload-artifact@v4
-  with:
-    name: extent-report
-    path: ReportPortal/bin/Release/net8.0/ExtentReports.html
+          path: ReportPortal/bin/Release/net8.0/ExtentReports.html
