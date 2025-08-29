@@ -39,8 +39,4 @@
         </None>
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Allure\" />
-    </ItemGroup>
-
 </Project>

@@ -33,6 +33,13 @@ public class FilterTests : TestBase
     [OneTimeSetUp]
     public void CleanupAllureResults()
     {
+        var resultsDir = AllureLifecycle.Instance.ResultsDirectory;
+
+        if (!Directory.Exists(resultsDir))
+        {
+            Directory.CreateDirectory(resultsDir);
+        }
+        
         AllureLifecycle.Instance.CleanupResultDirectory();
     }
 

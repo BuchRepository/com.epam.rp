@@ -29,6 +29,9 @@ jobs:
         working-directory: ./ReportPortal
         run: dotnet restore
 
+      - name: Create Allure results folder
+        run: mkdir -p Allure
+
       - name: Build solution
         working-directory: ./ReportPortal
         run: dotnet build --configuration Release --no-restore
