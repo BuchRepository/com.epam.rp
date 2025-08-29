@@ -31,14 +31,6 @@ public class FilterTests : TestBase
             .ReadFrom.Configuration(configuration)
             .CreateLogger();
     }
-    
-    [Test]
-    [AllureSuite("Dummy Suite")]
-    [AllureStory("Dummy Story")]
-    public void DummyTest()
-    {
-        Assert.Pass();
-    }
 
     [Test(Description = "Verify that a specific filter is displayed in the filters list.")]
     [AllureSeverity(SeverityLevel.critical)]
