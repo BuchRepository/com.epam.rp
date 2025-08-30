@@ -1,0 +1,77 @@
+name: CI - .NET Tests with Chrome
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    container:
+      image: selenium/standalone-chrome:latest
+      options: --user root --shm-size=2g
+
+    env:
+      DOTNET_ROOT: /usr/share/dotnet
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore dependencies
+        working-directory: ./ReportPortal
+        run: dotnet restore
+
+      - name: Build solution
+        working-directory: ./ReportPortal
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Create appsettings.json from secrets
+        working-directory: ./ReportPortal
+        run: |
+          echo "{
+            \"LOGIN\": \"${{ secrets.TEST_LOGIN }}\",
+            \"PASSWORD\": \"${{ secrets.TEST_PASSWORD }}\",
+            \"Serilog\": {
+              \"Using\": [\"Serilog.Sinks.Console\", \"Serilog.Sinks.File\"],
+              \"MinimumLevel\": {
+                \"Default\": \"Information\",
+                \"Override\": {
+                  \"Microsoft\": \"Warning\",
+                  \"System\": \"Warning\"
+                }
+              },
+              \"WriteTo\": [
+                {
+                  \"Name\": \"Console\"
+                },
+                {
+                  \"Name\": \"File\",
+                  \"Args\": {
+                    \"path\": \"logs/logfile.log\",
+                    \"restrictedToMinimumLevel\": \"Information\"
+                  }
+                }
+              ]
+            }
+          }" > appsettings.json
+
+      - name: Run tests
+        working-directory: ./ReportPortal
+        run: dotnet test --configuration Release --logger "console;verbosity=detailed" --logger "trx;LogFileName=test-results.trx"
+
+      - name: List files in Release folder
+        run: ls -lah ./ReportPortal/bin/Release/net8.0/
+
+      - name: Upload Extent Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: extent-report
+          path: ./ReportPortal/bin/Release/net8.0/index.html
