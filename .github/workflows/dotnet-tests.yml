@@ -29,7 +29,6 @@ jobs:
         run: dotnet build com.epam.rp.sln --configuration Release --no-restore
 
       - name: Create appsettings.json from secrets
-        working-directory: ./ReportPortal
         run: |
           echo "{
             \"LOGIN\": \"${{ secrets.TEST_LOGIN }}\",
