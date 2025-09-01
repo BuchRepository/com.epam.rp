@@ -9,9 +9,6 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-    container:
-      image: selenium/standalone-chrome:latest
-      options: --user root --shm-size=2g
 
     env:
       DOTNET_ROOT: /usr/share/dotnet
@@ -26,12 +23,10 @@ jobs:
           dotnet-version: 8.0.x
 
       - name: Restore dependencies
-        working-directory: ./ReportPortal
         run: dotnet restore
 
       - name: Build solution
-        working-directory: ./ReportPortal
-        run: dotnet build --configuration Release --no-restore
+        run: dotnet build com.epam.rp.sln --configuration Release --no-restore
 
       - name: Create appsettings.json from secrets
         working-directory: ./ReportPortal
@@ -55,7 +50,7 @@ jobs:
                 {
                   \"Name\": \"File\",
                   \"Args\": {
-                    \"path\": \"logs/logfile.log\",
+                    \"path\": \"${{ github.workspace }}/logs/logfile.log\",
                     \"restrictedToMinimumLevel\": \"Information\"
                   }
                 }
@@ -64,14 +59,20 @@ jobs:
           }" > appsettings.json
 
       - name: Run tests
-        working-directory: ./ReportPortal
         run: dotnet test --configuration Release --logger "console;verbosity=detailed" --logger "trx;LogFileName=test-results.trx"
 
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: logs
+          path: ./logs/logfile.log
+
       - name: List files in Release folder
-        run: ls -lah ./ReportPortal/bin/Release/net8.0/
+        run: ls -lah ./bin/Release/net8.0/
 
       - name: Upload Extent Report
         uses: actions/upload-artifact@v4
         with:
           name: extent-report
-          path: ./ReportPortal/bin/Release/net8.0/index.html
+          path: ./bin/Release/net8.0/index.html
