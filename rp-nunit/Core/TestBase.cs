@@ -1,6 +1,10 @@
 using AventStack.ExtentReports;
 using AventStack.ExtentReports.Reporter;
+using NUnit.Framework.Interfaces;
 using OpenQA.Selenium;
+using NUnitAssert = NUnit.Framework.Assert;
+using NUnitTestContext = NUnit.Framework.TestContext;
+
 
 namespace ReportPortal.Core;
 
@@ -15,7 +19,7 @@ public class TestBase
     public void OneTimeSetup()
     {
         string reportPath = Path.Combine(AppContext.BaseDirectory, "ExtentReports.html");
-        TestContext.Progress.WriteLine($"[LOG] ExtentReports path: {reportPath}");
+        NUnitTestContext.Progress.WriteLine($"[LOG] ExtentReports path: {reportPath}");
         
         var htmlReporter = new ExtentHtmlReporter(reportPath);
         htmlReporter.Config.DocumentTitle = "Test Report";
@@ -28,9 +32,9 @@ public class TestBase
     [SetUp]
     public void SetUp()
     {
-        test = extent.CreateTest(TestContext.CurrentContext.Test.Name);
+        test = extent.CreateTest(NUnitTestContext.CurrentContext.Test.Name);
         
-        string browser = TestContext.Parameters.Get("browser", "chrome");
+        string browser = NUnitTestContext.Parameters.Get("browser", "chrome");
         Driver = DriverFactory.CreateDriver(browser);
         if (Driver == null)
         {
@@ -42,15 +46,15 @@ public class TestBase
     [TearDown]
     public void TearDown()
     {
-        var status = TestContext.CurrentContext.Result.Outcome.Status;
-        var stacktrace = TestContext.CurrentContext.Result.StackTrace;
+        var status = NUnitTestContext.CurrentContext.Result.Outcome.Status;
+        var stacktrace = NUnitTestContext.CurrentContext.Result.StackTrace;
 
         switch (status)
         {
-            case NUnit.Framework.Interfaces.TestStatus.Failed:
+            case TestStatus.Failed:
                 test.Fail("Test Failed").Fail(stacktrace);
                 break;
-            case NUnit.Framework.Interfaces.TestStatus.Passed:
+            case TestStatus.Passed:
                 test.Pass("Test Passed");
                 break;
             default:

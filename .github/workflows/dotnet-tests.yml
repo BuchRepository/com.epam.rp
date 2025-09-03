@@ -58,7 +58,7 @@ jobs:
           }" > appsettings.json
 
       - name: Run tests
-        run: dotnet test --configuration Release --logger "console;verbosity=detailed" --logger "trx;LogFileName=test-results.trx"
+        run: dotnet test com.epam.rp.sln --configuration Release --logger "console;verbosity=detailed" --logger "trx;LogFileName=test-results.trx"
 
       - name: Upload logs
         if: always()
@@ -68,10 +68,12 @@ jobs:
           path: ./logs/logfile.log
 
       - name: List files in Release folder
-        run: ls -lah ./bin/Release/net8.0/
+        run: ls -lah ./rp-nunit/bin/Release/net8.0/ || true && ls -lah ./rp-mstest/bin/Release/net8.0/ || true
 
       - name: Upload Extent Report
         uses: actions/upload-artifact@v4
         with:
           name: extent-report
-          path: ./bin/Release/net8.0/index.html
+          path: |
+            ./rp-nunit/bin/Release/net8.0/*.html
+            ./rp-mstest/bin/Release/net8.0/*.html

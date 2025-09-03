@@ -56,7 +56,7 @@ public class FilterTests : TestBase
 
         var filter = new FilterModel("DEMO_FILTER", "sergii_buchkivskyi");
 
-        Assert.That(filtersPage.IsFilterPresent(filter.FilterName), Is.True,
+        NUnit.Framework.Assert.That(filtersPage.IsFilterPresent(filter.FilterName), Is.True,
             "Filter should exists in the filters list.");
     }
 }
