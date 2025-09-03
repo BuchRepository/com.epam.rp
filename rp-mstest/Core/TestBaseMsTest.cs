@@ -5,35 +5,36 @@ using OpenQA.Selenium;
 
 namespace com.epam.rp_mstest.Core
 {
+    
     [TestClass]
     public class TestBase
     {
         protected IWebDriver? Driver;
-        protected static ExtentReports extent;
-        protected ExtentTest test;
-
-        [ClassInitialize]
-        public static void ClassSetup(TestContext context)
-        {
-            string reportPath = Path.Combine(AppContext.BaseDirectory, "ExtentReports_MSTest.html");
-            Console.WriteLine($"[LOG] ExtentReports path: {reportPath}");
-
-            var htmlReporter = new ExtentHtmlReporter(reportPath)
-            {
-                Config =
-                {
-                    DocumentTitle = "Test Report",
-                    ReportName = "UI Test Report",
-                    Theme = AventStack.ExtentReports.Reporter.Configuration.Theme.Standard
-                }
-            };
-            extent = new ExtentReports();
-            extent.AttachReporter(htmlReporter);
-        }
+        protected static ExtentReports? extent;
+        protected ExtentTest? test;
 
         [TestInitialize]
         public void SetupTest()
         {
+            if (extent == null)
+            {
+                string reportPath = Path.Combine(AppContext.BaseDirectory, "ExtentReports_MSTest.html");
+                Console.WriteLine($"ExtentReports path: {reportPath}");
+
+                var htmlReporter = new ExtentHtmlReporter(reportPath)
+                {
+                    Config =
+                    {
+                        DocumentTitle = "Test Report",
+                        ReportName = "UI Test Report",
+                        Theme = AventStack.ExtentReports.Reporter.Configuration.Theme.Standard
+                    }
+                };
+
+                extent = new ExtentReports();
+                extent.AttachReporter(htmlReporter);
+            }
+            
             test = extent.CreateTest(TestContext.TestName);
             Driver = DriverFactoryMsTest.CreateDriver("chrome");
             if (Driver == null)
