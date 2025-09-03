@@ -30,34 +30,31 @@ jobs:
 
       - name: Create appsettings.json from secrets
         run: |
-          for proj in rp-nunit rp-mstest; do
-            mkdir -p $proj/bin/Release/net8.0/
-            echo "{
-              \"LOGIN\": \"${{ secrets.TEST_LOGIN }}\",
-              \"PASSWORD\": \"${{ secrets.TEST_PASSWORD }}\",
-              \"Serilog\": {
-                \"Using\": [\"Serilog.Sinks.Console\", \"Serilog.Sinks.File\"],
-                \"MinimumLevel\": {
-                  \"Default\": \"Information\",
-                  \"Override\": {
-                    \"Microsoft\": \"Warning\",
-                    \"System\": \"Warning\"
-                  }
-                },
-                \"WriteTo\": [
-                  {
-                    \"Name\": \"Console\"
-                  },
-                  {
-                    \"Name\": \"File\",
-                    \"Args\": {
-                      \"path\": \"${{ github.workspace }}/logs/logfile.log\",
-                      \"restrictedToMinimumLevel\": \"Information\"
-                    }
-                  }
-                ]
-              }
-            }" > $proj/bin/Release/net8.0/appsettings.json
+          mkdir -p rp-nunit/bin/Release/net8.0/
+          mkdir -p rp-mstest/bin/Release/net8.0/
+
+          cat > rp-nunit/bin/Release/net8.0/appsettings.json <<EOL
+          {
+            "LOGIN": "${{ secrets.TEST_LOGIN }}",
+            "PASSWORD": "${{ secrets.TEST_PASSWORD }}",
+            "Serilog": {
+              "Using": ["Serilog.Sinks.Console", "Serilog.Sinks.File"],
+              "MinimumLevel": {
+                "Default": "Information",
+                "Override": {
+                  "Microsoft": "Warning",
+                  "System": "Warning"
+                }
+              },
+              "WriteTo": [
+                {"Name": "Console"},
+                {"Name": "File", "Args": {"path": "${{ github.workspace }}/logs/logfile.log",    "restrictedToMinimumLevel": "Information"}}
+              ]
+            }
+          }
+          EOL
+
+          cp rp-nunit/bin/Release/net8.0/appsettings.json rp-mstest/bin/Release/net8.0/appsettings.json
 
       - name: Run tests
         run: dotnet test com.epam.rp.sln --configuration Release --logger "console;verbosity=detailed" --logger "trx;LogFileName=test-results.trx"
