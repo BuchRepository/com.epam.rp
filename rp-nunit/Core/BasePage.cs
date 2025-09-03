@@ -2,7 +2,7 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using SeleniumExtras.WaitHelpers;
 
-namespace ReportPortal.Core;
+namespace Core;
 
 public abstract class BasePage
 {

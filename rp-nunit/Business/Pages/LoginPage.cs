@@ -1,7 +1,7 @@
 using OpenQA.Selenium;
-using ReportPortal.Core;
+using Core;
 
-namespace ReportPortal.Business.Pages;
+namespace Business.Pages;
 
 public class LoginPage : BasePage
 {

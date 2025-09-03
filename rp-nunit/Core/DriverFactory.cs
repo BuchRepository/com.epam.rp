@@ -3,7 +3,7 @@ using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Firefox;
 using OpenQA.Selenium.Safari;
 
-namespace ReportPortal.Core;
+namespace Core;
 
 public static class DriverFactory
 {

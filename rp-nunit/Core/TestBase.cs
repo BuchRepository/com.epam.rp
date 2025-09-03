@@ -1,16 +1,20 @@
 using AventStack.ExtentReports;
 using AventStack.ExtentReports.Reporter;
+using Business.Pages;
 using NUnit.Framework.Interfaces;
 using OpenQA.Selenium;
 using NUnitAssert = NUnit.Framework.Assert;
 using NUnitTestContext = NUnit.Framework.TestContext;
 
 
-namespace ReportPortal.Core;
+namespace Core;
 
 public class TestBase
 {
     protected IWebDriver? Driver;
+    
+    protected LoginPage? LoginPage;
+    protected FiltersPage? FiltersPage;
     
     protected static ExtentReports extent;
     protected ExtentTest test;
@@ -41,6 +45,9 @@ public class TestBase
             throw new InvalidOperationException("Driver initialization failed.");
         }
         Driver.Navigate().GoToUrl("https://rp.epam.com");
+        
+        LoginPage = new LoginPage(Driver);
+        FiltersPage = new FiltersPage(Driver);
     }
 
     [TearDown]

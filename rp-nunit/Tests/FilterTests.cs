@@ -1,10 +1,9 @@
 using Microsoft.Extensions.Configuration;
-using ReportPortal.Business.Models;
-using ReportPortal.Business.Pages;
-using ReportPortal.Core;
+using Business.Models;
+using Core;
 using Serilog;
 
-namespace ReportPortal.Tests;
+namespace Tests;
 
 [TestFixture]
 public class FilterTests : TestBase
@@ -27,36 +26,44 @@ public class FilterTests : TestBase
             .CreateLogger();
     }
 
-    [Test(Description = "Verify that a specific filter is displayed in the filters list.")]
-    public void Filter_ShouldBeDisplayedInList()
+    [Test]
+    public void DisplayOnLaunchesShouldToggleAndReturn()
     {
-        if (Driver == null)
-        {
-            throw new NullReferenceException("Driver is null! Ensure it is properly initialized.");
-        }
-            
-        var loginPage = new LoginPage(Driver);
-        try
-        {
-            Log.Information("Start test");
-            
-            loginPage.Login(LOGIN, PASSWORD);
-        }
-        catch (Exception ex)
-        {
-            Log.Error(ex, "The test encountered an error.");
-        }
-        finally
-        {
-            Log.CloseAndFlush();
-        }
-        
-        var filtersPage = new FiltersPage(Driver);
-        filtersPage.OpenFiltersSection();
+        Log.Information("Start test");
+        LoginPage!.Login(LOGIN, PASSWORD);
+        FiltersPage!.OpenFiltersSection();
 
-        var filter = new FilterModel("DEMO_FILTER", "sergii_buchkivskyi");
+        // 1. Verify that Demo filter is presented
+        var filter = new FilterModel("DEMO_FILTER");
+        bool isFilterPresented = FiltersPage.IsFilterPresent(filter.FilterName);
+        Assert.That(isFilterPresented, Is.True, "Demo filter should exists in the filters list.");
 
-        NUnit.Framework.Assert.That(filtersPage.IsFilterPresent(filter.FilterName), Is.True,
-            "Filter should exists in the filters list.");
+        Log.Information($"Demo filter is presented in the filters list: {isFilterPresented}");
+
+        // 2. Get the current state
+        bool initialState = FiltersPage.IsDisplayOnLaunchesOn();
+        Log.Information($"Initial DisplayOnLaunches state: {(initialState ? "ON" : "OFF")}");
+
+        // 3. Toggle to the opposite state
+        FiltersPage!.ToggleDisplayOnLaunches();
+        FiltersPage!.WaitForState(!initialState);
+
+        // 4. Verify that the state changed to the opposite
+        bool toggledState = FiltersPage!.IsDisplayOnLaunchesOn();
+        Assert.That(toggledState, Is.EqualTo(!initialState),
+            "State should be toggled to the opposite.");
+
+        Log.Information($"State after toggle: {(toggledState ? "ON" : "OFF")}");
+
+        // 5. Toggle back to the initial state
+        FiltersPage!.ToggleDisplayOnLaunches();
+        FiltersPage!.WaitForState(initialState);
+
+        // 6. Verify that the state was reverted back
+        bool finalState = FiltersPage!.IsDisplayOnLaunchesOn();
+        Assert.That(finalState, Is.EqualTo(initialState),
+            "State should be reverted back to initial.");
+
+        Log.Information($"Final state: {(finalState ? "ON" : "OFF")}");
     }
 }

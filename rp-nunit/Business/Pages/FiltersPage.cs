@@ -1,8 +1,8 @@
+using Core;
 using OpenQA.Selenium;
-using ReportPortal.Core;
 using SeleniumExtras.WaitHelpers;
 
-namespace ReportPortal.Business.Pages;
+namespace Business.Pages;
 
 public class FiltersPage : BasePage
 {
@@ -12,6 +12,9 @@ public class FiltersPage : BasePage
     private readonly By LaunchNameInput    = By.XPath("//input[@placeholder='Enter name']");
     private readonly By SaveButton         = By.XPath("//span[contains(text(), 'Save')]");
     private readonly By filtersMenuItem = By.XPath("//a[contains(@href,'/filters')]");
+    private readonly By OnOffFilterDisplayingCheckbox = By.XPath("//input[@type='checkbox']/following-sibling::span[2]");
+    private readonly By OnFilterDisplaying = By.XPath("//span[text()='ON']");
+    private readonly By OffFilterDisplaying = By.XPath("//span[text()='OFF']");
     
     public void OpenFiltersSection()
     {
@@ -23,5 +26,31 @@ public class FiltersPage : BasePage
     {
         var filterElement = _wait.Until(ExpectedConditions.ElementExists(By.XPath($"//span[text()='{filterName}']")));
         return filterElement.Displayed;
+    }
+    
+    public bool IsDisplayOnLaunchesOn()
+    {
+        try
+        {
+            return FindVisible(OnFilterDisplaying).Displayed;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public void ToggleDisplayOnLaunches()
+    {
+        FindClickable(OnOffFilterDisplayingCheckbox);
+        Click(OnOffFilterDisplayingCheckbox);
+    }
+
+    public void WaitForState(bool expectedOn)
+    {
+        if (expectedOn)
+            FindVisible(OnFilterDisplaying);
+        else
+            FindVisible(OffFilterDisplaying);
     }
 }
