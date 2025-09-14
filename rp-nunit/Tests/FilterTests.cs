@@ -1,69 +1,151 @@
+using Business.Enums;
+using Business.Pages;
 using Microsoft.Extensions.Configuration;
-using Business.Models;
+using com.epam.rp_nunit.Core;
 using Core;
+using OpenQA.Selenium.Chrome;
 using Serilog;
 
 namespace Tests;
 
 [TestFixture]
+[Parallelizable(ParallelScope.All)]
+[FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
 public class FilterTests : TestBase
 {
-    private readonly string LOGIN;
-    private readonly string PASSWORD;
+    private readonly string _login;
+    private readonly string _password;
     
     public FilterTests()
     {
         var configuration = new ConfigurationBuilder()
             .SetBasePath(AppContext.BaseDirectory)
-            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+            //.AddJsonFile("appsettings.local.json", optional: true, reloadOnChange: true)
             .Build();
 
-        LOGIN = configuration["LOGIN"];
-        PASSWORD = configuration["PASSWORD"];
+        _login = configuration["LOGIN"];
+        _password = configuration["PASSWORD"];
         
         Log.Logger = new LoggerConfiguration()
             .ReadFrom.Configuration(configuration)
             .CreateLogger();
     }
 
-    [Test]
-    public void DisplayOnLaunchesShouldToggleAndReturn()
+    public static IEnumerable<dynamic> AddFilterData()
     {
+        return TestDataLoader.LoadTestData<dynamic>("TestData.json", "AddFilter");
+    }
+    
+    [Test, TestCaseSource(nameof(AddFilterData))]
+    public void UserCanAddFilter(dynamic data)
+    {
+        using var driver = new ChromeDriver();
+        var loginPage = new LoginPage(driver);
+        var filtersPage = new FiltersPage(driver);
+        
+        driver.Navigate().GoToUrl("https://rp.epam.com");
+        
+        string filterName = $"{data.filterName}_{Guid.NewGuid():N}";
+        string parameter = data.parameter;
+        string quantity = data.quantity;
+        bool expectedResult = data.expectedResult;
+        
         Log.Information("Start test");
-        LoginPage!.Login(LOGIN, PASSWORD);
-        FiltersPage!.OpenFiltersSection();
+        Log.Information("Login to ReportPortal cabinet");
+        loginPage.Login(_login, _password);
+        Log.Information("Open 'Filters' page");
+        filtersPage.OpenFiltersPage();
+        Log.Information("Click on 'Add' button");
+        var launchesPage = filtersPage.ClickAddFilter();
+        launchesPage.AddFilter(filterName, parameter, quantity);
 
-        // 1. Verify that Demo filter is presented
-        var filter = new FilterModel("DEMO_FILTER");
-        bool isFilterPresented = FiltersPage.IsFilterPresent(filter.FilterName);
-        Assert.That(isFilterPresented, Is.True, "Demo filter should exists in the filters list.");
+        Assert.IsTrue(filtersPage.WaitForFilterVisibility(filterName, expectedResult), $"Filter '{filterName}' should be present after adding.");
 
-        Log.Information($"Demo filter is presented in the filters list: {isFilterPresented}");
+        filtersPage!.DeleteFilter(filterName);
+        Assert.IsTrue(filtersPage!.WaitForFilterVisibility(filterName, false), $"Filter '{filterName}' should be deleted.");
+    }
+    
+    public static IEnumerable<dynamic> RemoveFilterData()
+    {
+        return TestDataLoader.LoadTestData<dynamic>("TestData.json", "RemoveFilter");
+    }
+    
+    [Test, TestCaseSource(nameof(RemoveFilterData))]
+    public void UserCanRemoveFilter(dynamic data)
+    {
+        using var driver = new ChromeDriver();
+        driver.Navigate().GoToUrl("https://rp.epam.com");
+        
+        var loginPage = new LoginPage(driver);
+        var filtersPage = new FiltersPage(driver);
+        
+        string filterName = $"{data.filterName}_{Guid.NewGuid():N}";
+        string parameter = data.parameter;
+        string quantity = data.quantity;
+        bool expectedResult = data.expectedResult;
+       
+        //Log.Information("Start test");
+        //Log.Information("Login to ReportPortal cabinet");
+        loginPage!.Login(_login, _password);
+        //Log.Information("Open 'Filters' page");
+        filtersPage.OpenFiltersPage();
+        //Log.Information("Click on 'Add' button");
+        var launchesPage = filtersPage.ClickAddFilter();
+        launchesPage.AddFilter(filterName, parameter, quantity);
+       
+        filtersPage.DeleteFilter(filterName);
+        Assert.IsTrue(filtersPage.WaitForFilterVisibility(filterName, expectedResult),
+            $"Filter '{filterName}' should be deleted.");
+    }
 
-        // 2. Get the current state
-        bool initialState = FiltersPage.IsDisplayOnLaunchesOn();
-        Log.Information($"Initial DisplayOnLaunches state: {(initialState ? "ON" : "OFF")}");
+    public static IEnumerable<dynamic> ToggleDisplayData()
+    {
+        return TestDataLoader.LoadTestData<dynamic>("TestData.json", "ToggleDisplay");
+    }
 
-        // 3. Toggle to the opposite state
-        FiltersPage!.ToggleDisplayOnLaunches();
-        FiltersPage!.WaitForState(!initialState);
+    [Test, TestCaseSource(nameof( ToggleDisplayData))]
+    public void UserCanToggleFilterDisplay(dynamic data)
+    {
+        using var driver = new ChromeDriver();
+        driver.Navigate().GoToUrl("https://rp.epam.com");
+        
+        var loginPage = new LoginPage(driver);
+        var filtersPage = new FiltersPage(driver);
+        
+        string filterName = $"{data.filterName}_{Guid.NewGuid():N}";
+        string parameter = data.parameter;
+        string quantity = data.quantity;
+        
+        Log.Information("Start test");
+        Log.Information("Login to ReportPortal cabinet");
+        loginPage!.Login(_login, _password);
 
-        // 4. Verify that the state changed to the opposite
-        bool toggledState = FiltersPage!.IsDisplayOnLaunchesOn();
-        Assert.That(toggledState, Is.EqualTo(!initialState),
-            "State should be toggled to the opposite.");
+        Log.Information("Open 'Filters' page");
+        filtersPage!.OpenFiltersPage();
+        Log.Information("Click on 'Add' button");
+        var launchesPage = filtersPage!.ClickAddFilter();
+        launchesPage.AddFilter(filterName, parameter, quantity);
+        
+        Assert.That(
+            launchesPage.IsFilterVisible(filterName, shouldBeVisible: true),
+            Is.True,
+            $"Created filter '{filterName}' should be presented on Launches page."
+        );
 
-        Log.Information($"State after toggle: {(toggledState ? "ON" : "OFF")}");
+        filtersPage!.ToggleDisplayOnLaunches(filterName);
+        filtersPage!.WaitForState(filterName, FiltersState.Off);
+        
+        launchesPage.RefreshPage();
 
-        // 5. Toggle back to the initial state
-        FiltersPage!.ToggleDisplayOnLaunches();
-        FiltersPage!.WaitForState(initialState);
-
-        // 6. Verify that the state was reverted back
-        bool finalState = FiltersPage!.IsDisplayOnLaunchesOn();
-        Assert.That(finalState, Is.EqualTo(initialState),
-            "State should be reverted back to initial.");
-
-        Log.Information($"Final state: {(finalState ? "ON" : "OFF")}");
+        Assert.That(
+            launchesPage.IsFilterVisible(filterName, shouldBeVisible: false),
+            Is.True,
+            $"Created filter '{filterName}' should not be presented on Launches page."
+        );
+        
+        filtersPage.DeleteFilter(filterName);
+        Assert.IsTrue(filtersPage!.WaitForFilterVisibility(filterName, false),
+            $"Filter '{filterName}' should be deleted.");
     }
 }

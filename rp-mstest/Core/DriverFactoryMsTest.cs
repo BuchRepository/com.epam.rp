@@ -5,7 +5,7 @@ using OpenQA.Selenium.Safari;
 
 namespace com.epam.rp_mstest.Core;
 
-public class DriverFactoryMsTest
+public static class DriverFactoryMsTest
 {
     public static IWebDriver CreateDriver(string browser = "chrome")
     {

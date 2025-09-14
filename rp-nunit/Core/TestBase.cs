@@ -3,6 +3,7 @@ using AventStack.ExtentReports.Reporter;
 using Business.Pages;
 using NUnit.Framework.Interfaces;
 using OpenQA.Selenium;
+using Serilog;
 using NUnitAssert = NUnit.Framework.Assert;
 using NUnitTestContext = NUnit.Framework.TestContext;
 
@@ -11,15 +12,16 @@ namespace Core;
 
 public class TestBase
 {
-    protected IWebDriver? Driver;
+    /*protected IWebDriver? Driver;
     
     protected LoginPage? LoginPage;
-    protected FiltersPage? FiltersPage;
+    protected FiltersPage? FiltersPage;*/
+    //protected IWebDriver? Driver;
     
-    protected static ExtentReports extent;
-    protected ExtentTest test;
+    /*protected static ExtentReports extent;
+    protected ExtentTest test;*/
     
-    [OneTimeSetUp]
+    /*[OneTimeSetUp]
     public void OneTimeSetup()
     {
         string reportPath = Path.Combine(AppContext.BaseDirectory, "ExtentReports.html");
@@ -31,9 +33,9 @@ public class TestBase
         htmlReporter.Config.Theme = AventStack.ExtentReports.Reporter.Configuration.Theme.Standard;
         extent = new ExtentReports();
         extent.AttachReporter(htmlReporter);
-    }
+    }*/
         
-    [SetUp]
+    /*[SetUp]
     public void SetUp()
     {
         test = extent.CreateTest(NUnitTestContext.CurrentContext.Test.Name);
@@ -48,15 +50,30 @@ public class TestBase
         
         LoginPage = new LoginPage(Driver);
         FiltersPage = new FiltersPage(Driver);
-    }
+    }*/
 
     [TearDown]
     public void TearDown()
     {
-        var status = NUnitTestContext.CurrentContext.Result.Outcome.Status;
+        /*var status = NUnitTestContext.CurrentContext.Result.Outcome.Status;
         var stacktrace = NUnitTestContext.CurrentContext.Result.StackTrace;
 
-        switch (status)
+        if (status == TestStatus.Failed)
+        {
+            string screenshotName = $"TestFail_{DateTime.Now:yyyyMMdd_HHmmss}.png";
+            try
+            {
+                var screenshot = ((ITakesScreenshot)Driver).GetScreenshot();
+                screenshot.SaveAsFile(screenshotName);
+                Log.Information($"Screenshot saved: {screenshotName}");
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, "Failed to take screenshot on test failure");
+            }
+        }*/
+        
+        /*switch (status)
         {
             case TestStatus.Failed:
                 test.Fail("Test Failed").Fail(stacktrace);
@@ -67,15 +84,24 @@ public class TestBase
             default:
                 test.Skip("Test Skipped");
                 break;
-        }
+        }*/
         
-        if (Driver != null)
+        /*if (Driver != null)
         {
             Driver.Quit();
             Driver.Dispose();
         }
         Driver = null;
         
-        extent.Flush();
+        extent.Flush();*/
+        
+        /*try
+        {
+            extent?.Flush();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"ExtentReports flush failed: {ex.Message}");
+        }*/
     }
 }

@@ -1,6 +1,7 @@
+using Business.Enums;
 using Core;
 using OpenQA.Selenium;
-using SeleniumExtras.WaitHelpers;
+using Serilog;
 
 namespace Business.Pages;
 
@@ -8,49 +9,59 @@ public class FiltersPage : BasePage
 {
     public FiltersPage(IWebDriver driver) : base(driver) { }
 
-    private readonly By CreateFilterButton = By.XPath("//span[contains(text(), 'Add filter')]");
-    private readonly By LaunchNameInput    = By.XPath("//input[@placeholder='Enter name']");
-    private readonly By SaveButton         = By.XPath("//span[contains(text(), 'Save')]");
-    private readonly By filtersMenuItem = By.XPath("//a[contains(@href,'/filters')]");
-    private readonly By OnOffFilterDisplayingCheckbox = By.XPath("//input[@type='checkbox']/following-sibling::span[2]");
-    private readonly By OnFilterDisplaying = By.XPath("//span[text()='ON']");
-    private readonly By OffFilterDisplaying = By.XPath("//span[text()='OFF']");
+    private readonly By _filtersMenuItem = By.XPath("//a[contains(@href,'/filters')]");
+    private readonly By _addFilterButton   = By.XPath("//span[text()='Add Filter']");
+    private readonly By _confirmDeleteFilterButton = By.XPath("//button[text()='Delete']");
     
-    public void OpenFiltersSection()
-    {
-        var filtersLink = _wait.Until(ExpectedConditions.ElementToBeClickable(filtersMenuItem));
-        filtersLink.Click();
-    }
+    private By FilterByName(string name) => By.XPath($"//span[text()='{name}']");
+    private By DeleteButtonByName(string name) => By.XPath($"//span[text()='{name}']/following::div[contains(@class, 'deleteFilterButton')][1]");
+    private By ToggleByName(string name) => By.XPath($"//span[text()='{name}']/following::span[contains(@class,'inputSwitcher')][1]");
+    private By StateByName(string name, FiltersState state) => 
+        By.XPath($"//span[text()='{name}']/following::span[text()='{state.ToString().ToUpper()}'][1]");
 
-    public bool IsFilterPresent(string filterName)
+
+    public void OpenFiltersPage()
     {
-        var filterElement = _wait.Until(ExpectedConditions.ElementExists(By.XPath($"//span[text()='{filterName}']")));
-        return filterElement.Displayed;
+        Click(_filtersMenuItem);
+    } 
+    
+    public LaunchesPage ClickAddFilter()
+    {
+        Click(_addFilterButton);
+        return new LaunchesPage(_driver);
     }
     
-    public bool IsDisplayOnLaunchesOn()
+    public void DeleteFilter(string filterName)
+    {
+        Click(DeleteButtonByName(filterName));
+        Click(_confirmDeleteFilterButton);
+    }
+    
+    public bool WaitForFilterVisibility(string filterName, bool shouldExist = true)
     {
         try
         {
-            return FindVisible(OnFilterDisplaying).Displayed;
+            return _wait.Until(driver =>
+            {
+                var elements = driver.FindElements(FilterByName(filterName));
+                var isVisible = elements.Any(e => e.Displayed);
+                return isVisible == shouldExist;
+            });
         }
-        catch
+        catch (WebDriverTimeoutException)
         {
+            Log.Warning($"Filter '{filterName}' did not reach state {shouldExist}");
             return false;
         }
     }
 
-    public void ToggleDisplayOnLaunches()
+    public void ToggleDisplayOnLaunches(string filterName)
     {
-        FindClickable(OnOffFilterDisplayingCheckbox);
-        Click(OnOffFilterDisplayingCheckbox);
+        Click(ToggleByName(filterName));
     }
 
-    public void WaitForState(bool expectedOn)
+    public void WaitForState(string filterName, FiltersState state)
     {
-        if (expectedOn)
-            FindVisible(OnFilterDisplaying);
-        else
-            FindVisible(OffFilterDisplaying);
+        FindVisible(StateByName(filterName, state));
     }
 }
