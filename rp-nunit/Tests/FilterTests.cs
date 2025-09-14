@@ -21,15 +21,10 @@ public class FilterTests : TestBase
         var configuration = new ConfigurationBuilder()
             .SetBasePath(AppContext.BaseDirectory)
             .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-            //.AddJsonFile("appsettings.local.json", optional: true, reloadOnChange: true)
             .Build();
 
         _login = configuration["LOGIN"];
         _password = configuration["PASSWORD"];
-        
-        Log.Logger = new LoggerConfiguration()
-            .ReadFrom.Configuration(configuration)
-            .CreateLogger();
     }
 
     public static IEnumerable<dynamic> AddFilterData()
@@ -40,12 +35,6 @@ public class FilterTests : TestBase
     [Test, TestCaseSource(nameof(AddFilterData))]
     public void UserCanAddFilter(dynamic data)
     {
-        using var driver = new ChromeDriver();
-        var loginPage = new LoginPage(driver);
-        var filtersPage = new FiltersPage(driver);
-        
-        driver.Navigate().GoToUrl("https://rp.epam.com");
-        
         string filterName = $"{data.filterName}_{Guid.NewGuid():N}";
         string parameter = data.parameter;
         string quantity = data.quantity;
@@ -53,17 +42,17 @@ public class FilterTests : TestBase
         
         Log.Information("Start test");
         Log.Information("Login to ReportPortal cabinet");
-        loginPage.Login(_login, _password);
+        LoginPage!.Login(_login, _password);
         Log.Information("Open 'Filters' page");
-        filtersPage.OpenFiltersPage();
+        FiltersPage!.OpenFiltersPage();
         Log.Information("Click on 'Add' button");
-        var launchesPage = filtersPage.ClickAddFilter();
+        var launchesPage = FiltersPage!.ClickAddFilter();
         launchesPage.AddFilter(filterName, parameter, quantity);
 
-        Assert.IsTrue(filtersPage.WaitForFilterVisibility(filterName, expectedResult), $"Filter '{filterName}' should be present after adding.");
+        Assert.IsTrue(FiltersPage!.WaitForFilterVisibility(filterName, expectedResult), $"Filter '{filterName}' should be present after adding.");
 
-        filtersPage!.DeleteFilter(filterName);
-        Assert.IsTrue(filtersPage!.WaitForFilterVisibility(filterName, false), $"Filter '{filterName}' should be deleted.");
+        FiltersPage!.DeleteFilter(filterName);
+        Assert.IsTrue(FiltersPage!.WaitForFilterVisibility(filterName, false), $"Filter '{filterName}' should be deleted.");
     }
     
     public static IEnumerable<dynamic> RemoveFilterData()
@@ -74,28 +63,22 @@ public class FilterTests : TestBase
     [Test, TestCaseSource(nameof(RemoveFilterData))]
     public void UserCanRemoveFilter(dynamic data)
     {
-        using var driver = new ChromeDriver();
-        driver.Navigate().GoToUrl("https://rp.epam.com");
-        
-        var loginPage = new LoginPage(driver);
-        var filtersPage = new FiltersPage(driver);
-        
         string filterName = $"{data.filterName}_{Guid.NewGuid():N}";
         string parameter = data.parameter;
         string quantity = data.quantity;
         bool expectedResult = data.expectedResult;
        
-        //Log.Information("Start test");
-        //Log.Information("Login to ReportPortal cabinet");
-        loginPage!.Login(_login, _password);
-        //Log.Information("Open 'Filters' page");
-        filtersPage.OpenFiltersPage();
-        //Log.Information("Click on 'Add' button");
-        var launchesPage = filtersPage.ClickAddFilter();
+        Log.Information("Start test");
+        Log.Information("Login to ReportPortal cabinet");
+        LoginPage!.Login(_login, _password);
+        Log.Information("Open 'Filters' page");
+        FiltersPage!.OpenFiltersPage();
+        Log.Information("Click on 'Add' button");
+        var launchesPage = FiltersPage.ClickAddFilter();
         launchesPage.AddFilter(filterName, parameter, quantity);
        
-        filtersPage.DeleteFilter(filterName);
-        Assert.IsTrue(filtersPage.WaitForFilterVisibility(filterName, expectedResult),
+        FiltersPage.DeleteFilter(filterName);
+        Assert.IsTrue(FiltersPage.WaitForFilterVisibility(filterName, expectedResult),
             $"Filter '{filterName}' should be deleted.");
     }
 
@@ -107,24 +90,18 @@ public class FilterTests : TestBase
     [Test, TestCaseSource(nameof( ToggleDisplayData))]
     public void UserCanToggleFilterDisplay(dynamic data)
     {
-        using var driver = new ChromeDriver();
-        driver.Navigate().GoToUrl("https://rp.epam.com");
-        
-        var loginPage = new LoginPage(driver);
-        var filtersPage = new FiltersPage(driver);
-        
         string filterName = $"{data.filterName}_{Guid.NewGuid():N}";
         string parameter = data.parameter;
         string quantity = data.quantity;
         
         Log.Information("Start test");
         Log.Information("Login to ReportPortal cabinet");
-        loginPage!.Login(_login, _password);
+        LoginPage!.Login(_login, _password);
 
         Log.Information("Open 'Filters' page");
-        filtersPage!.OpenFiltersPage();
+        FiltersPage!.OpenFiltersPage();
         Log.Information("Click on 'Add' button");
-        var launchesPage = filtersPage!.ClickAddFilter();
+        var launchesPage = FiltersPage!.ClickAddFilter();
         launchesPage.AddFilter(filterName, parameter, quantity);
         
         Assert.That(
@@ -133,8 +110,8 @@ public class FilterTests : TestBase
             $"Created filter '{filterName}' should be presented on Launches page."
         );
 
-        filtersPage!.ToggleDisplayOnLaunches(filterName);
-        filtersPage!.WaitForState(filterName, FiltersState.Off);
+        FiltersPage!.ToggleDisplayOnLaunches(filterName);
+        FiltersPage!.WaitForState(filterName, FiltersState.Off);
         
         launchesPage.RefreshPage();
 
@@ -144,8 +121,8 @@ public class FilterTests : TestBase
             $"Created filter '{filterName}' should not be presented on Launches page."
         );
         
-        filtersPage.DeleteFilter(filterName);
-        Assert.IsTrue(filtersPage!.WaitForFilterVisibility(filterName, false),
+        FiltersPage.DeleteFilter(filterName);
+        Assert.IsTrue(FiltersPage!.WaitForFilterVisibility(filterName, false),
             $"Filter '{filterName}' should be deleted.");
     }
 }

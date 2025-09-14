@@ -57,7 +57,7 @@ jobs:
           cp rp-nunit/bin/Release/net8.0/appsettings.json rp-mstest/bin/Release/net8.0/appsettings.json
 
       - name: Run tests
-        run: dotnet test com.epam.rp.sln --configuration Release --logger "console;verbosity=detailed" --logger "trx;LogFileName=test-results.trx"
+        run: dotnet test com.epam.rp.sln --configuration Release --logger "console;verbosity=detailed" --logger "trx;LogFileName=test-results.trx" -- NUnit.ParallelScope=Fixtures
 
       - name: Upload logs
         if: always()
