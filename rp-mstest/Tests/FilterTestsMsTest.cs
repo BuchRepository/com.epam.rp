@@ -43,12 +43,6 @@ public class FilterTestsMsTest : TestBaseMsTest
     [DynamicData(nameof(AddFilterData), DynamicDataSourceType.Method)]
     public void UserCanAddFilter(dynamic data)
     {
-        using var driver = new ChromeDriver();
-        var loginPage = new LoginPageMsTest(driver);
-        var filtersPage = new FiltersPageMsTest(driver);
-        
-        driver.Navigate().GoToUrl("https://rp.epam.com");
-        
         string filterName = $"{data.filterName}_{Guid.NewGuid():N}";
         string parameter = data.parameter;
         string quantity = data.quantity;
@@ -56,17 +50,17 @@ public class FilterTestsMsTest : TestBaseMsTest
         
         Log.Information("Start test");
         Log.Information("Login to ReportPortal cabinet");
-        loginPage!.Login(_login, _password);
+        LoginPage!.Login(_login, _password);
         Log.Information("Open 'Filters' page");
-        filtersPage!.OpenFiltersPage();
+        FiltersPage!.OpenFiltersPage();
         Log.Information("Click on 'Add' button");
-        var launchesPage = filtersPage!.ClickAddFilter();
+        var launchesPage = FiltersPage!.ClickAddFilter();
         launchesPage.AddFilter(filterName, parameter, quantity);
 
-        Assert.IsTrue(filtersPage!.WaitForFilterVisibility(filterName, expectedResult), $"Filter '{filterName}' should be present after adding.");
+        Assert.IsTrue(FiltersPage!.WaitForFilterVisibility(filterName, expectedResult), $"Filter '{filterName}' should be present after adding.");
 
-        filtersPage!.DeleteFilter(filterName);
-        Assert.IsTrue(filtersPage!.WaitForFilterVisibility(filterName, false), $"Filter '{filterName}' should be deleted.");
+        FiltersPage!.DeleteFilter(filterName);
+        Assert.IsTrue(FiltersPage!.WaitForFilterVisibility(filterName, false), $"Filter '{filterName}' should be deleted.");
     }
     
     public static IEnumerable<object[]> RemoveFilterData()
@@ -82,12 +76,6 @@ public class FilterTestsMsTest : TestBaseMsTest
     [DynamicData(nameof(RemoveFilterData), DynamicDataSourceType.Method)]
     public void UserCanRemoveFilter(dynamic data)
     {
-        using var driver = new ChromeDriver();
-        var loginPage = new LoginPageMsTest(driver);
-        var filtersPage = new FiltersPageMsTest(driver);
-        
-        driver.Navigate().GoToUrl("https://rp.epam.com");
-        
         string filterName = $"{data.filterName}_{Guid.NewGuid():N}";
         string parameter = data.parameter;
         string quantity = data.quantity;
@@ -95,15 +83,15 @@ public class FilterTestsMsTest : TestBaseMsTest
        
         Log.Information("Start test");
         Log.Information("Login to ReportPortal cabinet");
-        loginPage!.Login(_login, _password);
+        LoginPage!.Login(_login, _password);
         Log.Information("Open 'Filters' page");
-        filtersPage!.OpenFiltersPage();
+        FiltersPage!.OpenFiltersPage();
         Log.Information("Click on 'Add' button");
-        var launchesPage = filtersPage!.ClickAddFilter();
+        var launchesPage = FiltersPage!.ClickAddFilter();
         launchesPage.AddFilter(filterName, parameter, quantity);
        
-        filtersPage.DeleteFilter(filterName);
-        Assert.IsTrue(filtersPage!.WaitForFilterVisibility(filterName, expectedResult),
+        FiltersPage.DeleteFilter(filterName);
+        Assert.IsTrue(FiltersPage!.WaitForFilterVisibility(filterName, expectedResult),
             $"Filter '{filterName}' should be deleted.");
     }
 
@@ -120,24 +108,18 @@ public class FilterTestsMsTest : TestBaseMsTest
     [DynamicData(nameof(ToggleDisplayData), DynamicDataSourceType.Method)]
     public void UserCanToggleFilterDisplay(dynamic data)
     {
-        using var driver = new ChromeDriver();
-        var loginPage = new LoginPageMsTest(driver);
-        var filtersPage = new FiltersPageMsTest(driver);
-        
-        driver.Navigate().GoToUrl("https://rp.epam.com");
-        
         string filterName = $"{data.filterName}_{Guid.NewGuid():N}";
         string parameter = data.parameter;
         string quantity = data.quantity;
         
         Log.Information("Start test");
         Log.Information("Login to ReportPortal cabinet");
-        loginPage!.Login(_login, _password);
+        LoginPage!.Login(_login, _password);
 
         Log.Information("Open 'Filters' page");
-        filtersPage!.OpenFiltersPage();
+        FiltersPage!.OpenFiltersPage();
         Log.Information("Click on 'Add' button");
-        var launchesPage = filtersPage!.ClickAddFilter();
+        var launchesPage = FiltersPage!.ClickAddFilter();
         launchesPage.AddFilter(filterName, parameter, quantity);
         
         Assert.IsTrue(
@@ -145,8 +127,8 @@ public class FilterTestsMsTest : TestBaseMsTest
             $"Created filter '{filterName}' should be presented on Launches page."
         );
 
-        filtersPage!.ToggleDisplayOnLaunches(filterName);
-        filtersPage!.WaitForState(filterName, FiltersState.Off);
+        FiltersPage!.ToggleDisplayOnLaunches(filterName);
+        FiltersPage!.WaitForState(filterName, FiltersState.Off);
         
         launchesPage.RefreshPage();
 
@@ -155,8 +137,8 @@ public class FilterTestsMsTest : TestBaseMsTest
             $"Toggled filter '{filterName}' should disappear on Launches page."
         );
         
-        filtersPage.DeleteFilter(filterName);
-        Assert.IsTrue(filtersPage!.WaitForFilterVisibility(filterName, false),
+        FiltersPage.DeleteFilter(filterName);
+        Assert.IsTrue(FiltersPage!.WaitForFilterVisibility(filterName, false),
             $"Filter '{filterName}' should be deleted.");
     }
 }

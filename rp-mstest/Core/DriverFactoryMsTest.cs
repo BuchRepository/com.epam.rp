@@ -7,7 +7,7 @@ namespace com.epam.rp_mstest.Core;
 
 public static class DriverFactoryMsTest
 {
-    public static IWebDriver CreateDriver(string browser = "chrome")
+    public static IWebDriver CreateDriver(string browser = "chrome", bool uniqueProfile = false)
     {
         IWebDriver driver;
 
@@ -29,18 +29,23 @@ public static class DriverFactoryMsTest
                 options.AddArgument("--window-size=1920,1080");
                 options.AddArgument("--disable-gpu");
                 
-                driver = new ChromeDriver(options);
+                if (uniqueProfile)
+                {
+                    string profilePath = Path.Combine(Path.GetTempPath(), $"chrome_profile_{Guid.NewGuid():N}");
+                    Directory.CreateDirectory(profilePath);
+                    options.AddArgument($"--user-data-dir={profilePath}");
+                    options.AddArgument("--disable-extensions");
+                }
+                
+                var service = ChromeDriverService.CreateDefaultService();
+                service.Port = 0;
+                driver = new ChromeDriver(service, options);
                 break;
             
             default:
                 throw new NotSupportedException($"Browser '{browser}' is not supported.");
         }
         
-        if (driver == null)
-        {
-            throw new InvalidOperationException("Driver could not be created. Ensure all configurations are correct.");
-        }
-
         return driver;
     }
 }

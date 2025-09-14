@@ -10,13 +10,15 @@ namespace com.epam.rp_mstest.Core;
 [TestClass]
 public class TestBaseMsTest
 {
-    /*protected IWebDriver? Driver;
-
-    protected LoginPageMsTest? LoginPage;
-    protected FiltersPageMsTest? FiltersPage;
-
+    protected IWebDriver? Driver;
     protected static ExtentReports extent;
     protected ExtentTest test;
+       
+    protected LoginPageMsTest? LoginPage;
+    protected FiltersPageMsTest? FiltersPage;
+       
+    private static readonly object _extentLock = new object();
+    private string _logFile = string.Empty;
     public TestContext TestContext { get; set; } = null!;
 
     [AssemblyInitialize]
@@ -41,13 +43,13 @@ public class TestBaseMsTest
     [TestInitialize]
     public void SetUp()
     {
-        test = extent.CreateTest(TestContext.TestName);
+        //test = extent.CreateTest(TestContext.TestName);
         
         string browser = TestContext.Properties.Contains("browser")
             ? TestContext.Properties["browser"]?.ToString() ?? "chrome"
             : "chrome";
 
-        Driver = DriverFactoryMsTest.CreateDriver(browser);
+        Driver = DriverFactoryMsTest.CreateDriver(browser, uniqueProfile: true);
         if (Driver == null)
             throw new InvalidOperationException("Driver initialization failed.");
 
@@ -60,7 +62,7 @@ public class TestBaseMsTest
     [TestCleanup]
     public void CleanUp()   
     {
-        var outcome = TestContext.CurrentTestOutcome;
+        /*var outcome = TestContext.CurrentTestOutcome;
 
         if (outcome == UnitTestOutcome.Failed)
         {
@@ -86,12 +88,19 @@ public class TestBaseMsTest
         else
         {
             test.Skip("Test Skipped");
-        }
+        }*/
 
-        Driver?.Quit();
-        Driver?.Dispose();
+        try
+        {
+            Driver?.Quit();
+            Driver?.Dispose();
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Error while disposing driver");
+        }
         Driver = null;
 
-        extent.Flush();
-    }*/
+        //extent.Flush();
+    }
 }
