@@ -60,7 +60,7 @@ public class TestBase
         LoginPage = new LoginPage(Driver);
         FiltersPage = new FiltersPage(Driver);
         
-        test = extent.CreateTest(NUnitTestContext.CurrentContext.Test.Name);
+        //test = extent.CreateTest(NUnitTestContext.CurrentContext.Test.Name);
     }
 
     [TearDown]
@@ -78,10 +78,10 @@ public class TestBase
                 screenshot.SaveAsFile(screenshotName);
                 Log.Information($"Screenshot saved: {screenshotName}");
                 
-                lock (_extentLock)
+                /*lock (_extentLock)
                 {
                     test.AddScreenCaptureFromPath(screenshotName);
-                }
+                }*/
             }
             catch (Exception e)
             {
@@ -89,7 +89,7 @@ public class TestBase
             }
         }
 
-        lock (_extentLock)
+        /*lock (_extentLock)
         {
             switch (status)
             {
@@ -103,7 +103,7 @@ public class TestBase
                     test.Skip("Test Skipped");
                     break;
             }
-        }
+        }*/
 
         if (Driver != null)
         {
@@ -112,9 +112,9 @@ public class TestBase
             Driver = null;
         }
 
-        lock (_extentLock)
+        /*lock (_extentLock)
         {
             extent.Flush();
-        }
+        }*/
     }
 }
