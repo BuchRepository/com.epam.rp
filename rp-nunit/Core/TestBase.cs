@@ -13,49 +13,54 @@ namespace Core;
 public class TestBase
 {
     protected IWebDriver? Driver;
-    protected ExtentReports extent;
+    protected static ExtentReports extent;
     protected ExtentTest test;
     
     protected LoginPage? LoginPage;
     protected FiltersPage? FiltersPage;
     
     private static readonly object _extentLock = new object();
-    private string _logFile = $"logs/logfile_{Guid.NewGuid():N}.log";
+    private string _logFile = string.Empty;
     
     [OneTimeSetUp]
     public void OneTimeSetup()
     {
-        string reportPath = Path.Combine(AppContext.BaseDirectory, $"ExtentReports_{Guid.NewGuid():N}.html");
-        NUnitTestContext.Progress.WriteLine($"[LOG] ExtentReports path: {reportPath}");
-        
-        var htmlReporter = new ExtentHtmlReporter(reportPath);
-        htmlReporter.Config.DocumentTitle = "Test Report";
-        htmlReporter.Config.ReportName = "UI Test Report";
-        htmlReporter.Config.Theme = AventStack.ExtentReports.Reporter.Configuration.Theme.Standard;
-        
         lock (_extentLock)
         {
-            extent = new ExtentReports();
-            extent.AttachReporter(htmlReporter);
+            if (extent == null)
+            {
+                string reportPath = Path.Combine(AppContext.BaseDirectory, $"ExtentReports_{Guid.NewGuid():N}.html");
+
+                var htmlReporter = new ExtentHtmlReporter(reportPath);
+                htmlReporter.Config.DocumentTitle = "Test Report";
+                htmlReporter.Config.ReportName = "UI Test Report";
+                htmlReporter.Config.Theme = AventStack.ExtentReports.Reporter.Configuration.Theme.Standard;
+
+                extent = new ExtentReports();
+                extent.AttachReporter(htmlReporter);
+            }
         }
     }
         
     [SetUp]
     public void SetUp()
     {
-        test = extent.CreateTest(NUnitTestContext.CurrentContext.Test.Name);
+        Directory.CreateDirectory(Path.Combine(AppContext.BaseDirectory, "logs"));
+        _logFile = Path.Combine(AppContext.BaseDirectory, "logs", $"logfile_{Guid.NewGuid():N}.log");
+
+        Log.Logger = new LoggerConfiguration()
+            .WriteTo.Console()
+            .WriteTo.File(_logFile)
+            .CreateLogger();
         
         string browser = NUnitTestContext.Parameters.Get("browser", "chrome");
-        Driver = DriverFactory.CreateDriver(browser);
+        Driver = DriverFactory.CreateDriver(browser, uniqueProfile: true);
         Driver.Navigate().GoToUrl("https://rp.epam.com");
         
         LoginPage = new LoginPage(Driver);
         FiltersPage = new FiltersPage(Driver);
         
-        Log.Logger = new LoggerConfiguration()
-            .WriteTo.Console()
-            .WriteTo.File(_logFile)
-            .CreateLogger();
+        test = extent.CreateTest(NUnitTestContext.CurrentContext.Test.Name);
     }
 
     [TearDown]

@@ -7,7 +7,7 @@ namespace Core;
 
 public static class DriverFactory
 {
-    public static IWebDriver CreateDriver(string browser = "chrome")
+    public static IWebDriver CreateDriver(string browser = "chrome", bool uniqueProfile = false)
     {
         IWebDriver driver;
 
@@ -29,16 +29,18 @@ public static class DriverFactory
                 options.AddArgument("--window-size=1920,1080");
                 options.AddArgument("--disable-gpu");
                 
+                if (uniqueProfile)
+                {
+                    string profilePath = Path.Combine(Path.GetTempPath(), $"chrome_profile_{Guid.NewGuid():N}");
+                    Directory.CreateDirectory(profilePath);
+                    options.AddArgument($"--user-data-dir={profilePath}");
+                }
+                
                 driver = new ChromeDriver(options);
                 break;
             
             default:
                 throw new NotSupportedException($"Browser '{browser}' is not supported.");
-        }
-        
-        if (driver == null)
-        {
-            throw new InvalidOperationException("Driver could not be created. Ensure all configurations are correct.");
         }
 
         return driver;
