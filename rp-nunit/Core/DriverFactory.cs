@@ -28,16 +28,24 @@ public static class DriverFactory
                 options.AddArgument("--disable-software-rasterizer");
                 options.AddArgument("--window-size=1920,1080");
                 options.AddArgument("--disable-gpu");
+                options.AddArgument("--no-first-run");
+                options.AddArgument("--disable-extensions");
                 
                 if (uniqueProfile)
                 {
                     string profilePath = Path.Combine(Path.GetTempPath(), $"chrome_profile_{Guid.NewGuid():N}");
                     Directory.CreateDirectory(profilePath);
                     options.AddArgument($"--user-data-dir={profilePath}");
+                    options.AddArgument("--disable-extensions");
                 }
                 
-                driver = new ChromeDriver(options);
+                var service = ChromeDriverService.CreateDefaultService();
+                service.Port = 0;
+                driver = new ChromeDriver(service, options);
                 break;
+                
+                /*driver = new ChromeDriver(options);
+                break;*/
             
             default:
                 throw new NotSupportedException($"Browser '{browser}' is not supported.");
