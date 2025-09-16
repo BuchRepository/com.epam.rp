@@ -10,7 +10,7 @@ public abstract class BasePageMsTest
     protected readonly IWebDriver _driver;
     protected readonly WebDriverWait _wait;
 
-    protected BasePageMsTest(IWebDriver driver, int defaultTimeout = 10)
+    protected BasePageMsTest(IWebDriver driver, int defaultTimeout = 5)
     {
         _driver = driver;
         _wait = new WebDriverWait(driver, TimeSpan.FromSeconds(defaultTimeout));
