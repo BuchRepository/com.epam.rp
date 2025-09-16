@@ -10,19 +10,19 @@ using NUnitTestContext = NUnit.Framework.TestContext;
 
 namespace Core;
 
-public class TestBase
+public abstract class TestBase
 {
     protected IWebDriver? Driver;
-    protected static ExtentReports extent;
-    protected ExtentTest test;
+    //protected ExtentReports extent;
+    //protected ExtentTest test;
     
     protected LoginPage? LoginPage;
     protected FiltersPage? FiltersPage;
     
-    private static readonly object _extentLock = new object();
+    //private static readonly object _extentLock = new object();
     private string _logFile = string.Empty;
     
-    [OneTimeSetUp]
+    /*[OneTimeSetUp]
     public void OneTimeSetup()
     {
         lock (_extentLock)
@@ -40,7 +40,7 @@ public class TestBase
                 extent.AttachReporter(htmlReporter);
             }
         }
-    }
+    }*/
         
     [SetUp]
     public void SetUp()
