@@ -62,33 +62,39 @@ public class TestBaseMsTest
     [TestCleanup]
     public void CleanUp()   
     {
-        /*var outcome = TestContext.CurrentTestOutcome;
+        var outcome = TestContext.CurrentTestOutcome;
 
         if (outcome == UnitTestOutcome.Failed)
         {
-            string screenshotName = $"TestFail_{DateTime.Now:yyyyMMdd_HHmmss}.png";
+            string screenshotName = $"TestFail_{TestContext.TestName}_{Guid.NewGuid()}.png";
             try
             {
+                var screenshotsDir = Path.Combine(AppContext.BaseDirectory, "screenshots");
+                Directory.CreateDirectory(screenshotsDir);
+
+                var fullPath = Path.Combine(screenshotsDir, screenshotName);
+                
                 var screenshot = ((ITakesScreenshot)Driver).GetScreenshot();
-                screenshot.SaveAsFile(screenshotName);
-                Log.Information($"Screenshot saved: {screenshotName}");
+                screenshot.SaveAsFile(fullPath);
+                
+                Log.Information($"Screenshot saved: {fullPath}");
             }
             catch (Exception e)
             {
                 Log.Error(e, "Failed to take screenshot on test failure");
             }
             
-            test.Fail("Test Failed");
+            //test.Fail("Test Failed");
         }
         
-        else if (outcome == UnitTestOutcome.Passed)
+        /*else if (outcome == UnitTestOutcome.Passed)
         {
             test.Pass("Test Passed");
         }
         else
         {
             test.Skip("Test Skipped");
-        }*/
+        }   */
 
         try
         {

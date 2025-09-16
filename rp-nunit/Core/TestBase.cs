@@ -71,12 +71,18 @@ public abstract class TestBase
 
         if (status == TestStatus.Failed)
         {
-            string screenshotName = $"TestFail_{Guid.NewGuid():N}.png";
+            string screenshotName = $"TestFail_{status}_{Guid.NewGuid():N}.png";
             try
             {
+                var screenshotsDir = Path.Combine(AppContext.BaseDirectory, "screenshots");
+                Directory.CreateDirectory(screenshotsDir);
+
+                var fullPath = Path.Combine(screenshotsDir, screenshotName);
+                
                 var screenshot = ((ITakesScreenshot)Driver).GetScreenshot();
-                screenshot.SaveAsFile(screenshotName);
-                Log.Information($"Screenshot saved: {screenshotName}");
+                screenshot.SaveAsFile(fullPath);
+                
+                Log.Information($"Screenshot saved: {fullPath}");
                 
                 /*lock (_extentLock)
                 {

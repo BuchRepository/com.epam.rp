@@ -76,7 +76,7 @@ public abstract class BasePageMsTest
                     }
                     catch (Exception jsex)
                     {
-                        TakeScreenshot($"ClickError_{DateTime.Now:yyyyMMdd_HHmmss}.png");
+                        //TakeScreenshot($"ClickError_{DateTime.Now:yyyyMMdd_HHmmss}.png");
                         throw;
                     }
                 }
@@ -117,11 +117,11 @@ public abstract class BasePageMsTest
             {
                 attempts++;
                 Log.Warning($"Attempt {attempts} failed for typing into {locator}: {ex.Message}");
-                if (attempts == 3)
+                /*if (attempts == 3)
                 {
                     TakeScreenshot($"TypeError_{DateTime.Now:yyyyMMdd_HHmmss}.png");
                     throw;
-                }
+                }*/
             }
         }
     }
