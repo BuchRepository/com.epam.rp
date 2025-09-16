@@ -7,9 +7,12 @@ namespace com.epam.rp_mstest.Core;
 
 public static class DriverFactoryMsTest
 {
+    public static string? LastProfilePath { get; private set; }
+    
     public static IWebDriver CreateDriver(string browser = "chrome", bool uniqueProfile = false)
     {
         IWebDriver driver;
+        string? profilePath = null;
 
         switch (browser.ToLower())
         {
@@ -31,15 +34,15 @@ public static class DriverFactoryMsTest
                 
                 if (uniqueProfile)
                 {
-                    string profilePath = Path.Combine(Path.GetTempPath(), $"chrome_profile_{Guid.NewGuid():N}");
+                    profilePath = Path.Combine(Path.GetTempPath(), $"chrome_profile_{Guid.NewGuid():N}");
                     Directory.CreateDirectory(profilePath);
                     options.AddArgument($"--user-data-dir={profilePath}");
                     options.AddArgument("--disable-extensions");
                 }
                 
-                var service = ChromeDriverService.CreateDefaultService();
-                service.Port = 0;
-                driver = new ChromeDriver(service, options);
+                var service = CreateDriverServiceWithRetry();
+                service.HideCommandPromptWindow = true;
+                driver = new ChromeDriver(service, options, TimeSpan.FromSeconds(60));
                 break;
             
             default:
@@ -47,5 +50,25 @@ public static class DriverFactoryMsTest
         }
         
         return driver;
+    }
+    
+    private static ChromeDriverService CreateDriverServiceWithRetry(int retries = 5)
+    {
+        for (int i = 0; i < retries; i++)
+        {
+            try
+            {
+                var service = ChromeDriverService.CreateDefaultService();
+                service.Port = new Random().Next(49152, 65535);
+                return service;
+            }
+            catch
+            {
+                if (i == retries - 1) throw;
+                Thread.Sleep(200);
+            }
+        }
+
+        throw new WebDriverException("Failed to create ChromeDriverService with unique port.");
     }
 }

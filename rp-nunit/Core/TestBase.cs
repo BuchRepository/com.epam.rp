@@ -111,6 +111,16 @@ public class TestBase
             Driver.Dispose();
             Driver = null;
         }
+        
+        if (!string.IsNullOrEmpty(DriverFactory.LastProfilePath) &&
+            Directory.Exists(DriverFactory.LastProfilePath))
+        {
+            try
+            {
+                Directory.Delete(DriverFactory.LastProfilePath, true);
+            }
+            catch { }
+        }
 
         /*lock (_extentLock)
         {

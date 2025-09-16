@@ -100,6 +100,16 @@ public class TestBaseMsTest
             Log.Error(ex, "Error while disposing driver");
         }
         Driver = null;
+        
+        if (!string.IsNullOrEmpty(DriverFactoryMsTest.LastProfilePath) &&
+            Directory.Exists(DriverFactoryMsTest.LastProfilePath))
+        {
+            try
+            {
+                Directory.Delete(DriverFactoryMsTest.LastProfilePath, true);
+            }
+            catch { }
+        }
 
         //extent.Flush();
     }
