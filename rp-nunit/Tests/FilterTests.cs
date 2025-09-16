@@ -20,8 +20,8 @@ public class FilterTests : TestBase
     {
         var configuration = new ConfigurationBuilder()
             .SetBasePath(AppContext.BaseDirectory)
-            //.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-            .AddJsonFile("appsettings.local.json", optional: true, reloadOnChange: true)
+            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+            //.AddJsonFile("appsettings.local.json", optional: true, reloadOnChange: true)
             .Build();
 
         _login = configuration["LOGIN"];
