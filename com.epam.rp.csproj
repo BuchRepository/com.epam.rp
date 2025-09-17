@@ -8,8 +8,8 @@
         <IsPackable>false</IsPackable>
         <IsTestProject>true</IsTestProject>
 
-        <AssemblyName>com.epam.rp-nunit</AssemblyName>
-        <RootNamespace>com.epam.rp-nunit</RootNamespace>
+        <AssemblyName>com.epam.rp</AssemblyName>
+        <RootNamespace>com.epam.rp</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
