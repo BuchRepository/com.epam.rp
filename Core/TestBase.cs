@@ -13,34 +13,27 @@ namespace Core;
 public abstract class TestBase
 {
     protected IWebDriver? Driver;
-    //protected ExtentReports extent;
-    //protected ExtentTest test;
+    protected ExtentReports extent;
+    protected ExtentTest test;
     
     protected LoginPage? LoginPage;
     protected FiltersPage? FiltersPage;
     
-    //private static readonly object _extentLock = new object();
     private string _logFile = string.Empty;
     
-    /*[OneTimeSetUp]
+    [OneTimeSetUp]
     public void OneTimeSetup()
     {
-        lock (_extentLock)
-        {
-            if (extent == null)
-            {
-                string reportPath = Path.Combine(AppContext.BaseDirectory, $"ExtentReports_{Guid.NewGuid():N}.html");
+        string reportPath = Path.Combine(AppContext.BaseDirectory, $"ExtentReports_{Guid.NewGuid():N}.html");
 
-                var htmlReporter = new ExtentHtmlReporter(reportPath);
-                htmlReporter.Config.DocumentTitle = "Test Report";
-                htmlReporter.Config.ReportName = "UI Test Report";
-                htmlReporter.Config.Theme = AventStack.ExtentReports.Reporter.Configuration.Theme.Standard;
+        var htmlReporter = new ExtentHtmlReporter(reportPath);
+        htmlReporter.Config.DocumentTitle = "Test Report";
+        htmlReporter.Config.ReportName = "UI Test Report";
+        htmlReporter.Config.Theme = AventStack.ExtentReports.Reporter.Configuration.Theme.Standard;
 
-                extent = new ExtentReports();
-                extent.AttachReporter(htmlReporter);
-            }
-        }
-    }*/
+        extent = new ExtentReports();
+        extent.AttachReporter(htmlReporter);
+    }
         
     [SetUp]
     public void SetUp()
@@ -54,13 +47,13 @@ public abstract class TestBase
             .CreateLogger();
         
         string browser = NUnitTestContext.Parameters.Get("browser", "chrome");
-        Driver = DriverFactory.CreateDriver(browser, uniqueProfile: true);
+        Driver = DriverFactory.CreateDriver(browser);
         Driver.Navigate().GoToUrl("https://rp.epam.com");
         
         LoginPage = new LoginPage(Driver);
         FiltersPage = new FiltersPage(Driver);
         
-        //test = extent.CreateTest(NUnitTestContext.CurrentContext.Test.Name);
+        test = extent.CreateTest(NUnitTestContext.CurrentContext.Test.Name);
     }
 
     [TearDown]
@@ -84,53 +77,34 @@ public abstract class TestBase
                 
                 Log.Information($"Screenshot saved: {fullPath}");
                 
-                /*lock (_extentLock)
-                {
-                    test.AddScreenCaptureFromPath(screenshotName);
-                }*/
+                test.AddScreenCaptureFromPath(screenshotName);
             }
             catch (Exception e)
             {
                 Log.Error(e, "Failed to take screenshot on test failure");
             }
         }
-
-        /*lock (_extentLock)
+        
+        switch (status)
         {
-            switch (status)
-            {
-                case TestStatus.Failed:
-                    test.Fail("Test Failed").Fail(stacktrace);
-                    break;
-                case TestStatus.Passed:
-                    test.Pass("Test Passed");
-                    break;
-                default:
-                    test.Skip("Test Skipped");
-                    break;
-            }
-        }*/
+            case TestStatus.Failed:
+                test.Fail("Test Failed").Fail(stacktrace);
+                break;
+            case TestStatus.Passed:
+                test.Pass("Test Passed");
+                break;
+            default:
+                test.Skip("Test Skipped");
+                break;
+        }
 
         if (Driver != null)
         {
             Driver.Quit();
             Driver.Dispose();
-            Driver = null;
         }
-        
-        if (!string.IsNullOrEmpty(DriverFactory.LastProfilePath) &&
-            Directory.Exists(DriverFactory.LastProfilePath))
-        {
-            try
-            {
-                Directory.Delete(DriverFactory.LastProfilePath, true);
-            }
-            catch { }
-        }
+        Driver = null;
 
-        /*lock (_extentLock)
-        {
-            extent.Flush();
-        }*/
+        extent.Flush();
     }
 }

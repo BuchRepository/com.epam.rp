@@ -1,18 +1,14 @@
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Firefox;
-using OpenQA.Selenium.Safari;
 
 namespace Core;
 
 public static class DriverFactory
 {
-    public static string? LastProfilePath { get; private set; }
-    
-    public static IWebDriver CreateDriver(string browser = "chrome", bool uniqueProfile = false)
+    public static IWebDriver CreateDriver(string browser = "chrome")
     {
         IWebDriver driver;
-        string? profilePath = null;
 
         switch (browser.ToLower())
         {
@@ -37,16 +33,7 @@ public static class DriverFactory
                 options.AddArgument("--no-first-run");
                 options.AddArgument("--disable-extensions");
                 
-                if (uniqueProfile)
-                {
-                    profilePath = Path.Combine(Path.GetTempPath(), $"chrome_profile_{Guid.NewGuid():N}");
-                    Directory.CreateDirectory(profilePath);
-                    options.AddArgument($"--user-data-dir={profilePath}");
-                }
-                
-                var service = CreateDriverServiceWithRetry();
-                service.HideCommandPromptWindow = true;
-                driver = new ChromeDriver(service, options, TimeSpan.FromSeconds(60));
+                driver = new ChromeDriver(options);
                 break;
             
             default:
@@ -54,25 +41,5 @@ public static class DriverFactory
         }
 
         return driver;
-    }
-    
-    private static ChromeDriverService CreateDriverServiceWithRetry(int retries = 5)
-    {
-        for (int i = 0; i < retries; i++)
-        {
-            try
-            {
-                var service = ChromeDriverService.CreateDefaultService();
-                service.Port = new Random().Next(49152, 65535);
-                return service;
-            }
-            catch
-            {
-                if (i == retries - 1) throw;
-                Thread.Sleep(200);
-            }
-        }
-
-        throw new WebDriverException("Failed to create ChromeDriverService with unique port.");
     }
 }

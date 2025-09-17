@@ -1,4 +1,4 @@
-name: CI - com.epam.rp
+name: CI - .NET Tests with Chrome
 
 on:
   push:
@@ -30,48 +30,35 @@ jobs:
 
       - name: Create appsettings.json from secrets
         run: |
-          mkdir -p com.epam.rp/bin/Release/net8.0/
-
-          cat > com.epam.rp/bin/Release/net8.0/appsettings.json <<EOL
-          {
-            "LOGIN": "${{ secrets.TEST_LOGIN }}",
-            "PASSWORD": "${{ secrets.TEST_PASSWORD }}",
-            "Serilog": {
-              "Using": ["Serilog.Sinks.Console", "Serilog.Sinks.File"],
-              "MinimumLevel": {
-                "Default": "Information",
-                "Override": {
-                  "Microsoft": "Warning",
-                  "System": "Warning"
+          echo "{
+            \"LOGIN\": \"${{ secrets.TEST_LOGIN }}\",
+            \"PASSWORD\": \"${{ secrets.TEST_PASSWORD }}\",
+            \"Serilog\": {
+              \"Using\": [\"Serilog.Sinks.Console\", \"Serilog.Sinks.File\"],
+              \"MinimumLevel\": {
+                \"Default\": \"Information\",
+                \"Override\": {
+                  \"Microsoft\": \"Warning\",
+                  \"System\": \"Warning\"
                 }
               },
-              "WriteTo": [
-                {"Name": "Console"},
-                {"Name": "File", "Args": {"path": "${{ github.workspace }}/logs/logfile.log",    "restrictedToMinimumLevel": "Information"}}
+              \"WriteTo\": [
+                {
+                  \"Name\": \"Console\"
+                },
+                {
+                  \"Name\": \"File\",
+                  \"Args\": {
+                    \"path\": \"${{ github.workspace }}/logs/logfile.log\",
+                    \"restrictedToMinimumLevel\": \"Information\"
+                  }
+                }
               ]
             }
-          }
-          EOL
-
-      - name: Debug appsettings
-        run: cat com.epam.rp/bin/Release/net8.0/appsettings.json
-
-      - name: Copy Test Data
-        run: |
-          mkdir -p ./com.epam.rp/bin/Release/net8.0/TestData
-          cp -r ./Core/TestData/* ./com.epam.rp/bin/Release/net8.0/TestData/
+          }" > appsettings.json
 
       - name: Run tests
-        run: dotnet test com.epam.rp.sln --configuration Release --logger "console;verbosity=detailed" --logger "trx;LogFileName=test-results.trx" -- NUnit.ParallelScope=Fixtures 
-        continue-on-error: true
-
-      - name: Upload screenshots
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: screenshots
-          path: |
-            ./com.epam.rp/bin/Release/net8.0/screenshots/*.png
+        run: dotnet test --configuration Release --logger "console;verbosity=detailed" --logger "trx;LogFileName=test-results.trx"
 
       - name: Upload logs
         if: always()
@@ -81,11 +68,10 @@ jobs:
           path: ./logs/logfile.log
 
       - name: List files in Release folder
-        run: ls -lah ./com.epam.rp/bin/Release/net8.0/ || true
+        run: ls -lah ./bin/Release/net8.0/
 
       - name: Upload Extent Report
         uses: actions/upload-artifact@v4
         with:
           name: extent-report
-          path: |
-            ./com.epam.rp/bin/Release/net8.0/*.html
+          path: ./bin/Release/net8.0/index.html

@@ -9,8 +9,6 @@ using Serilog;
 namespace Tests;
 
 [TestFixture]
-[Parallelizable(ParallelScope.All)]
-[FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
 public class FilterTests : TestBase
 {
     private readonly string _login;
@@ -20,26 +18,20 @@ public class FilterTests : TestBase
     {
         var configuration = new ConfigurationBuilder()
             .SetBasePath(AppContext.BaseDirectory)
-            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-            //.AddJsonFile("appsettings.local.json", optional: true, reloadOnChange: true)
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
             .Build();
 
         _login = configuration["LOGIN"];
         _password = configuration["PASSWORD"];
     }
-
-    public static IEnumerable<dynamic> AddFilterData()
-    {
-        return TestDataLoader.LoadTestData<dynamic>("TestData.json", "AddFilter");
-    }
     
-    [Test, TestCaseSource(nameof(AddFilterData))]
-    public void UserCanAddFilter(dynamic data)
+    [Test]
+    public void UserCanAddFilter()
     {
-        string filterName = $"{data.filterName}_{Guid.NewGuid():N}";
-        string parameter = data.parameter;
-        string quantity = data.quantity;
-        bool expectedResult = data.expectedResult;
+        string filterName = $"Automation bugs_{Guid.NewGuid():N}";
+        string parameter = "Automation Bug";
+        string quantity = "1";
+        bool expectedResult = true;
         
         Log.Information("Start test");
         Log.Information("Login to ReportPortal cabinet");
@@ -56,18 +48,13 @@ public class FilterTests : TestBase
         Assert.IsTrue(FiltersPage!.WaitForFilterVisibility(filterName, false), $"Filter '{filterName}' should be deleted.");
     }
     
-    public static IEnumerable<dynamic> RemoveFilterData()
+    [Test]
+    public void UserCanRemoveFilter()
     {
-        return TestDataLoader.LoadTestData<dynamic>("TestData.json", "RemoveFilter");
-    }
-    
-    [Test, TestCaseSource(nameof(RemoveFilterData))]
-    public void UserCanRemoveFilter(dynamic data)
-    {
-        string filterName = $"{data.filterName}_{Guid.NewGuid():N}";
-        string parameter = data.parameter;
-        string quantity = data.quantity;
-        bool expectedResult = data.expectedResult;
+        string filterName = $"Product bugs_{Guid.NewGuid():N}";
+        string parameter = "Product Bug";
+        string quantity = "1";
+        bool expectedResult = false;
        
         Log.Information("Start test");
         Log.Information("Login to ReportPortal cabinet");
@@ -83,17 +70,12 @@ public class FilterTests : TestBase
             $"Filter '{filterName}' should be deleted.");
     }
 
-    public static IEnumerable<dynamic> ToggleDisplayData()
+    [Test]
+    public void UserCanToggleFilterDisplay()
     {
-        return TestDataLoader.LoadTestData<dynamic>("TestData.json", "ToggleDisplay");
-    }
-
-    [Test, TestCaseSource(nameof( ToggleDisplayData))]
-    public void UserCanToggleFilterDisplay(dynamic data)
-    {
-        string filterName = $"{data.filterName}_{Guid.NewGuid():N}";
-        string parameter = data.parameter;
-        string quantity = data.quantity;
+        string filterName = $"System issues_{Guid.NewGuid():N}";
+        string parameter = "System Issue";
+        string quantity = "1";
         
         Log.Information("Start test");
         Log.Information("Login to ReportPortal cabinet");
