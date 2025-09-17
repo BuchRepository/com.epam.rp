@@ -53,6 +53,11 @@ jobs:
           }
           EOL
 
+      - name: Copy Test Data
+        run: |
+          mkdir -p ./com.epam.rp/bin/Release/net8.0/TestData
+          cp -r ./Core/TestData/* ./com.epam.rp/bin/Release/net8.0/TestData/
+
       - name: Run tests
         run: dotnet test com.epam.rp.sln --configuration Release --logger "console;verbosity=detailed" --logger "trx;LogFileName=test-results.trx" -- NUnit.ParallelScope=Fixtures 
         continue-on-error: true
