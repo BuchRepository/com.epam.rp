@@ -53,6 +53,9 @@ jobs:
           }
           EOL
 
+      - name: Debug appsettings
+        run: cat com.epam.rp/bin/Release/net8.0/appsettings.json
+
       - name: Copy Test Data
         run: |
           mkdir -p ./com.epam.rp/bin/Release/net8.0/TestData
