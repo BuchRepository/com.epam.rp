@@ -60,13 +60,6 @@ jobs:
       - name: Run tests
         run: dotnet test --configuration Release --logger "console;verbosity=detailed" --logger "trx;LogFileName=test-results.trx"
 
-      - name: Upload logs
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: logs
-          path: ./logs/logfile.log
-
       - name: List files in Release folder
         run: ls -lah ./bin/Release/net8.0/
 
