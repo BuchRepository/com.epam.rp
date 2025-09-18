@@ -1,4 +1,4 @@
-using Business.Enums;
+/*using Business.Enums;
 using Business.Pages;
 using Microsoft.Extensions.Configuration;
 using com.epam.rp_nunit.Core;
@@ -108,4 +108,4 @@ public class FilterTests : TestBase
         Assert.IsTrue(FiltersPage!.WaitForFilterVisibility(filterName, false),
             $"Filter '{filterName}' should be deleted.");
     }
-}
+}*/

@@ -15,8 +15,6 @@ public static class DriverFactory
             case "firefox":
                 var ffOptions = new FirefoxOptions();
                 ffOptions.AddArgument("--headless");
-                ffOptions.AddArgument("--no-sandbox");
-                ffOptions.AddArgument("--disable-dev-shm-usage");
                 ffOptions.AddArgument("--width=1920");
                 ffOptions.AddArgument("--height=1080");
                 driver = new FirefoxDriver(ffOptions);
@@ -27,10 +25,7 @@ public static class DriverFactory
                 options.AddArgument("--no-sandbox");
                 options.AddArgument("--disable-dev-shm-usage");
                 options.AddArgument("--remote-allow-origins=*");
-                options.AddArgument("--disable-software-rasterizer");
                 options.AddArgument("--window-size=1920,1080");
-                options.AddArgument("--disable-gpu");
-                options.AddArgument("--no-first-run");
                 options.AddArgument("--disable-extensions");
                 
                 driver = new ChromeDriver(options);

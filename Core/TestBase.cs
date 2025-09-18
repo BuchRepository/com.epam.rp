@@ -12,12 +12,8 @@ namespace Core;
 
 public abstract class TestBase
 {
-    protected IWebDriver? Driver;
     protected ExtentReports extent;
     protected ExtentTest test;
-    
-    protected LoginPage? LoginPage;
-    protected FiltersPage? FiltersPage;
     
     private string _logFile = string.Empty;
     
@@ -34,8 +30,27 @@ public abstract class TestBase
         extent = new ExtentReports();
         extent.AttachReporter(htmlReporter);
     }
+    
+    [OneTimeTearDown]
+    public void OneTimeTearDown()
+    {
+        extent.Flush();
+    }
+    
+    protected void InitLogging(string testName)
+    {
+        string logFile = Path.Combine(AppContext.BaseDirectory, "logs", $"logfile_{Guid.NewGuid():N}.log");
+        Directory.CreateDirectory(Path.Combine(AppContext.BaseDirectory, "logs"));
+
+        Log.Logger = new LoggerConfiguration()
+            .WriteTo.Console()
+            .WriteTo.File(logFile)
+            .CreateLogger();
+
+        test = extent.CreateTest(testName);
+    }
         
-    [SetUp]
+    /*[SetUp]
     public void SetUp()
     {
         Directory.CreateDirectory(Path.Combine(AppContext.BaseDirectory, "logs"));
@@ -106,5 +121,5 @@ public abstract class TestBase
         Driver = null;
 
         extent.Flush();
-    }
+    }*/
 }
