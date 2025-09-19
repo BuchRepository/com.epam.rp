@@ -14,8 +14,8 @@ namespace com.epam.rp.Core;
 public sealed class Hooks
 {
     private readonly ScenarioContext _context;
-    public static string Login { get; private set; }
-    public static string Password { get; private set; }
+    public static string? Login { get; private set; }
+    public static string? Password { get; private set; }
     
     public Hooks(ScenarioContext context)
     {

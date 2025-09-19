@@ -17,6 +17,7 @@ public class FilterSteps
         _context = context;
         _loginPage = _context.Get<LoginPage>("loginPage");
         _filtersPage = _context.Get<FiltersPage>("filtersPage");
+        _launchesPage = _context.Get<LaunchesPage>("launchesPage");
     }
 
     [Given(@"I am logged in as a valid user")]
@@ -44,7 +45,7 @@ public class FilterSteps
     [Then(@"the filter ""(.*)"" should be visible on the Filters page")]
     public void ThenFilterShouldBeVisible(string filterName)
     {
-        var name = _context["filterName"].ToString();
+        var name = _context["filterName"]!.ToString();
         Assert.IsTrue(_filtersPage.WaitForFilterVisibility(name, true));
     }
 
