@@ -1,6 +1,5 @@
 using Business.Pages;
 using com.epam.rp.Core;
-using Core;
 using TechTalk.SpecFlow;
 
 namespace Tests;
@@ -16,6 +15,8 @@ public class FilterSteps
     public FilterSteps(ScenarioContext context)
     {
         _context = context;
+        _loginPage = _context.Get<LoginPage>("loginPage");
+        _filtersPage = _context.Get<FiltersPage>("filtersPage");
     }
 
     [Given(@"I am logged in as a valid user")]

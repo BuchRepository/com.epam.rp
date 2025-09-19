@@ -1,6 +1,10 @@
+using AventStack.ExtentReports;
+using AventStack.ExtentReports.Reporter;
+using com.epam.rp.Core.Utility;
 using Core;
 using Microsoft.Extensions.Configuration;
 using OpenQA.Selenium;
+using Serilog;
 using TechTalk.SpecFlow;
 
 namespace com.epam.rp.Core;
@@ -44,25 +48,88 @@ public sealed class Hooks
     public static void AfterFeature()
     {
     }
-
+    
     [BeforeScenario]
-    public void InitDriverAndPages()
+    public void BeforeScenario()
     {
-        IWebDriver driver = DriverFactory.CreateDriver("chrome");
+        string logsDir = Path.Combine(AppContext.BaseDirectory, "logs");
+        Directory.CreateDirectory(logsDir);
+        string logFile = Path.Combine(logsDir, $"logfile_{Guid.NewGuid():N}.log");
 
+        var logger = new LoggerConfiguration()
+            .WriteTo.Console()
+            .WriteTo.File(logFile)
+            .CreateLogger();
+
+        _context["logger"] = logger;
+
+        IWebDriver driver = DriverFactory.CreateDriver("chrome");
         _context["driver"] = driver;
 
         _context["loginPage"] = new Business.Pages.LoginPage(driver);
         _context["filtersPage"] = new Business.Pages.FiltersPage(driver);
+
+        string reportPath = Path.Combine(AppContext.BaseDirectory, $"ExtentReport_{Guid.NewGuid():N}.html");
+        var htmlReporter = new ExtentHtmlReporter(reportPath);
+        htmlReporter.Config.DocumentTitle = "Test Report";
+        htmlReporter.Config.ReportName = "UI Test Report";
+        htmlReporter.Config.Theme = AventStack.ExtentReports.Reporter.Configuration.Theme.Standard;
+
+        var extent = new ExtentReports();
+        extent.AttachReporter(htmlReporter);
+        var test = extent.CreateTest(_context.ScenarioInfo.Title);
+
+        _context["extent"] = extent;
+        _context["test"] = test;
     }
 
     [AfterScenario]
     public void CleanUp()
     {
-        if (_context.TryGetValue("driver", out IWebDriver driver))
+        var driver = _context.Get<IWebDriver>("driver");
+        var logger = _context.Get<Serilog.ILogger>("logger");
+        var extent = _context.Get<ExtentReports>("extent");
+        var test = _context.Get<ExtentTest>("test");
+
+        if (_context.ScenarioExecutionStatus == ScenarioExecutionStatus.TestError)
         {
-            driver.Quit();
-            driver.Dispose();
+            string screenshotPath = ScreenshotHelper.TakeScreenshot(driver, logger, _context.ScenarioInfo.Title);
+            if (screenshotPath != null)
+            {
+                test.AddScreenCaptureFromPath(screenshotPath);
+            }
+
+            test.Fail("Scenario failed");
+        }
+        else if (_context.ScenarioExecutionStatus == ScenarioExecutionStatus.OK)
+        {
+            test.Pass("Scenario passed");
+        }
+        else
+        {
+            test.Skip("Scenario skipped");
+        }
+
+        try
+        {
+            extent.Flush();
+        }
+        catch (Exception ex)
+        {
+            logger.Error(ex, "Error while flushing ExtentReports");
+        }
+        finally
+        {
+            try
+            {
+                driver.Quit();
+                driver.Dispose();
+                logger.Information("Driver successfully closed");
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, "Failed to quit or dispose WebDriver");
+            }
         }
     }
 }

@@ -26,7 +26,7 @@ jobs:
         run: dotnet restore com.epam.rp.sln
 
       - name: Build solution
-        run: dotnet build com.epam.rp.sln --configuration Release --no-restore
+        run: dotnet build com.epam.rp/com.epam.rp.csproj --configuration Release --no-restore
 
       - name: Create appsettings.json from secrets
         run: |

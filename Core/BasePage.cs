@@ -1,7 +1,9 @@
+using com.epam.rp.Core.Utility;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using SeleniumExtras.WaitHelpers;
 using Serilog;
+using TechTalk.SpecFlow;
 
 namespace Core;
 
@@ -9,11 +11,21 @@ public abstract class BasePage
 {
     protected readonly IWebDriver _driver;
     protected readonly WebDriverWait _wait;
+    protected readonly ILogger _logger;
 
     protected BasePage(IWebDriver driver, int defaultTimeout = 5)
     {
         _driver = driver;
         _wait = new WebDriverWait(driver, TimeSpan.FromSeconds(defaultTimeout));
+        
+        if (ScenarioContext.Current.TryGetValue("logger", out ILogger logger))
+        {
+            _logger = logger;
+        }
+        else
+        {
+            _logger = new LoggerConfiguration().WriteTo.Console().CreateLogger();
+        }
     }
 
     protected IWebElement Find(By locator) => 
@@ -58,25 +70,26 @@ public abstract class BasePage
                     }
                 });
             
-                Log.Information($"Successful click on element: {locator}");
+                _logger.Information($"Clicked on element: {locator}");
                 return;
             }
             catch (Exception ex)
             {
                 attempts++;
-                Log.Warning($"Attempt {attempts} failed for click on {locator}: {ex.Message}");
+                _logger.Warning($"Attempt {attempts} failed for click on {locator}: {ex.Message}");
                 if (attempts == 3)
                 {
                     try
                     {
                         var element = _driver.FindElement(locator);
                         ((IJavaScriptExecutor)_driver).ExecuteScript("arguments[0].click();", element);
-                        Log.Information($"JS click succeeded on element: {locator}");
+                        _logger.Information($"JS click succeeded on element: {locator}");
                         return;
+                            
                     }
                     catch (Exception jsex)
                     {
-                        //TakeScreenshot($"ClickError_{DateTime.Now:yyyyMMdd_HHmmss}.png");
+                        _logger.Error(jsex, $"JS click failed on element: {locator}");
                         throw;
                     }
                 }
@@ -110,33 +123,23 @@ public abstract class BasePage
                     }
                 });
 
-                Log.Information($"Successfully typed '{text}' into element: {locator}");
+                _logger.Information($"Successfully typed '{text}' into element: {locator}");
                 return;
             }
             catch (Exception ex)
             {
                 attempts++;
-                Log.Warning($"Attempt {attempts} failed for typing into {locator}: {ex.Message}");
+                _logger.Warning($"Attempt {attempts} failed for typing into {locator}: {ex.Message}");
                 if (attempts == 3)
                 {
-                    //TakeScreenshot($"TypeError_{DateTime.Now:yyyyMMdd_HHmmss}.png");
                     throw;
                 }
             }
         }
     }
     
-    public void TakeScreenshot(string fileName)
+    public void TakeScreenshot(string name = null)
     {
-        try
-        {
-            var screenshot = ((ITakesScreenshot)_driver).GetScreenshot();
-            screenshot.SaveAsFile(fileName);
-            Log.Information($"Screenshot saved: {fileName}");
-        }
-        catch (Exception e)
-        {
-            Log.Error(e, "Screenshot did not capture");
-        }
+        ScreenshotHelper.TakeScreenshot(_driver, _logger, name);
     }
 }
