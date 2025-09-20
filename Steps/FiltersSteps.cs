@@ -33,8 +33,8 @@ public class FilterSteps
         _filtersPage.OpenFiltersPage();
     }
 
-    [When(@"I add a filter with name ""(.*)"" and parameter ""(.*)"" and quantity ""(.*)""")]
-    public void WhenIAddFilter(string filterName, string parameter, string quantity)
+    [When(@"I create a filter with name ""(.*)"" and parameter ""(.*)"" and quantity ""(.*)""")]
+    public void WhenICreateFilter(string filterName, string parameter, string quantity)
     {
         string uniqueName = $"{filterName}_{Guid.NewGuid():N}";
         _context["filterName"] = uniqueName;
@@ -46,28 +46,28 @@ public class FilterSteps
     [Then(@"the filter ""(.*)"" should be visible on the Filters page")]
     public void ThenFilterShouldBeVisible(string filterName)
     {
-        var name = _context["filterName"]!.ToString();
+        var name = _context["filterName"].ToString();
         Assert.IsTrue(_filtersPage.WaitForFilterVisibility(name, true));
     }
 
     [When(@"I delete the filter ""(.*)""")]
     public void WhenIDeleteFilter(string filterName)
     {
-        var name = _context.ContainsKey("filterName") ? _context["filterName"].ToString() : filterName;
+        var name = _context["filterName"].ToString();
         _filtersPage.DeleteFilter(name);
     }
 
     [Then(@"the filter ""(.*)"" should not be visible on the Filters page")]
     public void ThenFilterShouldNotBeVisible(string filterName)
     {
-        var name = _context.ContainsKey("filterName") ? _context["filterName"].ToString() : filterName;
+        var name = _context["filterName"].ToString();
         Assert.IsTrue(_filtersPage.WaitForFilterVisibility(name, false));
     }
 
     [When(@"I toggle display of ""(.*)""")]
     public void WhenIToggleDisplay(string filterName)
     {
-        var name = _context.ContainsKey("filterName") ? _context["filterName"].ToString() : filterName;
+        var name = _context["filterName"].ToString();
         _filtersPage.ToggleDisplayOnLaunches(name);
     }
     
