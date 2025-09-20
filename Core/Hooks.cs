@@ -73,7 +73,7 @@ public sealed class Hooks
         _context["filtersPage"] = new FiltersPage(driver);
         _context["launchesPage"] = new LaunchesPage(driver);
 
-        string reportPath = Path.Combine(AppContext.BaseDirectory, $"ExtentReport_{Guid.NewGuid():N}.html");
+        string reportPath = Path.Combine(AppContext.BaseDirectory, $"ExtentReport.html");
         var htmlReporter = new ExtentHtmlReporter(reportPath);
         htmlReporter.Config.DocumentTitle = "Test Report";
         htmlReporter.Config.ReportName = "UI Test Report";
