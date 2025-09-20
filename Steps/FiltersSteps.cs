@@ -97,7 +97,8 @@ public class FilterSteps
     {
         _launchesPage.RefreshPage();
         var filterName = _context["filterName"].ToString();
-        Assert.IsTrue(!_launchesPage.IsFilterVisible(filterName, false));
+        Assert.That(_launchesPage.IsFilterVisible(filterName, false), Is.True, 
+            $"Created filter '{filterName}' should not be presented on Launches page.");
     }
 
 }
