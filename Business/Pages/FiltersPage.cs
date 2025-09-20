@@ -16,8 +16,8 @@ public class FiltersPage : BasePage
     private By FilterByName(string name) => By.XPath($"//span[text()='{name}']");
     private By DeleteButtonByName(string name) => By.XPath($"//span[text()='{name}']/following::div[contains(@class, 'deleteFilterButton')][1]");
     private By ToggleByName(string name) => By.XPath($"//span[text()='{name}']/following::span[contains(@class,'inputSwitcher')][1]");
-    private By StateByName(string name, FiltersState state) => 
-        By.XPath($"//span[text()='{name}']/following::span[text()='{state.ToString().ToUpper()}'][1]");
+    private By StateByName(string name, string state) => 
+        By.XPath($"//span[text()='{name}']/following::span[text()='{state.ToUpper()}'][1]");
 
 
     public void OpenFiltersPage()
@@ -60,7 +60,7 @@ public class FiltersPage : BasePage
         Click(ToggleByName(filterName));
     }
 
-    public void WaitForState(string filterName, FiltersState state)
+    public void WaitForState(string filterName, string state)
     {
         FindVisible(StateByName(filterName, state));
     }

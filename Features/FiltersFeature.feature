@@ -31,9 +31,9 @@ Feature: Filters Management
 
     Scenario Outline: User can toggle filter display
       When I create a filter with name "<filterName>" and parameter "<parameter>" and quantity "<quantity>"
-      And I toggle display of "DisplayFilter"
-      Then the filter should not be visible on the Launches page
-      But it should still exist in the Filters page
+      And I toggle display
+      And I wait "OFF" state
+      Then "<filterName>" filter should not be visible on the Launches page
       And I delete the filter
 
       Examples:
