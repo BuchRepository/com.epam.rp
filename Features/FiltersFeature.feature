@@ -11,8 +11,8 @@ Feature: Filters Management
 
     Scenario Outline: User can add a filter
       When I create a filter with name "<filterName>" and parameter "<parameter>" and quantity "<quantity>"
-      Then the filter "<filterName>" should be visible on the Filters page
-      And I delete the filter "<filterName>"
+      Then the filter should be visible on the Filters page
+      And I delete the filter
 
       Examples:
         | filterName | parameter      | quantity |
@@ -21,8 +21,8 @@ Feature: Filters Management
 
     Scenario Outline: User can remove a filter
       When I create a filter with name "<filterName>" and parameter "<parameter>" and quantity "<quantity>"
-      And I delete the filter "<filterName>"
-      Then the filter "<filterName>" should not be visible on the Filters page
+      And I delete the filter
+      Then the filter should not be visible on the Filters page
       
       Examples:
         | filterName | parameter      | quantity |
@@ -30,11 +30,11 @@ Feature: Filters Management
         | ProdBug    | Product Bug    | 1        |
 
     Scenario Outline: User can toggle filter display
-      When II create a filter with name "<filterName>" and parameter "<parameter>" and quantity "<quantity>"
+      When I create a filter with name "<filterName>" and parameter "<parameter>" and quantity "<quantity>"
       And I toggle display of "DisplayFilter"
-      Then the filter "<filterName>" should not be visible on the Launches page
+      Then the filter should not be visible on the Launches page
       But it should still exist in the Filters page
-      And I delete the filter "<filterName>"
+      And I delete the filter
 
       Examples:
         | filterName | parameter      | quantity |

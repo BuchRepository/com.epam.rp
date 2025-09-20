@@ -43,22 +43,22 @@ public class FilterSteps
         _launchesPage.AddFilter(uniqueName, parameter, quantity);
     }
 
-    [Then(@"the filter ""(.*)"" should be visible on the Filters page")]
-    public void ThenFilterShouldBeVisible(string filterName)
+    [Then(@"the filter should be visible on the Filters page")]
+    public void ThenFilterShouldBeVisible()
     {
         var name = _context["filterName"].ToString();
         Assert.IsTrue(_filtersPage.WaitForFilterVisibility(name, true));
     }
 
-    [When(@"I delete the filter ""(.*)""")]
-    public void WhenIDeleteFilter(string filterName)
+    [When(@"I delete the filter")]
+    public void WhenIDeleteFilter()
     {
         var name = _context["filterName"].ToString();
         _filtersPage.DeleteFilter(name);
     }
 
-    [Then(@"the filter ""(.*)"" should not be visible on the Filters page")]
-    public void ThenFilterShouldNotBeVisible(string filterName)
+    [Then(@"the filter should not be visible on the Filters page")]
+    public void ThenFilterShouldNotBeVisible()
     {
         var name = _context["filterName"].ToString();
         Assert.IsTrue(_filtersPage.WaitForFilterVisibility(name, false));
