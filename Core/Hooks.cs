@@ -17,6 +17,7 @@ public sealed class Hooks
     private readonly ScenarioContext _context;
     public static string? Login { get; private set; }
     public static string? Password { get; private set; }
+    private const string BaseUrl = "https://rp.epam.com";
     
     public Hooks(ScenarioContext context)
     {
@@ -65,6 +66,7 @@ public sealed class Hooks
         _context["logger"] = logger;
 
         IWebDriver driver = DriverFactory.CreateDriver("chrome");
+        driver.Navigate().GoToUrl(BaseUrl); 
         _context["driver"] = driver;
 
         _context["loginPage"] = new LoginPage(driver);
