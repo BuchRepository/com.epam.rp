@@ -13,6 +13,7 @@ public class LoginPage : BasePage
 
     public void Login(string login, string password)
     {
+        _logger.Information("Current URL before login: {Url}", _driver.Url);
         Type(LoginInput, login);
         Type(PasswordInput, password);
         Click(SubmitButton);
