@@ -1,5 +1,6 @@
 using AventStack.ExtentReports;
 using AventStack.ExtentReports.Reporter;
+using Business.Pages;
 using com.epam.rp.Core.Utility;
 using Core;
 using Microsoft.Extensions.Configuration;
@@ -66,8 +67,9 @@ public sealed class Hooks
         IWebDriver driver = DriverFactory.CreateDriver("chrome");
         _context["driver"] = driver;
 
-        _context["loginPage"] = new Business.Pages.LoginPage(driver);
-        _context["filtersPage"] = new Business.Pages.FiltersPage(driver);
+        _context["loginPage"] = new LoginPage(driver);
+        _context["filtersPage"] = new FiltersPage(driver);
+        _context["launchesPage"] = new LaunchesPage(driver);
 
         string reportPath = Path.Combine(AppContext.BaseDirectory, $"ExtentReport_{Guid.NewGuid():N}.html");
         var htmlReporter = new ExtentHtmlReporter(reportPath);

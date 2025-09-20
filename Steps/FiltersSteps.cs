@@ -1,6 +1,5 @@
 using Business.Pages;
 using com.epam.rp.Core;
-using OpenQA.Selenium;
 using TechTalk.SpecFlow;
 
 namespace Tests;
@@ -16,12 +15,6 @@ public class FilterSteps
     public FilterSteps(ScenarioContext context)
     {
         _context = context;
-        
-        var driver = _context.Get<IWebDriver>("driver");
-
-        _launchesPage = new LaunchesPage(driver);
-        _filtersPage = new FiltersPage(driver);
-        _loginPage = new LoginPage(driver);
         
         _loginPage = _context.Get<LoginPage>("loginPage");
         _filtersPage = _context.Get<FiltersPage>("filtersPage");
