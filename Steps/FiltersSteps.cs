@@ -51,7 +51,6 @@ public class FilterSteps
     [Then(@"the filter should be visible on the Filters page")]
     public void ThenFilterShouldBeVisible()
     {
-        //var filterName = _context["filterName"].ToString();
         Assert.IsTrue(_filtersPage.WaitForFilterVisibility(_context["filterName"].ToString(), true));
     }
 
@@ -59,46 +58,40 @@ public class FilterSteps
     [Then(@"I delete the filter")]
     public void ThenIDeleteFilter()
     {
-        //var filterName = _context["filterName"].ToString();
         _filtersPage.DeleteFilter(_context["filterName"].ToString());
     }
 
     [Then(@"the filter should not be visible on the Filters page")]
     public void ThenFilterShouldNotBeVisible()
     {
-        //var filterName = _context["filterName"].ToString();
         Assert.IsTrue(_filtersPage.WaitForFilterVisibility(_context["filterName"].ToString(), false));
     }
 
     [When(@"I toggle display")]
     public void WhenIToggleDisplay()
     {
-        var filterName = _context["filterName"].ToString();
-        _filtersPage.ToggleDisplayOnLaunches(filterName);
+        _filtersPage.ToggleDisplayOnLaunches(_context["filterName"].ToString());
     }
     
     [When(@"I wait ""(.*)"" state")]
     public void WhenIWaitState(string state)
     {
-        var filterName = _context["filterName"].ToString();
-        _filtersPage.WaitForState(filterName, state);
+        _filtersPage.WaitForState(_context["filterName"].ToString(), state);
     }
     
     [Then(@"The filter should be visible on the Launches page")]
     public void ThenTheFilterShouldBeVisibleOnLaunchesPage()
     {
         _launchesPage.RefreshPage();
-        var filterName = _context["filterName"].ToString();
-        Assert.IsTrue(_launchesPage.IsFilterVisible(filterName, true));
+        Assert.IsTrue(_launchesPage.IsFilterVisible(_context["filterName"].ToString(), true));
     }
 
     [Then(@"The filter should not be visible on the Launches page")]
     public void ThenTheFilterShouldNotBeVisibleOnLaunchesPage()
     {
         _launchesPage.RefreshPage();
-        var filterName = _context["filterName"].ToString();
-        Assert.That(_launchesPage.IsFilterVisible(filterName, false), Is.True, 
-            $"Created filter '{filterName}' should not be presented on Launches page.");
+        Assert.IsFalse(_launchesPage.IsFilterVisible(_context["filterName"].ToString(), false), 
+            $"Created filter should not be presented on Launches page.");
     }
 
 }
