@@ -33,7 +33,7 @@ Feature: Filters Management
       When I create a filter with name "<filterName>" and parameter "<parameter>" and quantity "<quantity>"
       And I toggle display
       And I wait "OFF" state
-      Then "<filterName>" filter should not be visible on the Launches page
+      Then The filter should not be visible on the Launches page
       And I delete the filter
 
       Examples:
