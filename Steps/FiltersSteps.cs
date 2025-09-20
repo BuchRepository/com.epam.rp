@@ -83,14 +83,15 @@ public class FilterSteps
     public void ThenTheFilterShouldBeVisibleOnLaunchesPage()
     {
         _launchesPage.RefreshPage();
-        Assert.IsTrue(_launchesPage.IsFilterVisible(_context["filterName"].ToString(), true));
+        Assert.IsTrue(_launchesPage.IsFilterVisible(_context["filterName"].ToString(), true), 
+            $"Created filter should be presented on Launches page.");
     }
 
     [Then(@"The filter should not be visible on the Launches page")]
     public void ThenTheFilterShouldNotBeVisibleOnLaunchesPage()
     {
         _launchesPage.RefreshPage();
-        Assert.IsFalse(_launchesPage.IsFilterVisible(_context["filterName"].ToString(), false), 
+        Assert.IsTrue(_launchesPage.IsFilterVisible(_context["filterName"].ToString(), false), 
             $"Created filter should not be presented on Launches page.");
     }
 
