@@ -76,7 +76,8 @@ public class FilterSteps
     [When(@"I wait ""(.*)"" state")]
     public void WhenIWaitState(string state)
     {
-        _filtersPage.WaitForState(_context["filterName"].ToString(), state);
+        var stateValue = state == "ON" ? FiltersState.ON.ToString() : FiltersState.OFF.ToString();   
+        _filtersPage.WaitForState(_context["filterName"].ToString(), stateValue);
     }
     
     [Then(@"The filter should be visible on the Launches page")]
@@ -94,5 +95,4 @@ public class FilterSteps
         Assert.IsTrue(_launchesPage.IsFilterVisible(_context["filterName"].ToString(), false), 
             $"Created filter should not be presented on Launches page.");
     }
-
 }

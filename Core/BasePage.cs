@@ -137,9 +137,4 @@ public abstract class BasePage
             }
         }
     }
-    
-    public void TakeScreenshot(string name = null)
-    {
-        ScreenshotHelper.TakeScreenshot(_driver, _logger, name);
-    }
 }
