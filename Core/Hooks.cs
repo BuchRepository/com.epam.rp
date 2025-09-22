@@ -83,9 +83,9 @@ public sealed class Hooks
         driver.Navigate().GoToUrl(BaseUrl); 
         _context["driver"] = driver;
 
-        _context["loginPage"] = new LoginPage(driver);
-        _context["filtersPage"] = new FiltersPage(driver);
-        _context["launchesPage"] = new LaunchesPage(driver);
+        _context["loginPage"] = new LoginPage(driver, _context);
+        _context["filtersPage"] = new FiltersPage(driver, _context);
+        _context["launchesPage"] = new LaunchesPage(driver, _context);
 
         if (_extentReports == null) 
             throw new InvalidOperationException("_extentReports is not initialized");

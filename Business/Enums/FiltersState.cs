@@ -1,7 +1,7 @@
-namespace Business.Enums;
+namespace com.epam.rp.Business.Enums;
 
 public enum FiltersState
 {
-    ON,
-    OFF
+    On,
+    Off
 }

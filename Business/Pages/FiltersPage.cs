@@ -1,12 +1,13 @@
 using com.epam.rp.Core;
 using OpenQA.Selenium;
 using Serilog;
+using TechTalk.SpecFlow;
 
 namespace com.epam.rp.Business.Pages;
 
 public class FiltersPage : BasePage
 {
-    public FiltersPage(IWebDriver driver) : base(driver) { }
+    public FiltersPage(IWebDriver driver, ScenarioContext context) : base(driver, context) { }
 
     private readonly By _filtersMenuItem = By.XPath("//a[contains(@href,'/filters')]");
     private readonly By _addFilterButton   = By.XPath("//span[text()='Add Filter']");
@@ -27,7 +28,7 @@ public class FiltersPage : BasePage
     public LaunchesPage ClickAddFilter()
     {
         Click(_addFilterButton);
-        return new LaunchesPage(_driver);
+        return new LaunchesPage(Driver, Context);
     }
     
     public void DeleteFilter(string filterName)
@@ -40,7 +41,7 @@ public class FiltersPage : BasePage
     {
         try
         {
-            return _wait.Until(driver =>
+            return Wait.Until(driver =>
             {
                 var elements = driver.FindElements(FilterByName(filterName));
                 var isVisible = elements.Any(e => e.Displayed);

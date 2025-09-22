@@ -1,5 +1,6 @@
 using com.epam.rp.Core;
 using Serilog;
+using TechTalk.SpecFlow;
 
 namespace com.epam.rp.Business.Pages;
     
@@ -8,16 +9,14 @@ using OpenQA.Selenium;
 public class LaunchesPage : BasePage
 {
     
-    public LaunchesPage(IWebDriver driver) : base(driver) { }
+    public LaunchesPage(IWebDriver driver, ScenarioContext context) : base(driver, context) { }
 
-    private readonly By _launchNameInput = By.XPath("//input[placeholder='Launch name']"); 
     private readonly By _saveButton = By.XPath("//span[text()='Save']"); 
     private readonly By _addFilterButton = By.XPath("//button[contains(text(), 'Add')]"); 
     private readonly By _filtersMenuItem = By.XPath("//a[contains(@href,'/filters')]");
     private readonly By _filterNameInput = By.XPath("//input[@placeholder='Enter filter name']");
     private readonly By _moreOptionsButton = By.XPath("//div[text()='More']");
     private readonly By _enterQuantityInput = By.XPath("//input[@placeholder='Enter quantity']");
-    private readonly By _automationBugsTitle = By.XPath("//span[contains(@class,'breadcrumb__link-item')]");
 
 
     public void AddFilter(string filterName, string parameter, string quantity)
@@ -51,7 +50,7 @@ public class LaunchesPage : BasePage
     
         try
         {
-            return _wait.Until(drv =>
+            return Wait.Until(drv =>
             {
                 try
                 {
@@ -89,8 +88,6 @@ public class LaunchesPage : BasePage
 
     public void RefreshPage()
     {
-        _driver.Navigate().Refresh();
+        Driver.Navigate().Refresh();
     }
-
 }
-

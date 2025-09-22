@@ -8,33 +8,35 @@ namespace com.epam.rp.Core;
 
 public abstract class BasePage
 {
-    protected readonly IWebDriver _driver;
-    protected readonly WebDriverWait _wait;
-    protected readonly ILogger _logger;
+    protected readonly IWebDriver Driver;
+    protected readonly ScenarioContext Context;
+    protected readonly WebDriverWait Wait;
+    protected readonly ILogger Logger;
 
-    protected BasePage(IWebDriver driver,  int defaultTimeout = 5)
+    protected BasePage(IWebDriver driver,  ScenarioContext context, int defaultTimeout = 5)
     {
-        _driver = driver;
-        _wait = new WebDriverWait(driver, TimeSpan.FromSeconds(defaultTimeout));
+        Driver = driver;
+        Context = context;
+        Wait = new WebDriverWait(driver, TimeSpan.FromSeconds(defaultTimeout));
         
-        if (ScenarioContext.Current.TryGetValue("logger", out ILogger logger))
+        if (Context.TryGetValue("logger", out ILogger logger))
         {
-            _logger = logger;
+            Logger = logger;
         }
         else
         {
-            _logger = new LoggerConfiguration().WriteTo.Console().CreateLogger();
+            Logger = new LoggerConfiguration().WriteTo.Console().CreateLogger();
         }
     }
 
     protected IWebElement Find(By locator) => 
-        _wait.Until(ExpectedConditions.ElementExists(locator));
+        Wait.Until(ExpectedConditions.ElementExists(locator));
         
     protected IWebElement FindVisible(By locator) => 
-        _wait.Until(ExpectedConditions.ElementIsVisible(locator));
+        Wait.Until(ExpectedConditions.ElementIsVisible(locator));
         
     protected IWebElement FindClickable(By locator) => 
-        _wait.Until(ExpectedConditions.ElementToBeClickable(locator));
+        Wait.Until(ExpectedConditions.ElementToBeClickable(locator));
         
     public void Click(By locator)
     {
@@ -43,7 +45,7 @@ public abstract class BasePage
         {
             try
             {
-                _wait.Until(driver =>
+                Wait.Until(driver =>
                 {
                     try
                     {
@@ -69,26 +71,26 @@ public abstract class BasePage
                     }
                 });
             
-                _logger.Information($"Clicked on element: {locator}");
+                Logger.Information($"Clicked on element: {locator}");
                 return;
             }
             catch (Exception ex)
             {
                 attempts++;
-                _logger.Warning($"Attempt {attempts} failed for click on {locator}: {ex.Message}");
+                Logger.Warning($"Attempt {attempts} failed for click on {locator}: {ex.Message}");
                 if (attempts == 3)
                 {
                     try
                     {
-                        var element = _driver.FindElement(locator);
-                        ((IJavaScriptExecutor)_driver).ExecuteScript("arguments[0].click();", element);
-                        _logger.Information($"JS click succeeded on element: {locator}");
+                        var element = Driver.FindElement(locator);
+                        ((IJavaScriptExecutor)Driver).ExecuteScript("arguments[0].click();", element);
+                        Logger.Information($"JS click succeeded on element: {locator}");
                         return;
                             
                     }
                     catch (Exception jsex)
                     {
-                        _logger.Error(jsex, $"JS click failed on element: {locator}");
+                        Logger.Error(jsex, $"JS click failed on element: {locator}");
                         throw;
                     }
                 }
@@ -103,11 +105,11 @@ public abstract class BasePage
         {
             try
             {
-                _wait.Until(_ =>
+                Wait.Until(_ =>
                 {
                     try
                     {
-                        var el = _driver.FindElement(locator);
+                        var el = Driver.FindElement(locator);
                         if (el.Displayed && el.Enabled)
                         {
                             el.Clear();
@@ -122,13 +124,13 @@ public abstract class BasePage
                     }
                 });
 
-                _logger.Information($"Successfully typed '{text}' into element: {locator}");
+                Logger.Information($"Successfully typed '{text}' into element: {locator}");
                 return;
             }
             catch (Exception ex)
             {
                 attempts++;
-                _logger.Warning($"Attempt {attempts} failed for typing into {locator}: {ex.Message}");
+                Logger.Warning($"Attempt {attempts} failed for typing into {locator}: {ex.Message}");
                 if (attempts == 3)
                 {
                     throw;

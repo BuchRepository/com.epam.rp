@@ -1,4 +1,4 @@
-using Business.Enums;
+using com.epam.rp.Business.Enums;
 using com.epam.rp.Business.Pages;
 using com.epam.rp.Core;
 using Serilog;
@@ -104,7 +104,7 @@ public class FilterSteps
         var filtersPage = _context.Get<FiltersPage>("filtersPage");
         var filterName = GetFilterName();
         
-        var stateValue = state == "ON" ? FiltersState.ON.ToString() : FiltersState.OFF.ToString();   
+        var stateValue = state == "ON" ? FiltersState.On.ToString().ToUpper() : FiltersState.Off.ToString().ToUpper();   
         filtersPage.WaitForState(filterName, stateValue);
     }
     
