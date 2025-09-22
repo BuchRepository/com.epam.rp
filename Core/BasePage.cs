@@ -13,7 +13,7 @@ public abstract class BasePage
     protected readonly WebDriverWait _wait;
     protected readonly ILogger _logger;
 
-    protected BasePage(IWebDriver driver, int defaultTimeout = 5)
+    protected BasePage(IWebDriver driver,  int defaultTimeout = 5)
     {
         _driver = driver;
         _wait = new WebDriverWait(driver, TimeSpan.FromSeconds(defaultTimeout));

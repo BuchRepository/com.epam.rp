@@ -1,12 +1,11 @@
 using OpenQA.Selenium;
-using Serilog;
 
 namespace com.epam.rp.Core.Utility;
 
 
 public static class ScreenshotHelper
 {
-    public static string TakeScreenshot(IWebDriver driver, Serilog.ILogger logger, string scenarioName = null)
+    public static string? TakeScreenshot(IWebDriver driver, Serilog.ILogger logger, string? scenarioName = null)
     {
         try
         {

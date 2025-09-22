@@ -15,17 +15,19 @@ namespace com.epam.rp.Core;
 public sealed class Hooks
 {
     private readonly ScenarioContext _context;
+    private static ExtentReports _extentReports;
+    private static ILogger _rootLogger;
     public static string? Login { get; private set; }
     public static string? Password { get; private set; }
     private const string BaseUrl = "https://rp.epam.com";
     
-    public Hooks(ScenarioContext context)
+    public Hooks(ScenarioContext scenarioContext)
     {
-        _context = context;
+        _context = scenarioContext;
     }
     
     [BeforeTestRun]
-    public static void LoadConfiguration()
+    public static void BeforeTestRun()
     {
         var configuration = new ConfigurationBuilder()
             .SetBasePath(AppContext.BaseDirectory)
@@ -34,11 +36,28 @@ public sealed class Hooks
 
         Login = configuration["LOGIN"];
         Password = configuration["PASSWORD"];
+        
+        _rootLogger = new LoggerConfiguration()
+            .WriteTo.Console()
+            .WriteTo.File("logs/log_root.txt")
+            .CreateLogger();
+        
+        string reportPath = Path.Combine(AppContext.BaseDirectory, "ExtentReport.html");
+        var htmlReporter = new ExtentHtmlReporter(reportPath);
+        htmlReporter.Config.DocumentTitle = "Test Report";
+        htmlReporter.Config.ReportName = "UI Test Report";
+        htmlReporter.Config.Theme = AventStack.ExtentReports.Reporter.Configuration.Theme.Standard;
+
+        _extentReports = new ExtentReports();
+        _extentReports.AttachReporter(htmlReporter);
     }
 
     [AfterTestRun]
     public static void AfterTestRun()
     {
+        _extentReports.Flush();
+        _rootLogger.Information("All tests finished. Reports flushed.");
+        Log.CloseAndFlush();
     }
 
     [BeforeFeature]
@@ -54,15 +73,11 @@ public sealed class Hooks
     [BeforeScenario]
     public void BeforeScenario()
     {
-        string logsDir = Path.Combine(AppContext.BaseDirectory, "logs");
-        Directory.CreateDirectory(logsDir);
-        string logFile = Path.Combine(logsDir, $"logfile_{Guid.NewGuid():N}.log");
-
+        string logFile = Path.Combine(AppContext.BaseDirectory, "logs", $"log_{Guid.NewGuid():N}.txt");
         var logger = new LoggerConfiguration()
             .WriteTo.Console()
             .WriteTo.File(logFile)
             .CreateLogger();
-
         _context["logger"] = logger;
 
         IWebDriver driver = DriverFactory.CreateDriver("chrome");
@@ -73,17 +88,8 @@ public sealed class Hooks
         _context["filtersPage"] = new FiltersPage(driver);
         _context["launchesPage"] = new LaunchesPage(driver);
 
-        string reportPath = Path.Combine(AppContext.BaseDirectory, $"ExtentReport.html");
-        var htmlReporter = new ExtentHtmlReporter(reportPath);
-        htmlReporter.Config.DocumentTitle = "Test Report";
-        htmlReporter.Config.ReportName = "UI Test Report";
-        htmlReporter.Config.Theme = AventStack.ExtentReports.Reporter.Configuration.Theme.Standard;
-
-        var extent = new ExtentReports();
-        extent.AttachReporter(htmlReporter);
-        var test = extent.CreateTest(_context.ScenarioInfo.Title);
-
-        _context["extent"] = extent;
+        var test = _extentReports.CreateTest(_context.ScenarioInfo.Title);
+        _context["extent"] = _extentReports;
         _context["test"] = test;
     }
 
@@ -113,27 +119,16 @@ public sealed class Hooks
         {
             test.Skip("Scenario skipped");
         }
-
+        
         try
         {
-            extent.Flush();
+            driver.Quit();
+            driver.Dispose();
+            logger.Information("Driver successfully closed");
         }
         catch (Exception ex)
         {
-            logger.Error(ex, "Error while flushing ExtentReports");
-        }
-        finally
-        {
-            try
-            {
-                driver.Quit();
-                driver.Dispose();
-                logger.Information("Driver successfully closed");
-            }
-            catch (Exception ex)
-            {
-                logger.Error(ex, "Failed to quit or dispose WebDriver");
-            }
+            logger.Error(ex, "Failed to quit or dispose WebDriver");
         }
     }
 }
