@@ -1,7 +1,7 @@
-using Core;
+using com.epam.rp.Core;
 using Serilog;
 
-namespace Business.Pages;
+namespace com.epam.rp.Business.Pages;
     
 using OpenQA.Selenium;
 

@@ -1,7 +1,7 @@
+using com.epam.rp.Core;
 using OpenQA.Selenium;
-using Core;
 
-namespace Business.Pages;
+namespace com.epam.rp.Business.Pages;
 
 public class LoginPage : BasePage
 {

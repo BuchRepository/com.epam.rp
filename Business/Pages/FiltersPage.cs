@@ -1,9 +1,8 @@
-using Business.Enums;
-using Core;
+using com.epam.rp.Core;
 using OpenQA.Selenium;
 using Serilog;
 
-namespace Business.Pages;
+namespace com.epam.rp.Business.Pages;
 
 public class FiltersPage : BasePage
 {

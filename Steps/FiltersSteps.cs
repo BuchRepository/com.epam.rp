@@ -1,5 +1,5 @@
 using Business.Enums;
-using Business.Pages;
+using com.epam.rp.Business.Pages;
 using com.epam.rp.Core;
 using Serilog;
 using TechTalk.SpecFlow;
@@ -14,6 +14,15 @@ public class FilterSteps
     public FilterSteps(ScenarioContext context)
     {
         _context = context;
+    }
+    
+    private string GetFilterName()
+    {
+        if (!_context.TryGetValue("filterName", out string? filterName) || string.IsNullOrEmpty(filterName))
+        {
+            throw new InvalidOperationException("Filter name is not set in ScenarioContext.");
+        }
+        return filterName;
     }
 
     [Given(@"I am logged in as a valid user")]
@@ -56,7 +65,7 @@ public class FilterSteps
     public void ThenFilterShouldBeVisible()
     {
         var filtersPage = _context.Get<FiltersPage>("filtersPage");
-        var filterName = _context["filterName"]!.ToString();
+        var filterName = GetFilterName();
         
         Assert.IsTrue(filtersPage.WaitForFilterVisibility(filterName, true));
     }
@@ -66,7 +75,7 @@ public class FilterSteps
     public void ThenIDeleteFilter()
     {
         var filtersPage = _context.Get<FiltersPage>("filtersPage");
-        var filterName = _context["filterName"]!.ToString();
+        var filterName = GetFilterName();
         
         filtersPage.DeleteFilter(filterName);
     }
@@ -75,7 +84,7 @@ public class FilterSteps
     public void ThenFilterShouldNotBeVisible()
     {
         var filtersPage = _context.Get<FiltersPage>("filtersPage");
-        var filterName = _context["filterName"]!.ToString();
+        var filterName = GetFilterName();
         
         Assert.IsTrue(filtersPage.WaitForFilterVisibility(filterName, false));
     }
@@ -84,7 +93,7 @@ public class FilterSteps
     public void WhenIToggleDisplay()
     {
         var filtersPage = _context.Get<FiltersPage>("filtersPage");
-        var filterName = _context["filterName"]!.ToString();
+        var filterName = GetFilterName();
         
         filtersPage.ToggleDisplayOnLaunches(filterName);
     }
@@ -93,7 +102,7 @@ public class FilterSteps
     public void WhenIWaitState(string state)
     {
         var filtersPage = _context.Get<FiltersPage>("filtersPage");
-        var filterName = _context["filterName"]!.ToString();
+        var filterName = GetFilterName();
         
         var stateValue = state == "ON" ? FiltersState.ON.ToString() : FiltersState.OFF.ToString();   
         filtersPage.WaitForState(filterName, stateValue);
@@ -103,7 +112,7 @@ public class FilterSteps
     public void ThenTheFilterShouldBeVisibleOnLaunchesPage()
     {
         var launchesPage = _context.Get<LaunchesPage>("launchesPage");
-        var filterName = _context["filterName"]!.ToString();
+        var filterName = GetFilterName();
 
         launchesPage.RefreshPage();
         Assert.IsTrue(launchesPage.IsFilterVisible(filterName, true), 
@@ -114,7 +123,7 @@ public class FilterSteps
     public void ThenTheFilterShouldNotBeVisibleOnLaunchesPage()
     {
         var launchesPage = _context.Get<LaunchesPage>("launchesPage");
-        var filterName = _context["filterName"]!.ToString();
+        var filterName = GetFilterName();
         
         launchesPage.RefreshPage();
         Assert.IsTrue(launchesPage.IsFilterVisible(filterName, false), 

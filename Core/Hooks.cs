@@ -1,8 +1,7 @@
 using AventStack.ExtentReports;
 using AventStack.ExtentReports.Reporter;
-using Business.Pages;
+using com.epam.rp.Business.Pages;
 using com.epam.rp.Core.Utility;
-using Core;
 using Microsoft.Extensions.Configuration;
 using OpenQA.Selenium;
 using Serilog;
@@ -15,8 +14,8 @@ namespace com.epam.rp.Core;
 public sealed class Hooks
 {
     private readonly ScenarioContext _context;
-    private static ExtentReports _extentReports;
-    private static ILogger _rootLogger;
+    private static ExtentReports? _extentReports;
+    private static ILogger? _rootLogger;
     public static string? Login { get; private set; }
     public static string? Password { get; private set; }
     private const string BaseUrl = "https://rp.epam.com";
@@ -55,8 +54,8 @@ public sealed class Hooks
     [AfterTestRun]
     public static void AfterTestRun()
     {
-        _extentReports.Flush();
-        _rootLogger.Information("All tests finished. Reports flushed.");
+        _extentReports?.Flush();
+        _rootLogger?.Information("All tests finished. Reports flushed.");
         Log.CloseAndFlush();
     }
 
@@ -80,7 +79,7 @@ public sealed class Hooks
             .CreateLogger();
         _context["logger"] = logger;
 
-        IWebDriver driver = DriverFactory.CreateDriver("chrome");
+        IWebDriver driver = DriverFactory.CreateDriver();
         driver.Navigate().GoToUrl(BaseUrl); 
         _context["driver"] = driver;
 
@@ -88,7 +87,11 @@ public sealed class Hooks
         _context["filtersPage"] = new FiltersPage(driver);
         _context["launchesPage"] = new LaunchesPage(driver);
 
+        if (_extentReports == null) 
+            throw new InvalidOperationException("_extentReports is not initialized");
+
         var test = _extentReports.CreateTest(_context.ScenarioInfo.Title);
+
         _context["extent"] = _extentReports;
         _context["test"] = test;
     }
@@ -97,13 +100,12 @@ public sealed class Hooks
     public void CleanUp()
     {
         var driver = _context.Get<IWebDriver>("driver");
-        var logger = _context.Get<Serilog.ILogger>("logger");
-        var extent = _context.Get<ExtentReports>("extent");
+        var logger = _context.Get<ILogger>("logger");
         var test = _context.Get<ExtentTest>("test");
 
         if (_context.ScenarioExecutionStatus == ScenarioExecutionStatus.TestError)
         {
-            string screenshotPath = ScreenshotHelper.TakeScreenshot(driver, logger, _context.ScenarioInfo.Title);
+            string? screenshotPath = ScreenshotHelper.TakeScreenshot(driver, logger, _context.ScenarioInfo.Title);
             if (screenshotPath != null)
             {
                 test.AddScreenCaptureFromPath(screenshotPath);

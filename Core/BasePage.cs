@@ -1,11 +1,10 @@
-using com.epam.rp.Core.Utility;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using SeleniumExtras.WaitHelpers;
 using Serilog;
 using TechTalk.SpecFlow;
 
-namespace Core;
+namespace com.epam.rp.Core;
 
 public abstract class BasePage
 {

@@ -2,7 +2,7 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Firefox;
 
-namespace Core;
+namespace com.epam.rp.Core;
 
 public static class DriverFactory
 {
