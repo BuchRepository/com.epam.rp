@@ -6,6 +6,7 @@ Thumbs.db
 .idea/
 *.sln.DotSettings.user
 *.DotSettings.user
+*.feature.cs
 
 # Build results
 bin/
@@ -26,6 +27,8 @@ slnx.sqlite
 *.iws
 *.DotSettings.user
 appsettings.json
+appsettings.local.json
+
 
 # NuGet
 *.nupkg
