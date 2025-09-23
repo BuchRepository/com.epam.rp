@@ -7,7 +7,6 @@ using TechTalk.SpecFlow;
 namespace com.epam.rp.Steps;
 
 [Binding]
-[Parallelizable(ParallelScope.All)]
 public class FilterSteps
 {
     private readonly ScenarioContext _context;
