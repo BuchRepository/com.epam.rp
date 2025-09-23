@@ -14,12 +14,13 @@ namespace com.epam.rp.Core;
 public sealed class Hooks
 {
     private readonly ScenarioContext _context;
-    private static ExtentReports? _extentReports;
+    private static readonly ExtentReports _extentReports = new ExtentReports();
+    private static readonly object _lock = new object();
     public static string? Login { get; private set; }
     public static string? Password { get; private set; }
     private const string BaseUrl = "https://rp.epam.com";
     
-    private static ThreadLocal<ExtentTest?> _currentTest = new ThreadLocal<ExtentTest>();
+    private static ThreadLocal<ExtentTest?> _currentTest = new ThreadLocal<ExtentTest?>();
     
     public Hooks(ScenarioContext scenarioContext)
     {
@@ -47,14 +48,20 @@ public sealed class Hooks
         htmlReporter.Config.ReportName = "UI Test Report";
         htmlReporter.Config.Theme = AventStack.ExtentReports.Reporter.Configuration.Theme.Standard;
 
-        _extentReports = new ExtentReports();
-        _extentReports.AttachReporter(htmlReporter);
+        lock (_lock)
+        {
+            _extentReports.AttachReporter(htmlReporter);
+        }
     }
 
     [AfterTestRun]
     public static void AfterTestRun()
     {
-        _extentReports?.Flush();
+        lock (_extentReports)
+        {
+            _extentReports.Flush();
+        }
+
         Log.Information("All tests finished. Reports flushed.");
         Log.CloseAndFlush();
     }
@@ -80,13 +87,12 @@ public sealed class Hooks
         _context["filtersPage"] = new FiltersPage(driver, _context);
         _context["launchesPage"] = new LaunchesPage(driver, _context);
 
-        if (_extentReports == null) 
-            throw new InvalidOperationException("_extentReports is not initialized");
-
-        var test = _extentReports.CreateTest(_context.ScenarioInfo.Title);
-
-        _currentTest.Value = test;
-        _context["test"] = test;
+        lock (_lock)
+        {
+            var test = _extentReports.CreateTest(_context.ScenarioInfo.Title);
+            _currentTest.Value = test;
+            _context["test"] = test;
+        }
     }
 
     [AfterScenario]
@@ -100,7 +106,10 @@ public sealed class Hooks
             string? screenshotPath = ScreenshotHelper.TakeScreenshot(driver, Log.Logger, _context.ScenarioInfo.Title);
             if (screenshotPath != null)
             {
-                test.AddScreenCaptureFromPath(screenshotPath);
+                lock (_lock)
+                {
+                    test.AddScreenCaptureFromPath(screenshotPath);
+                }
             }
 
             test.Fail("Scenario failed");
