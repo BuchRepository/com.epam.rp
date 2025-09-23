@@ -19,6 +19,9 @@ public sealed class Hooks
     public static string? Password { get; private set; }
     private const string BaseUrl = "https://rp.epam.com";
     
+    private static ThreadLocal<ExtentTest> _currentTest = new ThreadLocal<ExtentTest>();
+    private static ThreadLocal<ILogger> _currentLogger = new ThreadLocal<ILogger>();
+    
     public Hooks(ScenarioContext scenarioContext)
     {
         _context = scenarioContext;
@@ -83,7 +86,7 @@ public sealed class Hooks
 
         var test = _extentReports.CreateTest(_context.ScenarioInfo.Title);
 
-        _context["extent"] = _extentReports;
+        _currentTest.Value = test;
         _context["test"] = test;
     }
 
@@ -91,7 +94,7 @@ public sealed class Hooks
     public void CleanUp()
     {
         var driver = _context.Get<IWebDriver>("driver");
-        var test = _context.Get<ExtentTest>("test");
+        var test = _currentTest.Value!;
 
         if (_context.ScenarioExecutionStatus == ScenarioExecutionStatus.TestError)
         {
@@ -122,5 +125,8 @@ public sealed class Hooks
         {
             Log.Error(ex, "Failed to quit or dispose WebDriver");
         }
+        
+        _currentTest.Dispose();
+        _currentLogger.Dispose();
     }
 }

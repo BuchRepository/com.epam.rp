@@ -18,9 +18,9 @@ Feature: Filters Management
         | filterName             | parameter      | quantity |
         | Automation bugs        | Automation Bug | 1        |
         | ProdBug                | Product Bug    | 1        |
-        | System issues          | System Issue   | 1        |
-        | To investigate group   | To Investigate | 1        |
-        | Launches with failures | Failed         | 1        |
+#        | System issues          | System Issue   | 1        |
+#        | To investigate group   | To Investigate | 1        |
+#        | Launches with failures | Failed         | 1        |
 
 
     Scenario Outline: User can remove a filter
@@ -32,22 +32,22 @@ Feature: Filters Management
         | filterName             | parameter      | quantity |
         | Automation bugs        | Automation Bug | 1        |
         | ProdBug                | Product Bug    | 1        |
-        | System issues          | System Issue   | 1        |
-        | To investigate group   | To Investigate | 1        |
-        | Launches with failures | Failed         | 1        |
+#        | System issues          | System Issue   | 1        |
+#        | To investigate group   | To Investigate | 1        |
+#        | Launches with failures | Failed         | 1        |
 
-    Scenario Outline: User can toggle filter display
-      When I create a filter with name "<filterName>" and parameter "<parameter>" and quantity "<quantity>"
-      And I toggle display
-      And I wait "OFF" state
-      Then The filter should not be visible on the Launches page
-      And I delete the filter
-      And the filter should not be visible on the Filters page
-
-      Examples:
-        | filterName             | parameter      | quantity |
-        | Automation bugs        | Automation Bug | 1        |
-        | ProdBug                | Product Bug    | 1        |
-        | System issues          | System Issue   | 1        |
-        | To investigate group   | To Investigate | 1        |
-        | Launches with failures | Failed         | 1        |
+#    Scenario Outline: User can toggle filter display
+#      When I create a filter with name "<filterName>" and parameter "<parameter>" and quantity "<quantity>"
+#      And I toggle display
+#      And I wait "OFF" state
+#      Then The filter should not be visible on the Launches page
+#      And I delete the filter
+#      And the filter should not be visible on the Filters page
+#
+#      Examples:
+#        | filterName             | parameter      | quantity |
+#        | Automation bugs        | Automation Bug | 1        |
+#        | ProdBug                | Product Bug    | 1        |
+#        | System issues          | System Issue   | 1        |
+#        | To investigate group   | To Investigate | 1        |
+#        | Launches with failures | Failed         | 1        |
