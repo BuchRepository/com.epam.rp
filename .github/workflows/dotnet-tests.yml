@@ -58,7 +58,7 @@ jobs:
           }" > appsettings.json
 
       - name: Run tests
-        run: dotnet test --configuration Release --logger "console;verbosity=detailed" --logger "trx;LogFileName=test-results.trx"
+        run: dotnet test --configuration Release --logger "console;verbosity=minimal" --logger "trx;LogFileName=test-results.trx"
 
       - name: List files in Release folder
         run: ls -lah ./bin/Release/net8.0/
