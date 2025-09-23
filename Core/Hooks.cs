@@ -19,8 +19,7 @@ public sealed class Hooks
     public static string? Password { get; private set; }
     private const string BaseUrl = "https://rp.epam.com";
     
-    private static ThreadLocal<ExtentTest> _currentTest = new ThreadLocal<ExtentTest>();
-    private static ThreadLocal<ILogger> _currentLogger = new ThreadLocal<ILogger>();
+    private static ThreadLocal<ExtentTest?> _currentTest = new ThreadLocal<ExtentTest>();
     
     public Hooks(ScenarioContext scenarioContext)
     {
@@ -126,7 +125,6 @@ public sealed class Hooks
             Log.Error(ex, "Failed to quit or dispose WebDriver");
         }
         
-        _currentTest.Dispose();
-        _currentLogger.Dispose();
+        _currentTest.Value = null;
     }
 }
