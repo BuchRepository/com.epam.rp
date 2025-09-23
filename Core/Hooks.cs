@@ -15,7 +15,6 @@ public sealed class Hooks
 {
     private readonly ScenarioContext _context;
     private static ExtentReports? _extentReports;
-    private static ILogger? _rootLogger;
     public static string? Login { get; private set; }
     public static string? Password { get; private set; }
     private const string BaseUrl = "https://rp.epam.com";
@@ -36,9 +35,8 @@ public sealed class Hooks
         Login = configuration["LOGIN"];
         Password = configuration["PASSWORD"];
         
-        _rootLogger = new LoggerConfiguration()
+        Log.Logger = new LoggerConfiguration()
             .WriteTo.Console()
-            .WriteTo.File("logs/log_root.txt")
             .CreateLogger();
         
         string reportPath = Path.Combine(AppContext.BaseDirectory, "ExtentReport.html");
@@ -55,7 +53,7 @@ public sealed class Hooks
     public static void AfterTestRun()
     {
         _extentReports?.Flush();
-        _rootLogger?.Information("All tests finished. Reports flushed.");
+        Log.Information("All tests finished. Reports flushed.");
         Log.CloseAndFlush();
     }
 
@@ -72,13 +70,6 @@ public sealed class Hooks
     [BeforeScenario]
     public void BeforeScenario()
     {
-        string logFile = Path.Combine(AppContext.BaseDirectory, "logs", $"log_{Guid.NewGuid():N}.txt");
-        var logger = new LoggerConfiguration()
-            .WriteTo.Console()
-            .WriteTo.File(logFile)
-            .CreateLogger();
-        _context["logger"] = logger;
-
         IWebDriver driver = DriverFactory.CreateDriver();
         driver.Navigate().GoToUrl(BaseUrl); 
         _context["driver"] = driver;
@@ -100,12 +91,11 @@ public sealed class Hooks
     public void CleanUp()
     {
         var driver = _context.Get<IWebDriver>("driver");
-        var logger = _context.Get<ILogger>("logger");
         var test = _context.Get<ExtentTest>("test");
 
         if (_context.ScenarioExecutionStatus == ScenarioExecutionStatus.TestError)
         {
-            string? screenshotPath = ScreenshotHelper.TakeScreenshot(driver, logger, _context.ScenarioInfo.Title);
+            string? screenshotPath = ScreenshotHelper.TakeScreenshot(driver, Log.Logger, _context.ScenarioInfo.Title);
             if (screenshotPath != null)
             {
                 test.AddScreenCaptureFromPath(screenshotPath);
@@ -126,11 +116,11 @@ public sealed class Hooks
         {
             driver.Quit();
             driver.Dispose();
-            logger.Information("Driver successfully closed");
+            Log.Information("Driver successfully closed");
         }
         catch (Exception ex)
         {
-            logger.Error(ex, "Failed to quit or dispose WebDriver");
+            Log.Error(ex, "Failed to quit or dispose WebDriver");
         }
     }
 }
