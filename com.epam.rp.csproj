@@ -43,5 +43,9 @@
         <None Update="appsettings.json">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
+        <SpecFlowFeatureFiles Remove="Features\RemoveFilters.feature" />
+        <None Include="Features\RemoveFilters.feature" />
+        <SpecFlowFeatureFiles Remove="Features\FiltersFeature.feature" />
+        <None Include="Features\FiltersFeature.feature" />
     </ItemGroup>
 </Project>
