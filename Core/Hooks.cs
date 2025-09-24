@@ -24,6 +24,7 @@ public sealed class Hooks
     private const string BaseUrl = "https://rp.epam.com";
     
     private static ThreadLocal<ExtentTest?> _currentTest = new ThreadLocal<ExtentTest?>();
+    private static ThreadLocal<IWebDriver?> _driver = new ThreadLocal<IWebDriver?>();
     
     public Hooks(ScenarioContext scenarioContext)
     {
@@ -85,6 +86,7 @@ public sealed class Hooks
         IWebDriver driver = DriverFactory.CreateDriver();
         driver.Navigate().GoToUrl(BaseUrl); 
         _context["driver"] = driver;
+        _driver.Value = driver;
 
         _context["loginPage"] = new LoginPage(driver, _context);
         _context["filtersPage"] = new FiltersPage(driver, _context);
@@ -101,7 +103,7 @@ public sealed class Hooks
     [AfterScenario]
     public void CleanUp()
     {
-        var driver = _context.Get<IWebDriver>("driver");
+        var driver = _driver.Value;
         var test = _currentTest.Value!;
 
         if (_context.ScenarioExecutionStatus == ScenarioExecutionStatus.TestError)
@@ -128,8 +130,8 @@ public sealed class Hooks
         
         try
         {
-            driver.Quit();
-            driver.Dispose();
+            driver?.Quit();
+            driver?.Dispose();
             Log.Information("Driver successfully closed");
         }
         catch (Exception ex)
@@ -137,6 +139,7 @@ public sealed class Hooks
             Log.Error(ex, "Failed to quit or dispose WebDriver");
         }
         
+        _driver.Value = null;
         _currentTest.Value = null;
     }
 }
