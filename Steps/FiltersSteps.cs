@@ -1,6 +1,8 @@
+using System;
 using com.epam.rp.Business.Enums;
 using com.epam.rp.Business.Pages;
 using com.epam.rp.Core;
+using NUnit.Framework;
 using Serilog;
 using TechTalk.SpecFlow;
 

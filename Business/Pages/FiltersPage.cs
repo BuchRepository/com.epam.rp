@@ -1,3 +1,4 @@
+using System.Linq;
 using com.epam.rp.Core;
 using OpenQA.Selenium;
 using Serilog;
