@@ -30,10 +30,10 @@ jobs:
 
       - name: Create appsettings.json from secrets
         run: |
-          mkdir -p rp-nunit/bin/Release/net8.0/
-          mkdir -p rp-mstest/bin/Release/net8.0/
+          mkdir -p com.epam.rp.api/bin/Release/net8.0/
+          mkdir -p com.epam.rp.ui/bin/Release/net8.0/
 
-          cat > rp-nunit/bin/Release/net8.0/appsettings.json <<EOL
+          cat > com.epam.rp.api/bin/Release/net8.0/appsettings.json <<EOL
           {
             "LOGIN": "${{ secrets.TEST_LOGIN }}",
             "PASSWORD": "${{ secrets.TEST_PASSWORD }}",
@@ -55,7 +55,7 @@ jobs:
           }
           EOL
 
-          cp rp-nunit/bin/Release/net8.0/appsettings.json rp-mstest/bin/Release/net8.0/appsettings.json
+          cp com.epam.rp.api/bin/Release/net8.0/appsettings.json com.epam.rp.ui/bin/Release/net8.0/appsettings.json
 
       - name: Run tests
         run: dotnet test com.epam.rp.sln --configuration Release --logger "console;verbosity=detailed" --logger "trx;LogFileName=test-results.trx" -- NUnit.ParallelScope=Fixtures 
@@ -67,8 +67,8 @@ jobs:
         with:
           name: screenshots
           path: |
-            ./rp-nunit/bin/Release/net8.0/screenshots/*.png
-            ./rp-mstest/bin/Release/net8.0/screenshots/*.png
+            ./com.epam.rp.api/bin/Release/net8.0/screenshots/*.png
+            ./com.epam.rp.ui/bin/Release/net8.0/screenshots/*.png
 
       - name: Upload logs
         if: always()
@@ -78,12 +78,12 @@ jobs:
           path: ./logs/logfile.log
 
       - name: List files in Release folder
-        run: ls -lah ./rp-nunit/bin/Release/net8.0/ || true && ls -lah ./rp-mstest/bin/Release/net8.0/ || true
+        run: ls -lah ./com.epam.rp.api/bin/Release/net8.0/ || true && ls -lah ./com.epam.rp.ui/bin/Release/net8.0/ || true
 
       - name: Upload Extent Report
         uses: actions/upload-artifact@v4
         with:
           name: extent-report
           path: |
-            ./rp-nunit/bin/Release/net8.0/*.html
-            ./rp-mstest/bin/Release/net8.0/*.html
+            ./com.epam.rp.api/bin/Release/net8.0/*.html
+            ./com.epam.rp.ui/bin/Release/net8.0/*.html
