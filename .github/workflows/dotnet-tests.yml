@@ -33,7 +33,7 @@ jobs:
           mkdir -p com.epam.rp.api/bin/Release/net8.0/
           mkdir -p com.epam.rp.ui/bin/Release/net8.0/
 
-          cat > com.epam.rp.api/bin/Release/net8.0/appsettings.json <<EOL
+          cat > com.epam.rp.ui/bin/Release/net8.0/appsettings.json <<EOL
           {
             "LOGIN": "${{ secrets.TEST_LOGIN }}",
             "PASSWORD": "${{ secrets.TEST_PASSWORD }}",
@@ -55,7 +55,7 @@ jobs:
           }
           EOL
 
-          cp com.epam.rp.api/bin/Release/net8.0/appsettings.json com.epam.rp.ui/bin/Release/net8.0/appsettings.json
+          cp com.epam.rp.ui/bin/Release/net8.0/appsettings.json com.epam.rp.api/bin/Release/net8.0/appsettings.json
 
       - name: Run tests
         run: dotnet test com.epam.rp.sln --configuration Release --logger "console;verbosity=detailed" --logger "trx;LogFileName=test-results.trx" -- NUnit.ParallelScope=Fixtures 

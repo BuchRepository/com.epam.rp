@@ -18,7 +18,7 @@ public class FiltersTests : TestBase
     {
         var configuration = new ConfigurationBuilder()
             .SetBasePath(AppContext.BaseDirectory)
-            //.AddJsonFile("appsettings.local.json", optional: true, reloadOnChange: true)
+            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
             .Build();
 
         _login = configuration["LOGIN"] ?? throw new InvalidOperationException("LOGIN not found in config");
