@@ -11,7 +11,7 @@ public class FiltersApiClient
     private const string BaseUrl = "https://rp.epam.com/";
     private const string Project = "test_user_personal";
     private const string ApiPrefix = "api/v1/"; 
-    private static readonly string ApiToken = ConfigManager.ApiToken;
+    private static readonly string ApiToken = ConfigManager.ApiToken!;
 
     public FiltersApiClient()
     {
@@ -21,26 +21,26 @@ public class FiltersApiClient
     
     private string BuildUrl(string path) => $"{ApiPrefix}{Project}/{path}";
     
-    public async Task<RestResponse> GetFiltersAsync()
-    {
-        var url = BuildUrl($"filter");
-        var request = (new RestRequest(url, Method.Get));
+        public async Task<RestResponse> GetFiltersAsync()
+        {
+            var url = BuildUrl($"filter");
+            var request = (new RestRequest(url, Method.Get));
 
-        var response = _client.Execute(request);
-        
-        await LoggerService.LogRestRequestResponse(_client, request, response);
+            var response = await _client.ExecuteAsync(request);
+            
+            LoggerService.LogRestRequestResponse(_client, request, response);
 
-        return response;
-    }
+            return response;
+        }
     
     public async Task<RestResponse> GetFilterByIdAsync(int filterId)
     {
         var url = BuildUrl($"filter/{filterId}");
         var request = (new RestRequest(url, Method.Get));
 
-        var response = _client.Execute(request);
+        var response = await _client.ExecuteAsync(request);
         
-        await LoggerService.LogRestRequestResponse(_client, request, response);
+        LoggerService.LogRestRequestResponse(_client, request, response);
 
         return response;
     }
@@ -67,7 +67,7 @@ public class FiltersApiClient
         
         var request = new RestRequest(BuildUrl("filter"), Method.Post).AddJsonBody(body);
         var response = await _client.ExecuteAsync(request);
-        await LoggerService.LogRestRequestResponse(_client, request, response);
+        LoggerService.LogRestRequestResponse(_client, request, response);
         return response;
     }
 
@@ -101,7 +101,7 @@ public class FiltersApiClient
             
         var request = new RestRequest(BuildUrl($"filter"), Method.Put).AddJsonBody(body);
         var response = await _client.ExecuteAsync(request);
-        await LoggerService.LogRestRequestResponse(_client, request, response);
+        LoggerService.LogRestRequestResponse(_client, request, response);
         return response;
     }
 
@@ -128,7 +128,7 @@ public class FiltersApiClient
             
         var request = new RestRequest(BuildUrl($"filter/{filterId}"), Method.Put).AddJsonBody(body);
         var response = await _client.ExecuteAsync(request);
-        await LoggerService.LogRestRequestResponse(_client, request, response);
+        LoggerService.LogRestRequestResponse(_client, request, response);
         return response;
     }
     
@@ -136,7 +136,7 @@ public class FiltersApiClient
     {
         var request = new RestRequest(BuildUrl($"filter/{filterId}"), Method.Delete);
         var response = await _client.ExecuteAsync(request);
-        await LoggerService.LogRestRequestResponse(_client, request, response);
+        LoggerService.LogRestRequestResponse(_client, request, response);
         return response;
     }
 }

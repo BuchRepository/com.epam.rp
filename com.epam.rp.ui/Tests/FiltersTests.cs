@@ -1,7 +1,7 @@
 using com.epam.rp.core;
+using com.epam.rp.core.Configuration;
 using com.epam.rp.ui.Business.Enums;
 using com.epam.rp.ui.Core;
-using Microsoft.Extensions.Configuration;
 using TestDataLoader = com.epam.rp.ui.Core.TestDataLoader;
 
 [assembly: Parallelize(Workers = 5, Scope = ExecutionScope.MethodLevel)]
@@ -16,13 +16,8 @@ public class FiltersTests : TestBase
     
     public FiltersTests()
     {
-        var configuration = new ConfigurationBuilder()
-            .SetBasePath(AppContext.BaseDirectory)
-            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-            .Build();
-
-        _login = configuration["LOGIN"] ?? throw new InvalidOperationException("LOGIN not found in config");
-        _password = configuration["PASSWORD"] ?? throw new InvalidOperationException("LOGIN not found in config");
+        _login = ConfigManager.Login ?? throw new InvalidOperationException("LOGIN not found in config");
+        _password = ConfigManager.Password ?? throw new InvalidOperationException("PASSWORD not found in config");
     }
 
     public static IEnumerable<object[]> AddFilterData()

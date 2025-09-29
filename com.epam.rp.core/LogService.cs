@@ -23,17 +23,25 @@ namespace com.epam.rp.core
                 Log.Error(message);
         }
         
-        public static async Task LogRestRequestResponse(RestClient client, RestRequest request, RestResponse response)
+        public static void LogRestRequestResponse(RestClient client, RestRequest request, RestResponse response)
         {
             Info($"Request Method: {request.Method}");
             Info($"Request URL: {client.Options.BaseUrl}{request.Resource}");
-            var headers = request.Parameters
+            
+            var requestHeaders = request.Parameters
                 .Where(p => p.Type == ParameterType.HttpHeader)
                 .Select(p => $"{p.Name}:{p.Value}");
-            Info($"Request Headers: {string.Join(", ", headers)}");
+            
+            var defaultHeaders = client.DefaultParameters
+                .Where(p => p.Type == ParameterType.HttpHeader)
+                .Select(p => $"{p.Name}: {p.Value}");
+            
+            var allHeaders = requestHeaders.Concat(defaultHeaders).ToList();
+            
+            Info($"Request Headers: {(allHeaders.Count > 0 ? string.Join(", ", allHeaders) : "<no headers>")}");
             
             var bodyParam = request.Parameters
-                .FirstOrDefault(p => p.Type == RestSharp.ParameterType.RequestBody);
+                .FirstOrDefault(p => p.Type == ParameterType.RequestBody);
             
             if (bodyParam != null)
             {
@@ -41,10 +49,22 @@ namespace com.epam.rp.core
             }
 
             Info($"Response Status: {response.StatusCode}");
-            var responseHeaders = response.Headers != null
-                ? string.Join(", ", response.Headers.Select(h => $"{h.Name}:{h.Value ?? "<null>"}"))
+            var responseHeaders = new List<string>();
+
+            if (response.Headers != null)
+            {
+                foreach (var header in response.Headers)
+                {
+                    var value = header.Value.ToString() ?? "<null>";
+                    responseHeaders.Add($"{header.Name}: {value}");
+                }
+            }
+
+            string headersLog = responseHeaders.Count > 0
+                ? string.Join(", ", responseHeaders)
                 : "<no headers>";
-            Info($"Response Headers: {responseHeaders}");
+
+            Info("Response Headers: " + headersLog);
             Info($"Response Content: {response.Content}");
         }
     }

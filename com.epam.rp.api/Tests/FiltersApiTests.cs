@@ -6,8 +6,8 @@ using Newtonsoft.Json;
 namespace com.epam.rp.api.Tests;
 
 [TestFixture]
-[Parallelizable(ParallelScope.All)]
-[FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
+//[Parallelizable(ParallelScope.All)]
+//[FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
 public class FiltersApiTests
 {
     private FiltersApiClient _apiClient;
@@ -42,6 +42,8 @@ public class FiltersApiTests
     [Test]
     public async Task GetFilterById_Positive()
     {
+        LoggerService.Info($"Running GetFilterById_Positive.");
+        
         var body = new CreateFilterRequest
         {
             Name = $"TestFilter_{Guid.NewGuid()}",
@@ -88,6 +90,8 @@ public class FiltersApiTests
     [Test]
     public async Task GetFilterById_Negative_NotFound()
     {
+        LoggerService.Info($"Running GetFilterById_Negative_NotFound.");
+        
         var response = await _apiClient.GetFilterByIdAsync(InvaliId);
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
     }
@@ -95,6 +99,8 @@ public class FiltersApiTests
     [Test]
     public async Task CreateFilter_Positive()
     {
+        LoggerService.Info($"Running CreateFilter_Positive.");
+        
         var body = new CreateFilterRequest
         {
             Name = $"TestFilter_{Guid.NewGuid()}",
@@ -136,6 +142,8 @@ public class FiltersApiTests
     [Test]
     public async Task CreateFilter_Negative_MissingName()
     {
+        LoggerService.Info($"Running CreateFilter_Negative_MissingName.");
+        
         var body = new CreateFilterRequest
         {
             Name = null,
@@ -167,6 +175,8 @@ public class FiltersApiTests
     [Test]
     public async Task CreateFilter_Negative_InvalidType()
     {
+        LoggerService.Info($"Running CreateFilter_Negative_InvalidType.");
+        
         var body = new CreateFilterRequest
         {
             Name = $"TestFilter_{Guid.NewGuid()}",
@@ -198,6 +208,8 @@ public class FiltersApiTests
     [Test]
     public async Task UpdateFilterById_Positive()
     {
+        LoggerService.Info($"Running UpdateFilterById_Positive.");
+        
         var createBody = new CreateFilterRequest
         {
             Name = $"TestFilter_{Guid.NewGuid()}",
@@ -257,7 +269,9 @@ public class FiltersApiTests
 
     [Test]
     public async Task UpdateFilterById_Negative_InvalidId()
-    { 
+    {
+        LoggerService.Info($"Running UpdateFilterById_Negative_InvalidId.");
+        
         var updateBody = new UpdateFilterRequest
        {
            Name = $"TestFilter_{Guid.NewGuid()}",
@@ -289,6 +303,8 @@ public class FiltersApiTests
     [Test]
     public async Task UpdateFilters_Positive()
     {
+        LoggerService.Info($"Running UpdateFilters_Positive.");
+        
         var createBody = new CreateFilterRequest
         {
             Name = $"TestFilter_{Guid.NewGuid()}",
@@ -357,6 +373,8 @@ public class FiltersApiTests
     [Test]
     public async Task UpdateFilters_Negative_InvalidId()
     {
+        LoggerService.Info($"Running UpdateFilters_Negative_InvalidId.");
+        
         var updateBody = new UpdateFiltersRequest
         {
             Elements = new List<UpdateFilterElement>
@@ -395,6 +413,8 @@ public class FiltersApiTests
     [Test]
     public async Task DeleteFilter_Positive()
     {
+        LoggerService.Info($"Running DeleteFilter_Positive.");
+        
         var createBody = new CreateFilterRequest
         {
             Name = $"TestFilter_{Guid.NewGuid()}",
@@ -437,6 +457,8 @@ public class FiltersApiTests
     [Test]
     public async Task DeleteFilter_Negative_NotFound()
     {
+        LoggerService.Info($"Running DeleteFilter_Negative_NotFound.");
+        
         var response = await _apiClient.DeleteFilterAsync(InvaliId);
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
     }
