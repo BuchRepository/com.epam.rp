@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using RestSharp;
 using Serilog;
 
@@ -37,14 +38,13 @@ namespace com.epam.rp.core
                 .Select(p => $"{p.Name}: {p.Value}");
             
             var allHeaders = requestHeaders.Concat(defaultHeaders).ToList();
-            
             Info($"Request Headers: {(allHeaders.Count > 0 ? string.Join(", ", allHeaders) : "<no headers>")}");
             
             var bodyParam = request.Parameters
                 .FirstOrDefault(p => p.Type == ParameterType.RequestBody);
-            
             if (bodyParam != null)
             {
+                string json = JsonConvert.SerializeObject(bodyParam.Value, Formatting.Indented);
                 Info($"Request Body: {bodyParam.Value}");
             }
 
@@ -65,7 +65,24 @@ namespace com.epam.rp.core
                 : "<no headers>";
 
             Info("Response Headers: " + headersLog);
-            Info($"Response Content: {response.Content}");
+            
+            if (!string.IsNullOrWhiteSpace(response.Content))
+            {
+                try
+                {
+                    var parsed = JsonConvert.DeserializeObject(response.Content);
+                    string pretty = JsonConvert.SerializeObject(parsed, Formatting.Indented);
+                    Info($"Response Content: {pretty}");
+                }
+                catch
+                {
+                    Info($"Response Content: {response.Content}");
+                }
+            }
+            else
+            {
+                Info("Response Content: <empty>");
+            }
         }
     }
 }
