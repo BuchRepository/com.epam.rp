@@ -66,9 +66,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: screenshots
-          path: |
-            ./com.epam.rp.api/bin/Release/net8.0/screenshots/*.png
-            ./com.epam.rp.ui/bin/Release/net8.0/screenshots/*.png
+          path: ./com.epam.rp.ui/bin/Release/net8.0/screenshots/*.png
 
       - name: Upload logs
         if: always()
@@ -84,6 +82,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: extent-report
-          path: |
-            ./com.epam.rp.api/bin/Release/net8.0/*.html
-            ./com.epam.rp.ui/bin/Release/net8.0/*.html
+          path: ./com.epam.rp.ui/bin/Release/net8.0/*.html

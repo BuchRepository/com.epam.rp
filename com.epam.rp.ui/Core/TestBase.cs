@@ -40,7 +40,7 @@ public class TestBase
     [TestInitialize]
     public void SetUp()
     {
-        //test = extent.CreateTest(TestContext.TestName);
+        Test = Extent!.CreateTest(TestContext.TestName);
         
         string browser = TestContext.Properties.Contains("browser")
             ? TestContext.Properties["browser"]?.ToString() ?? "chrome"
@@ -73,25 +73,29 @@ public class TestBase
 
                 if (!string.IsNullOrEmpty(screenshotPath))
                 {
+                    Test!.Fail("Test Failed").AddScreenCaptureFromPath(screenshotPath);
                     LoggerService.Info($"Screenshot saved: {screenshotPath}");
+                }
+                else
+                {
+                    Test!.Fail("Test Failed - no screenshot available");
                 }
             }
             catch (Exception e)
             {
                 LoggerService.Error("Failed to take screenshot on test failure", e);
+                Test!.Fail("Test Failed - screenshot error: " + e.Message);
             }
-            
-            //test.Fail("Test Failed");
         }
         
-        /*else if (outcome == UnitTestOutcome.Passed)
+        else if (outcome == UnitTestOutcome.Passed)
         {
-            test.Pass("Test Passed");
+            Test!.Pass("Test Passed");
         }
         else
         {
-            test.Skip("Test Skipped");
-        }   */
+            Test!.Skip("Test Skipped");
+        }   
 
         try
         {
@@ -116,7 +120,11 @@ public class TestBase
                 LoggerService.Error("Error while deleting profile directory", ex);
             }
         }
-
-        //extent.Flush();
+    }
+    
+    [AssemblyCleanup]
+    public static void AssemblyCleanup()
+    {
+        Extent?.Flush();
     }
 }
