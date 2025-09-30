@@ -38,7 +38,7 @@ public static class DriverFactory
                 
                 var service = CreateDriverServiceWithRetry();
                 service.HideCommandPromptWindow = true;
-                driver = new ChromeDriver(service, options, TimeSpan.FromSeconds(60));
+                driver = new ChromeDriver(service, options, TimeSpan.FromSeconds(120));
                 break;
             
             default:
