@@ -16,6 +16,7 @@ public class FiltersApiTests
     
     const int InvaliId = 123456789;
     
+    [OneTimeSetUp]
     public void OneTimeSetup()
     {
         LoggerService.InitLogger();
