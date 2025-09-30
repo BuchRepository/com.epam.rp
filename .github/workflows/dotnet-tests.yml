@@ -68,18 +68,17 @@ jobs:
           name: screenshots
           path: ./com.epam.rp.ui/bin/Release/net8.0/screenshots/*.png
 
-      - name: Upload logs
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: logs
-          path: ./logs/logfile.log
-
       - name: List files in Release folder
         run: ls -lah ./com.epam.rp.api/bin/Release/net8.0/ || true && ls -lah ./com.epam.rp.ui/bin/Release/net8.0/ || true
 
-      - name: Upload Extent Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: extent-report
-          path: ./com.epam.rp.ui/bin/Release/net8.0/*.html
+      - name: Upload UI report
+  	uses: actions/upload-artifact@v4
+  	with:
+    	  name: ui-report
+    	  path: ./com.epam.rp.ui/bin/Release/net8.0/ExtentReports_UI.html
+
+      - name: Upload API report
+  	uses: actions/upload-artifact@v4
+  	with:
+    	  name: api-report
+    	  path: ./com.epam.rp.api/bin/Release/net8.0/ExtentReports_API.html
