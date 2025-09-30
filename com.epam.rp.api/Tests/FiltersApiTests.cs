@@ -8,11 +8,9 @@ using Newtonsoft.Json;
 namespace com.epam.rp.api.Tests;
 
 [TestFixture]
-//[Parallelizable(ParallelScope.All)]
-//[FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
 public class FiltersApiTests
 {
-    private FiltersApiClient _apiClient;
+    private FiltersApiClient _apiClient = new FiltersApiClient();
     private ExtentReports? _extent;
     private ExtentTest? _test;
     
