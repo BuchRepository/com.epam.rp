@@ -71,14 +71,14 @@ jobs:
       - name: List files in Release folder
         run: ls -lah ./com.epam.rp.api/bin/Release/net8.0/ || true && ls -lah ./com.epam.rp.ui/bin/Release/net8.0/ || true
 
-      - name: Upload UI report
-  	uses: actions/upload-artifact@v4
-  	with:
-    	  name: ui-report
-    	  path: ./com.epam.rp.ui/bin/Release/net8.0/ExtentReports_UI.html
+      - name: Upload UI Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-report
+          path: ./com.epam.rp.ui/bin/Release/net8.0/ExtentReports_UI.html
 
-      - name: Upload API report
-  	uses: actions/upload-artifact@v4
-  	with:
-    	  name: api-report
-    	  path: ./com.epam.rp.api/bin/Release/net8.0/ExtentReports_API.html
+      - name: Upload API Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-report
+          path: ./com.epam.rp.api/bin/Release/net8.0/ExtentReports_API.html
