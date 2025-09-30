@@ -67,6 +67,7 @@ jobs:
         with:
           name: screenshots
           path: ./com.epam.rp.ui/bin/Release/net8.0/screenshots/*.png
+          if-no-files-found: ignore
 
       - name: List files in Release folder
         run: ls -lah ./com.epam.rp.api/bin/Release/net8.0/ || true && ls -lah ./com.epam.rp.ui/bin/Release/net8.0/ || true
