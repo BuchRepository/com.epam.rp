@@ -1,6 +1,8 @@
 using System.Net;
+using AventStack.ExtentReports;
 using com.epam.rp.core;
 using com.epam.rp.core.Models;
+using com.epam.rp.core.Utility;
 using Newtonsoft.Json;
 
 namespace com.epam.rp.api.Tests;
@@ -11,20 +13,29 @@ namespace com.epam.rp.api.Tests;
 public class FiltersApiTests
 {
     private FiltersApiClient _apiClient;
+    private ExtentReports? _extent;
+    private ExtentTest? _test;
+    
     const int InvaliId = 123456789;
     
-    [SetUp]
-    public void Setup()
+    public void OneTimeSetup()
     {
         LoggerService.InitLogger();
         _apiClient = new FiltersApiClient();
+
+        _extent = ReportManager.GetExtent(isUI: false);
+    }
+
+    [SetUp]
+    public void Setup()
+    {
+        _test = _extent!.CreateTest(TestContext.CurrentContext.Test.Name);
+        LoggerService.Info($"Starting test: {TestContext.CurrentContext.Test.Name}");
     }
 
     [Test]
     public async Task GetAllFilters_Positive()
     {
-        LoggerService.Info($"Running GetAllFilters_Positive.");
-
         var response = await _apiClient.GetFiltersAsync();
         LoggerService.Info($"Request completed. Status code: {response.StatusCode}.");
 
@@ -42,8 +53,6 @@ public class FiltersApiTests
     [Test]
     public async Task GetFilterById_Positive()
     {
-        LoggerService.Info($"Running GetFilterById_Positive.");
-        
         var body = new CreateFilterRequest
         {
             Name = $"TestFilter_{Guid.NewGuid()}",
@@ -90,8 +99,6 @@ public class FiltersApiTests
     [Test]
     public async Task GetFilterById_Negative_NotFound()
     {
-        LoggerService.Info($"Running GetFilterById_Negative_NotFound.");
-        
         var response = await _apiClient.GetFilterByIdAsync(InvaliId);
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
     }
@@ -99,8 +106,6 @@ public class FiltersApiTests
     [Test]
     public async Task CreateFilter_Positive()
     {
-        LoggerService.Info($"Running CreateFilter_Positive.");
-        
         var body = new CreateFilterRequest
         {
             Name = $"TestFilter_{Guid.NewGuid()}",
@@ -142,8 +147,6 @@ public class FiltersApiTests
     [Test]
     public async Task CreateFilter_Negative_MissingName()
     {
-        LoggerService.Info($"Running CreateFilter_Negative_MissingName.");
-        
         var body = new CreateFilterRequest
         {
             Name = null,
@@ -175,8 +178,6 @@ public class FiltersApiTests
     [Test]
     public async Task CreateFilter_Negative_InvalidType()
     {
-        LoggerService.Info($"Running CreateFilter_Negative_InvalidType.");
-        
         var body = new CreateFilterRequest
         {
             Name = $"TestFilter_{Guid.NewGuid()}",
@@ -208,8 +209,6 @@ public class FiltersApiTests
     [Test]
     public async Task UpdateFilterById_Positive()
     {
-        LoggerService.Info($"Running UpdateFilterById_Positive.");
-        
         var createBody = new CreateFilterRequest
         {
             Name = $"TestFilter_{Guid.NewGuid()}",
@@ -303,8 +302,6 @@ public class FiltersApiTests
     [Test]
     public async Task UpdateFilters_Positive()
     {
-        LoggerService.Info($"Running UpdateFilters_Positive.");
-        
         var createBody = new CreateFilterRequest
         {
             Name = $"TestFilter_{Guid.NewGuid()}",
@@ -373,8 +370,6 @@ public class FiltersApiTests
     [Test]
     public async Task UpdateFilters_Negative_InvalidId()
     {
-        LoggerService.Info($"Running UpdateFilters_Negative_InvalidId.");
-        
         var updateBody = new UpdateFiltersRequest
         {
             Elements = new List<UpdateFilterElement>
@@ -413,8 +408,6 @@ public class FiltersApiTests
     [Test]
     public async Task DeleteFilter_Positive()
     {
-        LoggerService.Info($"Running DeleteFilter_Positive.");
-        
         var createBody = new CreateFilterRequest
         {
             Name = $"TestFilter_{Guid.NewGuid()}",
@@ -457,9 +450,35 @@ public class FiltersApiTests
     [Test]
     public async Task DeleteFilter_Negative_NotFound()
     {
-        LoggerService.Info($"Running DeleteFilter_Negative_NotFound.");
-        
         var response = await _apiClient.DeleteFilterAsync(InvaliId);
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+    }
+    
+    [TearDown]
+    public void TearDown()
+    {
+        var outcome = TestContext.CurrentContext.Result.Outcome.Status;
+
+        if (outcome == NUnit.Framework.Interfaces.TestStatus.Failed)
+        {
+            _test!.Fail("Test Failed")
+                .Fail(TestContext.CurrentContext.Result.Message);
+        }
+        else if (outcome == NUnit.Framework.Interfaces.TestStatus.Passed)
+        {
+            _test!.Pass("Test Passed");
+        }
+        else
+        {
+            _test!.Skip("Test Skipped");
+        }
+
+        _extent!.Flush();
+    }
+    
+    [OneTimeTearDown]
+    public void OneTimeTearDown()
+    {
+        ReportManager.FlushReports();
     }
 }

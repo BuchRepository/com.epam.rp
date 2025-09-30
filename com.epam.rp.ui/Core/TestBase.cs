@@ -1,6 +1,7 @@
 using AventStack.ExtentReports;
 using AventStack.ExtentReports.Reporter;
 using com.epam.rp.core;
+using com.epam.rp.core.Utility;
 using com.epam.rp.ui.Business.Pages;
 using com.epam.rp.ui.Core.Utility;
 using OpenQA.Selenium;
@@ -24,7 +25,7 @@ public class TestBase
     [AssemblyInitialize]
     public static void AssemblyInit(TestContext context)
     {
-        string reportPath = Path.Combine(AppContext.BaseDirectory, "ExtentReports.html");
+        /*string reportPath = Path.Combine(AppContext.BaseDirectory, "ExtentReports.html");
         Console.WriteLine($"[LOG] ExtentReports path: {reportPath}");
         
         var htmlReporter = new ExtentHtmlReporter(reportPath);
@@ -32,7 +33,9 @@ public class TestBase
         htmlReporter.Config.ReportName = "UI Test Report";
         htmlReporter.Config.Theme = AventStack.ExtentReports.Reporter.Configuration.Theme.Standard;
         Extent = new ExtentReports();
-        Extent.AttachReporter(htmlReporter);
+        Extent.AttachReporter(htmlReporter);*/
+    
+        Extent = ReportManager.GetExtent(isUI: true);
         
         LoggerService.InitLogger();
     }
@@ -125,6 +128,7 @@ public class TestBase
     [AssemblyCleanup]
     public static void AssemblyCleanup()
     {
-        Extent?.Flush();
+        //Extent?.Flush();
+        ReportManager.FlushReports();
     }
 }

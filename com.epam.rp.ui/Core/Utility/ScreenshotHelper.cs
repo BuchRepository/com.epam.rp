@@ -8,7 +8,7 @@ public static class ScreenshotHelper
     {
         try
         {
-            string screenshotsDir = Path.Combine(AppContext.BaseDirectory, "screenshots" , Guid.NewGuid().ToString());
+            string screenshotsDir = Path.Combine(AppContext.BaseDirectory, "screenshots");
             Directory.CreateDirectory(screenshotsDir);
 
             string fileName = $"{scenarioName ?? "screenshot"}_{Guid.NewGuid():N}.png";
