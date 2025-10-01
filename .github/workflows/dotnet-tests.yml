@@ -1,0 +1,85 @@
+name: CI - .NET Tests with Chrome
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    env:
+      DOTNET_ROOT: /usr/share/dotnet
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore com.epam.rp.sln
+
+      - name: Build solution
+        run: dotnet build com.epam.rp.sln --configuration Release --no-restore
+
+      - name: Create appsettings.json from secrets
+        run: |
+          mkdir -p com.epam.rp.api/bin/Release/net8.0/
+          mkdir -p com.epam.rp.ui/bin/Release/net8.0/
+
+          cat > com.epam.rp.ui/bin/Release/net8.0/appsettings.json <<EOL
+          {
+            "LOGIN": "${{ secrets.TEST_LOGIN }}",
+            "PASSWORD": "${{ secrets.TEST_PASSWORD }}",
+            "API_TOKEN": "${{ secrets.API_TOKEN }}",
+            "Serilog": {
+              "Using": ["Serilog.Sinks.Console", "Serilog.Sinks.File"],
+              "MinimumLevel": {
+                "Default": "Information",
+                "Override": {
+                  "Microsoft": "Warning",
+                  "System": "Warning"
+                }
+              },
+              "WriteTo": [
+                {"Name": "Console"},
+                {"Name": "File", "Args": {"path": "${{ github.workspace }}/logs/logfile.log",    "restrictedToMinimumLevel": "Information"}}
+              ]
+            }
+          }
+          EOL
+
+          cp com.epam.rp.ui/bin/Release/net8.0/appsettings.json com.epam.rp.api/bin/Release/net8.0/appsettings.json
+
+      - name: Run tests
+        run: dotnet test com.epam.rp.sln --configuration Release --logger "console;verbosity=detailed" --logger "trx;LogFileName=test-results.trx" -- NUnit.ParallelScope=Fixtures 
+        continue-on-error: true
+
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots
+          path: ./com.epam.rp.ui/bin/Release/net8.0/screenshots/*.png
+          if-no-files-found: ignore
+
+      - name: List files in Release folder
+        run: ls -lah ./com.epam.rp.api/bin/Release/net8.0/ || true && ls -lah ./com.epam.rp.ui/bin/Release/net8.0/ || true
+
+      - name: Upload UI Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-report
+          path: ./com.epam.rp.ui/bin/Release/net8.0/index.html
+
+      - name: Upload API Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-report
+          path: ./com.epam.rp.api/bin/Release/net8.0/index.html

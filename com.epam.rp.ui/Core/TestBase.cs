@@ -1,0 +1,123 @@
+using AventStack.ExtentReports;
+using AventStack.ExtentReports.Reporter;
+using com.epam.rp.core;
+using com.epam.rp.core.Utility;
+using com.epam.rp.ui.Business.Pages;
+using com.epam.rp.ui.Core.Utility;
+using OpenQA.Selenium;
+using Serilog;
+
+namespace com.epam.rp.ui.Core;
+
+
+[TestClass]
+public class TestBase
+{
+    protected IWebDriver? Driver;
+    protected static ExtentReports? Extent;
+    protected ExtentTest? Test;
+       
+    protected LoginPage? LoginPage;
+    protected FiltersPage? FiltersPage;
+       
+    public TestContext TestContext { get; set; } = null!;
+
+    [AssemblyInitialize]
+    public static void AssemblyInit(TestContext context)
+    {
+        Extent = ReportManager.GetExtent(isUI: true);
+        
+        LoggerService.InitLogger();
+    }
+    
+    [TestInitialize]
+    public void SetUp()
+    {
+        Test = Extent!.CreateTest(TestContext.TestName);
+        
+        string browser = TestContext.Properties.Contains("browser")
+            ? TestContext.Properties["browser"]?.ToString() ?? "chrome"
+            : "chrome";
+
+        Driver = DriverFactory.CreateDriver(browser, uniqueProfile: true);
+        if (Driver == null)
+            throw new InvalidOperationException("Driver initialization failed.");
+
+        Driver.Navigate().GoToUrl("https://rp.epam.com");
+
+        LoginPage = new LoginPage(Driver);
+        FiltersPage = new FiltersPage(Driver);
+    }
+
+    [TestCleanup]
+    public void CleanUp()   
+    {
+        var outcome = TestContext.CurrentTestOutcome;
+
+        if (outcome == UnitTestOutcome.Failed && Driver is not null)
+        {
+            try
+            {
+                string? screenshotPath = ScreenshotHelper.TakeScreenshot(
+                    Driver, 
+                    Log.Logger, 
+                    TestContext.TestName
+                );
+
+                if (!string.IsNullOrEmpty(screenshotPath))
+                {
+                    Test!.Fail("Test Failed").AddScreenCaptureFromPath(screenshotPath);
+                    LoggerService.Info($"Screenshot saved: {screenshotPath}");
+                }
+                else
+                {
+                    Test!.Fail("Test Failed - no screenshot available");
+                }
+            }
+            catch (Exception e)
+            {
+                LoggerService.Error("Failed to take screenshot on test failure", e);
+                Test!.Fail("Test Failed - screenshot error: " + e.Message);
+            }
+        }
+        
+        else if (outcome == UnitTestOutcome.Passed)
+        {
+            Test!.Pass("Test Passed");
+        }
+        else
+        {
+            Test!.Skip("Test Skipped");
+        }   
+
+        try
+        {
+            Driver?.Quit();
+            Driver?.Dispose();
+        }
+        catch (Exception ex)
+        {
+            LoggerService.Error("Error while disposing driver", ex);
+        }
+        Driver = null;
+        
+        if (!string.IsNullOrEmpty(DriverFactory.LastProfilePath) &&
+            Directory.Exists(DriverFactory.LastProfilePath))
+        {
+            try
+            {
+                Directory.Delete(DriverFactory.LastProfilePath, true);
+            }
+            catch (Exception ex)
+            {
+                LoggerService.Error("Error while deleting profile directory", ex);
+            }
+        }
+    }
+    
+    [AssemblyCleanup]
+    public static void AssemblyCleanup()
+    {
+        ReportManager.FlushReports();
+    }
+}
