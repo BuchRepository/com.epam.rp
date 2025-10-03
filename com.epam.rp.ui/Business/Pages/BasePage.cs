@@ -4,7 +4,7 @@ using OpenQA.Selenium.Support.UI;
 using SeleniumExtras.WaitHelpers;
 using Serilog;
 
-namespace com.epam.rp.ui.Core;
+namespace com.epam.rp.ui.Business.Pages;
 
 public abstract class BasePage
 {

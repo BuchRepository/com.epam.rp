@@ -1,5 +1,4 @@
 using AventStack.ExtentReports;
-using AventStack.ExtentReports.Reporter;
 using com.epam.rp.core;
 using com.epam.rp.core.Utility;
 using com.epam.rp.ui.Business.Pages;
