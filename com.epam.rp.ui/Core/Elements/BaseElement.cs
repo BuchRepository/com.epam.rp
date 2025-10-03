@@ -1,6 +1,5 @@
 using com.epam.rp.core;
 using OpenQA.Selenium.Support.UI;
-using SeleniumExtras.WaitHelpers;
 
 namespace com.epam.rp.ui.Core.Elements;
 

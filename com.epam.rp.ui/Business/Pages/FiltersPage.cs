@@ -1,6 +1,5 @@
 using com.epam.rp.core;
 using com.epam.rp.ui.Business.Enums;
-using com.epam.rp.ui.Core;
 using com.epam.rp.ui.Core.Elements;
 using OpenQA.Selenium;
 
@@ -18,12 +17,6 @@ public class FiltersPage : BasePage
         _addFilterButton = new Button(driver, By.XPath("//span[text()='Add Filter']"), "Add Filter button");
         _confirmDeleteFilterButton = new Button(driver, By.XPath("//button[text()='Delete']"), "Confirm Delete Filter button");
     }
-    
-    //public FiltersPage(IWebDriver driver) : base(driver) { }
-
-    /*private readonly By _filtersMenuItem = By.XPath("//a[contains(@href,'/filters')]");
-    private readonly By _addFilterButton   = By.XPath("//span[text()='Add Filter']");
-    private readonly By _confirmDeleteFilterButton = By.XPath("//button[text()='Delete']");*/
     
     private By FilterByName(string name) => By.XPath($"//span[text()='{name}']");
     private By DeleteButtonByName(string name) => By.XPath($"//span[text()='{name}']/following::div[contains(@class, 'deleteFilterButton')][1]");

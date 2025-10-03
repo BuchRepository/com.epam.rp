@@ -1,4 +1,3 @@
-//using com.epam.rp.ui.Core;
 using com.epam.rp.ui.Core.Elements;
 using OpenQA.Selenium;
 namespace com.epam.rp.ui.Business.Pages;
@@ -22,17 +21,4 @@ public class LoginPage : BasePage
         _password.Type(pass);
         _loginButton.ClickButton();
     }
-    
-    //public LoginPage(IWebDriver driver) : base(driver) { }	
-
-    /*private readonly By _loginInput = By.XPath("//input[@name='login']");
-    private readonly By _passwordInput = By.XPath("//input[@name='password']");
-    private readonly By _loginButton = By.XPath("//button[text()='Login']");*/
-    
-    /*public void Login(string login, string password)
-    {
-        Type(_loginInput, login);
-        Type(_passwordInput, password);
-        Click(_loginButton);
-    }*/
 }

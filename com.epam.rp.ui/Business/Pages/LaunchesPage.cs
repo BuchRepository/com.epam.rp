@@ -1,8 +1,6 @@
 using com.epam.rp.core;
-using com.epam.rp.ui.Core;
 using com.epam.rp.ui.Core.Elements;
 using OpenQA.Selenium;
-using OpenQA.Selenium.Chrome;
 
 namespace com.epam.rp.ui.Business.Pages;
 
@@ -24,13 +22,6 @@ public class LaunchesPage : BasePage
         _filtersMenuInput= By.XPath("//a[contains(@href,'/filters')]");
         _moreOptionsButton = By.XPath("//div[text()='More']");
     }
-
-    //private readonly By _saveButton = By.XPath("//span[text()='Save']");
-    /*private readonly By _addFilterButton = By.XPath("//button[contains(text(), 'Add')]"); 
-    private readonly By _filtersMenuItem = By.XPath("//a[contains(@href,'/filters')]");
-    private readonly By _filterNameInput = By.XPath("//input[@placeholder='Enter filter name']");
-    private readonly By _moreOptionsButton = By.XPath("//div[text()='More']");
-    private readonly By _enterQuantityInput = By.XPath("//input[@placeholder='Enter quantity']");*/
     
     public void AddFilter(string filterName, string parameter, string quantity)
     {
