@@ -8,6 +8,7 @@ public class LaunchesPage : BasePage
 {
     private readonly Button _saveButton;
     private readonly Button _addFilterButton;
+    private readonly Button _cloneButton;
     private readonly Input _filterNameInput;
     private readonly Input _enterQuantityInput;
     private readonly By _filtersMenuInput;
@@ -17,11 +18,14 @@ public class LaunchesPage : BasePage
     {
         _saveButton = new Button(driver, By.XPath("//span[text()='Save']"), "Save button");
         _addFilterButton = new Button(driver, By.XPath("//button[contains(text(), 'Add')]"), "Add filter button");
+        _cloneButton = new Button(driver, By.XPath("//button[@title='Clone']"), "Clone button");
         _filterNameInput = new Input(driver, By.XPath("//input[@placeholder='Enter filter name']"), "Filter name input");
         _enterQuantityInput = new Input(driver, By.XPath("//input[@placeholder='Enter quantity']"), "Enter quantity input");
         _filtersMenuInput= By.XPath("//a[contains(@href,'/filters')]");
         _moreOptions = By.XPath("//div[text()='More']");
     }
+    
+    private By FilterByName(string name) => By.XPath($"//span[text()='{name}']");
     
     public void AddFilter(string filterName, string parameter, string quantity)
     {
@@ -96,8 +100,17 @@ public class LaunchesPage : BasePage
         }
     }
 
-    public void RefreshPage()
+    public void ClickFilterByName(string filterName)
     {
-        Driver.Navigate().Refresh();
+        Click(FilterByName(filterName));
+    }
+
+    public void CopyFilter(string filterName)
+    {
+        _cloneButton.ClickButton();
+        LoggerService.Info("Click 'Save' button");
+        SaveFilter();
+        LoggerService.Info("Click 'Add' filter button");
+        ConfirmAddFilter();
     }
 }

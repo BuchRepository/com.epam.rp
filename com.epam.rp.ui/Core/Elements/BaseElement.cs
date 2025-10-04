@@ -35,7 +35,8 @@ public class BaseElement
 
         return fluentWait.Until(drv =>
         {
-            return (Element.Displayed && Element.Enabled) ? Element : null;
+            var element = drv.FindElement(Locator);
+            return (element.Displayed && element.Enabled) ? element : null;
         });
     }
     

@@ -9,16 +9,21 @@ public class FiltersPage : BasePage
 {
     private readonly Button _filtersMenuItem;
     private readonly Button _addFilterButton;
+    private readonly Button _updateButton;
     private readonly Button _confirmDeleteFilterButton;
+    private readonly Input _filterNameInput;
     
     public FiltersPage(IWebDriver driver) : base(driver)
     {
         _filtersMenuItem = new Button(driver, By.XPath("//a[contains(@href,'/filters')]"), "Filters menu item");
         _addFilterButton = new Button(driver, By.XPath("//span[text()='Add Filter']"), "Add Filter button");
+        _updateButton = new Button(driver, By.XPath("//button[text()='Update']"), "Update filter button");
         _confirmDeleteFilterButton = new Button(driver, By.XPath("//button[text()='Delete']"), "Confirm Delete Filter button");
+        _filterNameInput = new Input(driver, By.XPath("//input[@placeholder='Enter filter name']"), "Filter name input");
     }
     
     private By FilterByName(string name) => By.XPath($"//span[text()='{name}']");
+    private By EditButtonByName(string name) => By.XPath($"//span[text()='{name}']/following::div[contains(@class,'filterName__pencil')][1]");
     private By DeleteButtonByName(string name) => By.XPath($"//span[text()='{name}']/following::div[contains(@class, 'deleteFilterButton')][1]");
     private By ToggleByName(string name) => By.XPath($"//span[text()='{name}']/following::span[contains(@class,'inputSwitcher')][1]");
     private By StateByName(string name, FiltersState state) => 
@@ -79,5 +84,13 @@ public class FiltersPage : BasePage
     public void WaitForState(string filterName, FiltersState state)
     {
         FindVisible(StateByName(filterName, state));
+    }
+    
+    public void EditFilter(string oldName, string newName)
+    {
+        Click(EditButtonByName(oldName));
+        LoggerService.Info("Enter new filter name");
+        _filterNameInput.Type(newName);
+        _updateButton.ClickButton();
     }
 }

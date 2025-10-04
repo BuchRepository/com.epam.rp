@@ -120,4 +120,9 @@ public abstract class BasePage
             }
         }
     }
+    
+    public void RefreshPage()
+    {
+        Driver.Navigate().Refresh();
+    }
 }

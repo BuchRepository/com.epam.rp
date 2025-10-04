@@ -36,7 +36,6 @@ public class FiltersTests : TestBase
         string filterName = $"{data.filterName}_{Guid.NewGuid():N}";
         string parameter = data.parameter;
         string quantity = data.quantity;
-        bool expectedResult = data.expectedResult;
         
         LoggerService.Info("Start test");
         LoggerService.Info("Login to ReportPortal cabinet");
@@ -47,7 +46,7 @@ public class FiltersTests : TestBase
         var launchesPage = FiltersPage!.ClickAddFilter();
         launchesPage.AddFilter(filterName, parameter, quantity);
 
-        Assert.IsTrue(FiltersPage!.WaitForFilterVisibility(filterName, expectedResult), $"Filter '{filterName}' should be present after adding.");
+        Assert.IsTrue(FiltersPage!.WaitForFilterVisibility(filterName, true), $"Filter '{filterName}' should be present after adding.");
 
         FiltersPage!.DeleteFilter(filterName);
         Assert.IsTrue(FiltersPage!.WaitForFilterVisibility(filterName, false), $"Filter '{filterName}' should be deleted.");
@@ -69,7 +68,6 @@ public class FiltersTests : TestBase
         string filterName = $"{data.filterName}_{Guid.NewGuid():N}";
         string parameter = data.parameter;
         string quantity = data.quantity;
-        bool expectedResult = data.expectedResult;
        
         LoggerService.Info("Start test");
         LoggerService.Info("Login to ReportPortal cabinet");
@@ -81,7 +79,7 @@ public class FiltersTests : TestBase
         launchesPage.AddFilter(filterName, parameter, quantity);
        
         FiltersPage.DeleteFilter(filterName);
-        Assert.IsTrue(FiltersPage!.WaitForFilterVisibility(filterName, expectedResult),
+        Assert.IsTrue(FiltersPage!.WaitForFilterVisibility(filterName, false),
             $"Filter '{filterName}' should be deleted.");
     }
 
@@ -130,5 +128,77 @@ public class FiltersTests : TestBase
         FiltersPage.DeleteFilter(filterName);
         Assert.IsTrue(FiltersPage!.WaitForFilterVisibility(filterName, false),
             $"Filter '{filterName}' should be deleted.");
+    }
+    
+    public static IEnumerable<object[]> EditFilterData()
+    {
+        var testData = TestDataLoader.LoadTestData<dynamic>("TestData.json", "EditFilter");
+        foreach (var item in testData)
+            yield return new object[] { item };
+    }
+
+    [TestMethod]
+    [DynamicData(nameof(EditFilterData), DynamicDataSourceType.Method)]
+    public void UserCanEditFilter(dynamic data)
+    {
+        string filterName = $"{data.filterName}_{Guid.NewGuid():N}";
+        string parameter = data.parameter;
+        string quantity = data.quantity;
+        string newFilterName = $"Updated_{filterName}";
+        
+        LoggerService.Info("Start test");
+        LoggerService.Info("Login to ReportPortal cabinet");
+        LoginPage!.Login(_login, _password);
+        LoggerService.Info("Open 'Filters' page");
+        FiltersPage!.OpenFiltersPage();
+        
+        var launchesPage = FiltersPage!.ClickAddFilter();
+        launchesPage.AddFilter(filterName, parameter, quantity);
+
+        Assert.IsTrue(FiltersPage!.WaitForFilterVisibility(filterName, true), $"Filter '{filterName}' should be present.");
+
+        FiltersPage!.EditFilter(filterName, newFilterName);
+        
+        Assert.IsTrue(FiltersPage!.WaitForFilterVisibility(newFilterName, true), $"Edited filter '{newFilterName}' should be present.");
+        Assert.IsFalse(FiltersPage!.WaitForFilterVisibility(filterName, true), $"Old filter '{filterName}' should no longer exist.");
+
+        FiltersPage.DeleteFilter(newFilterName);
+        Assert.IsTrue(FiltersPage!.WaitForFilterVisibility(newFilterName, false), $"Filter '{newFilterName}' should be deleted.");
+    }
+
+    public static IEnumerable<object[]> CopyFilterData()
+    {
+        var testData = TestDataLoader.LoadTestData<dynamic>("TestData.json", "CopyFilter");
+        foreach (var item in testData)
+            yield return new object[] { item };
+    }
+
+    [TestMethod]
+    [DynamicData(nameof(CopyFilterData), DynamicDataSourceType.Method)]
+    public void UserCanCopyFilter(dynamic data)
+    {
+        string filterName = $"{data.filterName}_{Guid.NewGuid():N}";
+        string parameter = data.parameter;
+        string quantity = data.quantity;
+        string copiedFilterName = $"Copy {filterName}";
+
+        LoggerService.Info("Start test");
+        LoggerService.Info("Login to ReportPortal cabinet");
+        LoginPage!.Login(_login, _password);
+        LoggerService.Info("Open 'Filters' page");
+        FiltersPage!.OpenFiltersPage();
+        
+        var launchesPage = FiltersPage!.ClickAddFilter();
+        launchesPage.AddFilter(filterName, parameter, quantity);
+
+        Assert.IsTrue(FiltersPage!.WaitForFilterVisibility(filterName, true), $"Filter '{filterName}' should be present.");
+
+        launchesPage.ClickFilterByName(filterName);
+        launchesPage.CopyFilter(filterName);
+
+        Assert.IsTrue(FiltersPage!.WaitForFilterVisibility(copiedFilterName, true), $"Copied filter '{copiedFilterName}' should be present.");
+
+        FiltersPage.DeleteFilter(filterName);
+        FiltersPage.DeleteFilter(copiedFilterName);
     }
 }

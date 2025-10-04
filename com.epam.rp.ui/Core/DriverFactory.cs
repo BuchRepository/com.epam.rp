@@ -11,7 +11,7 @@ public static class DriverFactory
     public static IWebDriver CreateDriver(string browser = "chrome", bool uniqueProfile = false)
     {
         IWebDriver driver;
-        string? profilePath = null;
+        string? profilePath;
 
         switch (browser.ToLower())
         {
@@ -34,6 +34,8 @@ public static class DriverFactory
                     Directory.CreateDirectory(profilePath);
                     options.AddArgument($"--user-data-dir={profilePath}");
                     options.AddArgument("--disable-extensions");
+                    
+                    LastProfilePath = profilePath; 
                 }
                 
                 var service = CreateDriverServiceWithRetry();
