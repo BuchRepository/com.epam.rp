@@ -23,7 +23,7 @@ public class FiltersPage : BasePage
     }
     
     private By FilterByName(string name) => By.XPath($"//span[text()='{name}']");
-    private By EditButtonByName(string name) => By.XPath($"//span[text()='{name}']/following::div[contains(@class,'filterName__pencil')][1]");
+    private By EditButtonByName(string name) => By.XPath($"//span[text()='{name}']/following::span[contains(@class,'filterName__pencil')][1]");
     private By DeleteButtonByName(string name) => By.XPath($"//span[text()='{name}']/following::div[contains(@class, 'deleteFilterButton')][1]");
     private By ToggleByName(string name) => By.XPath($"//span[text()='{name}']/following::span[contains(@class,'inputSwitcher')][1]");
     private By StateByName(string name, FiltersState state) => 

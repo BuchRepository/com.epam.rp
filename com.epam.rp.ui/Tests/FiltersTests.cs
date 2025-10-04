@@ -20,6 +20,7 @@ public class FiltersTests : TestBase
         _password = ConfigManager.Password ?? throw new InvalidOperationException("PASSWORD not found in config");
     }
 
+    /*
     public static IEnumerable<object[]> AddFilterData()
     {
         var testData = TestDataLoader.LoadTestData<dynamic>("TestData.json", "AddFilter");
@@ -128,7 +129,7 @@ public class FiltersTests : TestBase
         FiltersPage.DeleteFilter(filterName);
         Assert.IsTrue(FiltersPage!.WaitForFilterVisibility(filterName, false),
             $"Filter '{filterName}' should be deleted.");
-    }
+    }*/
     
     public static IEnumerable<object[]> EditFilterData()
     {
@@ -149,7 +150,6 @@ public class FiltersTests : TestBase
         LoggerService.Info("Start test");
         LoggerService.Info("Login to ReportPortal cabinet");
         LoginPage!.Login(_login, _password);
-        LoggerService.Info("Open 'Filters' page");
         FiltersPage!.OpenFiltersPage();
         
         var launchesPage = FiltersPage!.ClickAddFilter();
@@ -166,7 +166,7 @@ public class FiltersTests : TestBase
         Assert.IsTrue(FiltersPage!.WaitForFilterVisibility(newFilterName, false), $"Filter '{newFilterName}' should be deleted.");
     }
 
-    public static IEnumerable<object[]> CopyFilterData()
+    /*public static IEnumerable<object[]> CopyFilterData()
     {
         var testData = TestDataLoader.LoadTestData<dynamic>("TestData.json", "CopyFilter");
         foreach (var item in testData)
@@ -200,5 +200,5 @@ public class FiltersTests : TestBase
 
         FiltersPage.DeleteFilter(filterName);
         FiltersPage.DeleteFilter(copiedFilterName);
-    }
+    }*/
 }

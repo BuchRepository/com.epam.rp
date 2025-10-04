@@ -31,11 +31,8 @@ public class LaunchesPage : BasePage
     {
         LoggerService.Info("Select specific parameter and quantity");
         SelectParameter(parameter, quantity);
-        LoggerService.Info("Click save button");
         SaveFilter();
-        LoggerService.Info("Enter filter name");
         EnterFilterName(filterName);
-        LoggerService.Info("Confirm filter adding");
         ConfirmAddFilter();
         LoggerService.Info("Back to 'Filters' page");
         Click(_filtersMenuInput);
