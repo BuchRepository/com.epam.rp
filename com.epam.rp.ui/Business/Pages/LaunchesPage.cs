@@ -11,7 +11,7 @@ public class LaunchesPage : BasePage
     private readonly Input _filterNameInput;
     private readonly Input _enterQuantityInput;
     private readonly By _filtersMenuInput;
-    private readonly By _moreOptionsButton;
+    private readonly By _moreOptions;
 
     public LaunchesPage(IWebDriver driver) : base(driver)
     {
@@ -20,7 +20,7 @@ public class LaunchesPage : BasePage
         _filterNameInput = new Input(driver, By.XPath("//input[@placeholder='Enter filter name']"), "Filter name input");
         _enterQuantityInput = new Input(driver, By.XPath("//input[@placeholder='Enter quantity']"), "Enter quantity input");
         _filtersMenuInput= By.XPath("//a[contains(@href,'/filters')]");
-        _moreOptionsButton = By.XPath("//div[text()='More']");
+        _moreOptions = By.XPath("//div[text()='More']");
     }
     
     public void AddFilter(string filterName, string parameter, string quantity)
@@ -36,11 +36,18 @@ public class LaunchesPage : BasePage
         LoggerService.Info("Back to 'Filters' page");
         Click(_filtersMenuInput);
     }
-
-    private void SelectParameter(string parameter,  string quantity)
+    
+    private void SelectParameter(string parameter, string quantity)
     {
-        Click(_moreOptionsButton);
-        Click(By.XPath($"//span[text()='{parameter}']"));
+        Click(_moreOptions);
+
+        var parameterCheckbox = new Checkbox(
+            Driver,
+            By.XPath($"//span[text()='{parameter}']"),
+            $"Parameter '{parameter}'"
+        );
+
+        parameterCheckbox.Check();
         _enterQuantityInput.Type(quantity);
     }
 

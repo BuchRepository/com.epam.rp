@@ -58,11 +58,6 @@ public class FiltersPage : BasePage
             return false;
         }
     }
-
-    /*public void ToggleDisplayOnLaunches(string filterName)
-    {
-        Click(ToggleByName(filterName));
-    }*/
     
     private Checkbox GetDisplayOnLaunchesCheckbox(string filterName)
     {
