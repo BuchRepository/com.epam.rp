@@ -117,7 +117,7 @@ public class FiltersTests : TestBase
             $"Created filter '{filterName}' should be presented on Launches page."
         );
 
-        FiltersPage!.ToggleDisplayOnLaunches(filterName);
+        FiltersPage!.DisableDisplayOnLaunches(filterName);
         FiltersPage!.WaitForState(filterName, FiltersState.Off);
         
         launchesPage.RefreshPage();

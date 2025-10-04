@@ -59,9 +59,26 @@ public class FiltersPage : BasePage
         }
     }
 
-    public void ToggleDisplayOnLaunches(string filterName)
+    /*public void ToggleDisplayOnLaunches(string filterName)
     {
         Click(ToggleByName(filterName));
+    }*/
+    
+    private Checkbox GetDisplayOnLaunchesCheckbox(string filterName)
+    {
+        return new Checkbox(Driver, ToggleByName(filterName), $"Display on Launches for '{filterName}'");
+    }
+
+    public void EnableDisplayOnLaunches(string filterName)
+    {
+        var checkbox = GetDisplayOnLaunchesCheckbox(filterName);
+        checkbox.Check();
+    }
+
+    public void DisableDisplayOnLaunches(string filterName)
+    {
+        var checkbox = GetDisplayOnLaunchesCheckbox(filterName);
+        checkbox.Uncheck();
     }
 
     public void WaitForState(string filterName, FiltersState state)
