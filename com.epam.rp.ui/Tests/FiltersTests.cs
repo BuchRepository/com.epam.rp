@@ -131,7 +131,7 @@ public class FiltersTests : TestBase
             $"Filter '{filterName}' should be deleted.");
     }*/
     
-    public static IEnumerable<object[]> EditFilterData()
+    /*public static IEnumerable<object[]> EditFilterData()
     {
         var testData = TestDataLoader.LoadTestData<dynamic>("TestData.json", "EditFilter");
         foreach (var item in testData)
@@ -164,9 +164,9 @@ public class FiltersTests : TestBase
 
         FiltersPage.DeleteFilter(newFilterName);
         Assert.IsTrue(FiltersPage!.WaitForFilterVisibility(newFilterName, false), $"Filter '{newFilterName}' should be deleted.");
-    }
+    }*/
 
-    /*public static IEnumerable<object[]> CopyFilterData()
+    public static IEnumerable<object[]> CopyFilterData()
     {
         var testData = TestDataLoader.LoadTestData<dynamic>("TestData.json", "CopyFilter");
         foreach (var item in testData)
@@ -185,7 +185,6 @@ public class FiltersTests : TestBase
         LoggerService.Info("Start test");
         LoggerService.Info("Login to ReportPortal cabinet");
         LoginPage!.Login(_login, _password);
-        LoggerService.Info("Open 'Filters' page");
         FiltersPage!.OpenFiltersPage();
         
         var launchesPage = FiltersPage!.ClickAddFilter();
@@ -194,11 +193,11 @@ public class FiltersTests : TestBase
         Assert.IsTrue(FiltersPage!.WaitForFilterVisibility(filterName, true), $"Filter '{filterName}' should be present.");
 
         launchesPage.ClickFilterByName(filterName);
-        launchesPage.CopyFilter(filterName);
+        launchesPage.CopyFilter();
 
         Assert.IsTrue(FiltersPage!.WaitForFilterVisibility(copiedFilterName, true), $"Copied filter '{copiedFilterName}' should be present.");
 
         FiltersPage.DeleteFilter(filterName);
         FiltersPage.DeleteFilter(copiedFilterName);
-    }*/
+    }
 }

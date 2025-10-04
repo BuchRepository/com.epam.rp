@@ -102,12 +102,12 @@ public class LaunchesPage : BasePage
         Click(FilterByName(filterName));
     }
 
-    public void CopyFilter(string filterName)
+    public void CopyFilter()
     {
         _cloneButton.ClickButton();
-        LoggerService.Info("Click 'Save' button");
         SaveFilter();
-        LoggerService.Info("Click 'Add' filter button");
         ConfirmAddFilter();
+        LoggerService.Info("Back to 'Filters' page");
+        Click(_filtersMenuInput);
     }
 }
