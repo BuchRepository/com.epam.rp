@@ -22,7 +22,7 @@ public class TestBase
     public TestContext TestContext { get; set; } = null!;
 
     [AssemblyInitialize]
-    public static void AssemblyInit(TestContext context)
+    public static void AssemblyInit(TestContext context)    
     {
         Extent = ReportManager.GetExtent(isUI: true);
         
