@@ -16,6 +16,18 @@ jobs:
           dotnet-version: 8.0.x
       - run: dotnet restore com.epam.rp.sln
       - run: dotnet build com.epam.rp.sln --configuration Release --no-restore
+
+      - name: Create appsettings.json from secrets
+        run: |
+          mkdir -p com.epam.rp.api/bin/Release/net8.0/
+          cat > com.epam.rp.api/bin/Release/net8.0/appsettings.json <<EOL
+          {
+            "LOGIN": "${{ secrets.TEST_LOGIN }}",
+            "PASSWORD": "${{ secrets.TEST_PASSWORD }}",
+            "API_TOKEN": "${{ secrets.API_TOKEN }}"
+          }
+          EOL
+
       - run: dotnet test com.epam.rp.api/com.epam.rp.api.csproj --configuration Release
 
   ui-tests:
@@ -91,7 +103,7 @@ jobs:
         run: |
           echo "Waiting for Selenium Grid to start..."
           for i in {1..60}; do
-            if curl -s http://localhost:4444/status | grep -q '"ready":true'; then
+            if curl -s http://selenium-hub:4444/status | grep -q '"ready":true'; then
               echo "Selenium Grid is ready!"
               break
             fi
