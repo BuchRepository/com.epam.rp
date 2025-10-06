@@ -52,7 +52,7 @@ jobs:
           SE_EVENT_BUS_PUBLISH_PORT: 4442
           SE_EVENT_BUS_SUBSCRIBE_PORT: 4443
     env:
-      SELENIUM_GRID_URL: http://selenium-hub:4444/wd/hub
+      SELENIUM_GRID_URL: http://localhost:4444/wd/hub
       RUN_REMOTE: "true"
 
     steps:
@@ -102,13 +102,13 @@ jobs:
       - name: Debug Selenium Hub
         run: |
           docker ps -a || true
-          curl -v http://selenium-hub:4444/status || true
+          curl -v http://localhost:4444/status || true
 
       - name: Wait for Selenium Grid to be ready
         run: |
           echo "Waiting for Selenium Grid to start..."
           for i in {1..60}; do
-            if curl -s http://selenium-hub:4444/status | grep -q '"ready":true'; then
+            if curl -s http://localhost:4444/status | grep -q '"ready":true'; then
               echo "Selenium Grid is ready!"
               break
             fi
