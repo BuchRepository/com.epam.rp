@@ -99,6 +99,11 @@ jobs:
 
           cp com.epam.rp.ui/bin/Release/net8.0/appsettings.json com.epam.rp.api/bin/Release/net8.0/appsettings.json
 
+      - name: Debug Selenium Hub
+        run: |
+          docker ps -a || true
+          curl -v http://selenium-hub:4444/status || true
+
       - name: Wait for Selenium Grid to be ready
         run: |
           echo "Waiting for Selenium Grid to start..."
@@ -112,11 +117,11 @@ jobs:
           done
 
       - name: Run UI tests in ${{ matrix.browser }}
-        run: |
-          dotnet test com.epam.rp.sln \
-            --configuration Release \
-            --logger "console;verbosity=detailed" \
-            --logger "trx;LogFileName=test-results-${{ matrix.browser }}.trx" \
+        run: >
+          dotnet test com.epam.rp.sln
+            --configuration Release
+            --logger "console;verbosity=detailed"
+            --logger "trx;LogFileName=test-results-${{ matrix.browser }}.trx"
             -- TestRunParameters.Parameter(name="browser",value="${{ matrix.browser }}")
         continue-on-error: true
 
