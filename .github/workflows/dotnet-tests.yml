@@ -28,7 +28,16 @@ jobs:
           }
           EOL
 
+      - name: Run API tests
       - run: dotnet test com.epam.rp.api/com.epam.rp.api.csproj --configuration Release
+
+      - name: Upload API Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-report
+          path: ./com.epam.rp.api/bin/Release/net8.0/index.html
+          if-no-files-found: ignore
 
   ui-tests:
     runs-on: ubuntu-latest
@@ -107,18 +116,19 @@ jobs:
       - name: Wait for Selenium Grid to be ready
         run: |
           echo "Waiting for Selenium Grid to start..."
-          for i in {1..60}; do
-            if curl -s http://localhost:4444/status | grep -q '"ready":true'; then
+          for i in {1..30}; do
+            status=$(curl -s http://localhost:4444/status | grep '"ready":true' || true)
+            if [ -n "$status" ]; then
               echo "Selenium Grid is ready!"
               break
             fi
-            echo "Waiting ($i/60)..."
+            echo "Waiting ($i/30)..."
             sleep 2
           done
 
       - name: Run UI tests in ${{ matrix.browser }}
         run: >
-          dotnet test com.epam.rp.sln
+          dotnet test com.epam.rp.ui/com.epam.rp.ui.csproj
             --configuration Release
             --logger "console;verbosity=detailed"
             --logger "trx;LogFileName=test-results-${{ matrix.browser }}.trx"
@@ -141,9 +151,3 @@ jobs:
         with:
           name: ui-report
           path: ./com.epam.rp.ui/bin/Release/net8.0/index.html
-
-      - name: Upload API Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: api-report
-          path: ./com.epam.rp.api/bin/Release/net8.0/index.html
