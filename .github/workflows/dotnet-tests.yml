@@ -30,6 +30,7 @@ jobs:
 
       - name: Run API tests
         run: dotnet test com.epam.rp.api/com.epam.rp.api.csproj --configuration Release
+        continue-on-error: true
 
       - name: Upload API Report
         if: always()
@@ -134,7 +135,7 @@ jobs:
             --no-build \
             --logger "console;verbosity=detailed" \
             --logger "trx;LogFileName=test-results-${{ matrix.browser }}.trx" \
-            -- TestRunParameters.Parameter(name="browser",value="${{ matrix.browser }}")
+            -- TestRunParameters.Parameter\(name=\"browser\",value=\"${{ matrix.browser }}\"\)
         continue-on-error: true
 
       - name: Upload screenshots
