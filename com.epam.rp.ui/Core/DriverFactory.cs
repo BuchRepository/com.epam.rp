@@ -47,7 +47,7 @@ public static class DriverFactory
                 throw new NotSupportedException($"Browser '{browser}' is not supported.");
         }
         
-        return new RemoteWebDriver(new Uri(gridUrl), capabilities, TimeSpan.FromSeconds(120));
+        return new RemoteWebDriver(new Uri(gridUrl), capabilities, TimeSpan.FromSeconds(180));
     }
         
     private static IWebDriver CreateLocalDriver(string browser, bool uniqueProfile)

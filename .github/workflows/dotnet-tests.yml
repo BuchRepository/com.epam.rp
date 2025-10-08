@@ -152,5 +152,5 @@ jobs:
       - name: Upload UI Report
         uses: actions/upload-artifact@v4
         with:
-          name: ui-report
+          name: ui-report-${{ matrix.browser }}
           path: ./com.epam.rp.ui/bin/Release/net8.0/index.html
