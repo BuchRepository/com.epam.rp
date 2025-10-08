@@ -128,11 +128,12 @@ jobs:
           ls -R com.epam.rp.ui | grep appsettings || echo "No appsettings found!"
 
       - name: Run UI tests in ${{ matrix.browser }}
-        run: >
-          dotnet test com.epam.rp.ui/com.epam.rp.ui.csproj
-            --configuration Release
-            --logger "console;verbosity=detailed"
-            --logger "trx;LogFileName=test-results-${{ matrix.browser }}.trx"
+        run: |
+          dotnet test com.epam.rp.ui/com.epam.rp.ui.csproj \
+            --configuration Release \
+            --no-build \
+            --logger "console;verbosity=detailed" \
+            --logger "trx;LogFileName=test-results-${{ matrix.browser }}.trx" \
             -- TestRunParameters.Parameter(name="browser",value="${{ matrix.browser }}")
         continue-on-error: true
 
