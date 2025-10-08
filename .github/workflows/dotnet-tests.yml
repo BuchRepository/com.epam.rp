@@ -29,7 +29,7 @@ jobs:
           EOL
 
       - name: Run API tests
-      - run: dotnet test com.epam.rp.api/com.epam.rp.api.csproj --configuration Release
+        run: dotnet test com.epam.rp.api/com.epam.rp.api.csproj --configuration Release
 
       - name: Upload API Report
         if: always()
