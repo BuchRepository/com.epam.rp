@@ -68,8 +68,7 @@ pipeline {
                 echo "Running API tests..."
                 sh '''
                     /usr/local/share/dotnet/dotnet test com.epam.rp.api/com.epam.rp.api.csproj \
-                    --configuration Release \
-                    --logger "trx;LogFileName=api_test_results.trx"
+                    --configuration Release
                 '''
             }
         }
@@ -92,8 +91,7 @@ pipeline {
                 echo "Running UI tests..."
                 sh '''
                     /usr/local/share/dotnet/dotnet test com.epam.rp.ui/com.epam.rp.ui.csproj \
-                    --configuration Release \
-                    --logger "trx;LogFileName=ui_test_results.trx"
+                    --configuration Release
                 '''
             }
         }
