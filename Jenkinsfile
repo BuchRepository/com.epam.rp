@@ -6,7 +6,7 @@ pipeline {
     }
 
     triggers {
-        //Every commit to develop
+        //Every commit to feature/module9-cicd
         pollSCM('H/5 * * * *')
         //Daily run at 02:00AM
         cron('H 2 * * *')
@@ -15,7 +15,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'develop', url: 'https://github.com/BuchRepository/com.epam.rp.git'
+                git branch: 'feature/module9-cicd', url: 'https://github.com/BuchRepository/com.epam.rp.git'
             }
         }
 
