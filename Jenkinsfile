@@ -22,8 +22,8 @@ pipeline {
         stage('Setup .NET') {
             steps {
                 echo "Checking .NET SDK installation..."
-                sh 'dotnet --version'
-                sh 'dotnet --info'
+                sh '$DOTNET_HOME/dotnet --version'
+                sh '$DOTNET_HOME/dotnet --info'
             }
         }
 
