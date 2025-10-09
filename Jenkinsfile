@@ -61,12 +61,15 @@ pipeline {
         }
 
         stage('SonarQube Analysis') {
+            environment {
+                PATH = "/Users/sergiibuchkivskyi/.dotnet/tools:$PATH"
+            }
             steps {
                 withCredentials([string(credentialsId: 'SONAR_QUBE_TOKEN', variable: 'SONAR_QUBE_TOKEN')]) {
                     sh '''
-                        $DOTNET_HOME/dotnet sonarscanner begin /o:"buchrepository" /k:"BuchRepository_com.epam.rp" /d:sonar.login=$SONAR_QUBE_TOKEN
+                        dotnet-sonarscanner begin /o:"buchrepository" /k:"BuchRepository_com.epam.rp" /d:sonar.login=$SONAR_QUBE_TOKEN
                         $DOTNET_HOME/dotnet build
-                        $DOTNET_HOME/dotnet sonarscanner end /d:sonar.login=$SONAR_QUBE_TOKEN
+                        dotnet-sonarscanner end /d:sonar.login=$SONAR_QUBE_TOKEN
                     '''
                 }
             }
