@@ -72,11 +72,6 @@ pipeline {
                     --logger "trx;LogFileName=api_test_results.trx"
                 '''
             }
-            post {
-                always {
-                    junit '**/api_test_results.trx'
-                }
-            }
         }
 
         stage('Upload API Report') {
@@ -100,11 +95,6 @@ pipeline {
                     --configuration Release \
                     --logger "trx;LogFileName=ui_test_results.trx"
                 '''
-            }
-            post {
-                always {
-                    junit '**/ui_test_results.trx'
-                }
             }
         }
 
