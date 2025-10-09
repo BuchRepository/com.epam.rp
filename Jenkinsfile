@@ -6,8 +6,6 @@ pipeline {
     }
 
     triggers {
-        //Every commit to feature/module9-cicd
-        pollSCM('H/5 * * * *')
         //Daily run at 02:00AM
         cron('H 2 * * *')
     }
@@ -32,13 +30,15 @@ pipeline {
                 withCredentials([
                     string(credentialsId: 'LOGIN', variable: 'LOGIN'),
                     string(credentialsId: 'PASSWORD', variable: 'PASSWORD'),
-                    string(credentialsId: 'API_TOKEN', variable: 'API_TOKEN')
+                    string(credentialsId: 'API_TOKEN', variable: 'API_TOKEN'),
+                    string(credentialsId: 'SONAR_QUBE_TOKEN', variable: 'SONAR_QUBE_TOKEN')
                 ]) {
                     echo "Environment variables injected."
                     sh '''
                         echo "LOGIN=$LOGIN"
                         echo "PASSWORD=[HIDDEN]"
                         echo "API_TOKEN=[HIDDEN]"
+                        echo "SONAR_QUBE_TOKEN=[HIDDEN]"
                     '''
                 }
             }
@@ -55,6 +55,18 @@ pipeline {
             steps {
                 echo "Building project..."
                 sh '/usr/local/share/dotnet/dotnet build com.epam.rp.sln --configuration Release --no-restore'
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                withCredentials([string(credentialsId: 'SONAR_QUBE_TOKEN', variable: 'SONAR_QUBE_TOKEN')]) {
+                    sh """
+                        dotnet sonarscanner begin /o:"buchrepository" /k:"BuchRepository_com.epam.rp" /d:sonar.token="$SONAR_QUBE_TOKEN"
+                        dotnet build
+                        dotnet sonarscanner end /d:sonar.login="$SONAR_QUBE_TOKEN"
+                    """
+                }
             }
         }
 
