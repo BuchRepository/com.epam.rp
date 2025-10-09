@@ -27,6 +27,23 @@ pipeline {
             }
         }
 
+        stage('Inject credentials') {
+            steps {
+                withCredentials([
+                    string(credentialsId: 'LOGIN', variable: 'LOGIN'),
+                    string(credentialsId: 'PASSWORD', variable: 'PASSWORD'),
+                    string(credentialsId: 'API_TOKEN', variable: 'API_TOKEN')
+                ]) {
+                    echo "Environment variables injected."
+                    sh '''
+                        echo "LOGIN=$LOGIN"
+                        echo "PASSWORD=[HIDDEN]"
+                        echo "API_TOKEN=[HIDDEN]"
+                    '''
+                }
+            }
+        }
+
         stage('Restore dependencies') {
             steps {
                 echo "Restoring dependencies..."
@@ -42,6 +59,11 @@ pipeline {
         }
 
         stage('Run API tests') {
+            environment {
+                LOGIN = credentials('LOGIN')
+                PASSWORD = credentials('PASSWORD')
+                API_TOKEN = credentials('API_TOKEN')
+            }
             steps {
                 echo "Running API tests..."
                 sh '''
@@ -58,6 +80,11 @@ pipeline {
         }
 
         stage('Run UI tests') {
+            environment {
+                LOGIN = credentials('LOGIN')
+                PASSWORD = credentials('PASSWORD')
+                API_TOKEN = credentials('API_TOKEN')
+            }
             steps {
                 echo "Running UI tests..."
                 sh '''
