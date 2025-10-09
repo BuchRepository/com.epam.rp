@@ -21,8 +21,9 @@ pipeline {
 
         stage('Setup .NET') {
             steps {
-                echo "Setting up .NET SDK..."
-                sh '/usr/local/share/dotnet/dotnet'
+                echo "Checking .NET SDK installation..."
+                sh '/usr/local/share/dotnet/dotnet --version'
+                sh '/usr/local/share/dotnet/dotnet --info'
             }
         }
 
