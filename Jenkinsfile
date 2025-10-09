@@ -22,21 +22,21 @@ pipeline {
         stage('Setup .NET') {
             steps {
                 echo "Setting up .NET SDK..."
-                sh 'dotnet --version || brew install dotnet'
+                sh '/usr/local/share/dotnet/dotnet'
             }
         }
 
         stage('Restore dependencies') {
             steps {
                 echo "Restoring dependencies..."
-                sh 'dotnet restore com.epam.rp.sln'
+                sh '/usr/local/share/dotnet/dotnet restore com.epam.rp.sln'
             }
         }
 
         stage('Build solution') {
             steps {
                 echo "Building project..."
-                sh 'dotnet build com.epam.rp.sln --configuration Release --no-restore'
+                sh '/usr/local/share/dotnet/dotnet build com.epam.rp.sln --configuration Release --no-restore'
             }
         }
 
@@ -44,7 +44,7 @@ pipeline {
             steps {
                 echo "Running API tests..."
                 sh '''
-                    dotnet test com.epam.rp.api/com.epam.rp.api.csproj \
+                    /usr/local/share/dotnet/dotnet test com.epam.rp.api/com.epam.rp.api.csproj \
                     --configuration Release \
                     --logger "trx;LogFileName=api_test_results.trx"
                 '''
@@ -60,7 +60,7 @@ pipeline {
             steps {
                 echo "Running UI tests..."
                 sh '''
-                    dotnet test com.epam.rp.ui/com.epam.rp.ui.csproj \
+                    /usr/local/share/dotnet/dotnet test com.epam.rp.ui/com.epam.rp.ui.csproj \
                     --configuration Release \
                     --logger "trx;LogFileName=ui_test_results.trx"
                 '''
