@@ -79,6 +79,14 @@ pipeline {
             }
         }
 
+        stage('Upload API Report') {
+            steps {
+                echo 'Uploading API report as artifact...'
+                archiveArtifacts artifacts: 'com.epam.rp.api/bin/Release/net8.0/index.html', fingerprint: true
+            }
+        }
+
+
         stage('Run UI tests') {
             environment {
                 LOGIN = credentials('LOGIN')
@@ -97,6 +105,12 @@ pipeline {
                 always {
                     junit '**/ui_test_results.trx'
                 }
+            }
+        }
+
+	stage('Upload UI Report') {
+            steps {
+                archiveArtifacts artifacts: 'com.epam.rp.ui/bin/Release/net8.0/index.html', fingerprint: true
             }
         }
     }
