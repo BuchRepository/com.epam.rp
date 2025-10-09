@@ -3,6 +3,8 @@ pipeline {
 
     environment {
         DOTNET_VERSION = "8.0.x"
+        DOTNET_HOME = "/usr/local/share/dotnet"
+        PATH = "/usr/local/share/dotnet:$PATH"
     }
 
     triggers {
@@ -20,8 +22,8 @@ pipeline {
         stage('Setup .NET') {
             steps {
                 echo "Checking .NET SDK installation..."
-                sh '/usr/local/share/dotnet/dotnet --version'
-                sh '/usr/local/share/dotnet/dotnet --info'
+                sh 'dotnet --version'
+                sh 'dotnet --info'
             }
         }
 
@@ -47,25 +49,25 @@ pipeline {
         stage('Restore dependencies') {
             steps {
                 echo "Restoring dependencies..."
-                sh '/usr/local/share/dotnet/dotnet restore com.epam.rp.sln'
+                sh '$DOTNET_HOME/dotnet restore com.epam.rp.sln'
             }
         }
 
         stage('Build solution') {
             steps {
                 echo "Building project..."
-                sh '/usr/local/share/dotnet/dotnet build com.epam.rp.sln --configuration Release --no-restore'
+                sh '$DOTNET_HOME/dotnet build com.epam.rp.sln --configuration Release --no-restore'
             }
         }
 
         stage('SonarQube Analysis') {
             steps {
                 withCredentials([string(credentialsId: 'SONAR_QUBE_TOKEN', variable: 'SONAR_QUBE_TOKEN')]) {
-                    sh """
-                        dotnet sonarscanner begin /o:"buchrepository" /k:"BuchRepository_com.epam.rp" /d:sonar.token="$SONAR_QUBE_TOKEN"
-                        dotnet build
-                        dotnet sonarscanner end /d:sonar.login="$SONAR_QUBE_TOKEN"
-                    """
+                    sh '''
+                        $DOTNET_HOME/dotnet sonarscanner begin /o:"buchrepository" /k:"BuchRepository_com.epam.rp" /d:sonar.login=$SONAR_QUBE_TOKEN
+                        $DOTNET_HOME/dotnet build
+                        $DOTNET_HOME/dotnet sonarscanner end /d:sonar.login=$SONAR_QUBE_TOKEN
+                    '''
                 }
             }
         }
@@ -79,7 +81,7 @@ pipeline {
             steps {
                 echo "Running API tests..."
                 sh '''
-                    /usr/local/share/dotnet/dotnet test com.epam.rp.api/com.epam.rp.api.csproj \
+                    $DOTNET_HOME/dotnet test com.epam.rp.api/com.epam.rp.api.csproj \
                     --configuration Release
                 '''
             }
@@ -102,7 +104,7 @@ pipeline {
             steps {
                 echo "Running UI tests..."
                 sh '''
-                    /usr/local/share/dotnet/dotnet test com.epam.rp.ui/com.epam.rp.ui.csproj \
+                    $DOTNET_HOME/dotnet test com.epam.rp.ui/com.epam.rp.ui.csproj \
                     --configuration Release
                 '''
             }
