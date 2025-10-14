@@ -1,4 +1,5 @@
 using Newtonsoft.Json;
+using ReportPortal.Serilog;
 using RestSharp;
 using Serilog;
 
@@ -11,6 +12,7 @@ namespace com.epam.rp.core
             Log.Logger = new LoggerConfiguration()
                 .WriteTo.Console()
                 .WriteTo.Debug() 
+                .WriteTo.ReportPortal()
                 .CreateLogger();
         }
 

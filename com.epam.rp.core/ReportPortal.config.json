@@ -1,0 +1,14 @@
+{
+  "server": {
+    "url": "https://rp.epam.com",
+    "project": "test_user_personal",
+    "authentication": {
+      "uuid": ""  
+    }
+  },
+  "launch": {
+    "name": "API & UI Tests",
+    "description": "Automated tests for API and UI",
+    "attributes": ["ui", "taf"]
+  }
+}
