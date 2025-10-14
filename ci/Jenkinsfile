@@ -33,7 +33,8 @@ pipeline {
                     string(credentialsId: 'LOGIN', variable: 'LOGIN'),
                     string(credentialsId: 'PASSWORD', variable: 'PASSWORD'),
                     string(credentialsId: 'API_TOKEN', variable: 'API_TOKEN'),
-                    string(credentialsId: 'SONAR_QUBE_TOKEN', variable: 'SONAR_QUBE_TOKEN')
+                    string(credentialsId: 'SONAR_QUBE_TOKEN', variable: 'SONAR_QUBE_TOKEN'),
+                    string(credentialsId: 'SLACK_WEBHOOK_URL', variable: 'SLACK_WEBHOOK_URL')
                 ]) {
                     echo "Environment variables injected."
                     sh '''
@@ -41,6 +42,7 @@ pipeline {
                         echo "PASSWORD=[HIDDEN]"
                         echo "API_TOKEN=[HIDDEN]"
                         echo "SONAR_QUBE_TOKEN=[HIDDEN]"
+                        echo "SLACK_WEBHOOK_URL=[HIDDEN]"
                     '''
                 }
             }
@@ -87,6 +89,7 @@ pipeline {
                 LOGIN = credentials('LOGIN')
                 PASSWORD = credentials('PASSWORD')
                 API_TOKEN = credentials('API_TOKEN')
+                SLACK_WEBHOOK_URL = credentials('SLACK_WEBHOOK_URL')
             }
             steps {
                 withCredentials([string(credentialsId: 'API_TOKEN', variable: 'RP_UUID')]) {
@@ -117,6 +120,7 @@ pipeline {
                 LOGIN = credentials('LOGIN')
                 PASSWORD = credentials('PASSWORD')
                 API_TOKEN = credentials('API_TOKEN')
+                SLACK_WEBHOOK_URL = credentials('SLACK_WEBHOOK_URL')
             }
             steps {
                 withCredentials([string(credentialsId: 'API_TOKEN', variable: 'RP_UUID')]) {
