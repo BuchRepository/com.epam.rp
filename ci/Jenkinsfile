@@ -60,6 +60,15 @@ pipeline {
             }
         }
 
+        stage('Check ReportPortal config') {
+            steps {
+                echo "Checking ReportPortal.config.json..."
+                sh 'find . -name "ReportPortal.config.json"'
+                sh 'cat com.epam.rp.api/bin/Release/net8.0/ReportPortal.config.json || echo "⚠️ ReportPortal config not found in API output folder"'
+                sh 'cat com.epam.rp.ui/bin/Release/net8.0/ReportPortal.config.json || echo "⚠️ ReportPortal config not found in UI output folder"'
+            }
+        }
+
         stage('SonarQube Analysis') {
             environment {
                 PATH = "/Users/sergiibuchkivskyi/.dotnet/tools:$PATH"
@@ -82,10 +91,15 @@ pipeline {
                 API_TOKEN = credentials('API_TOKEN')
             }
             steps {
-                echo "Running API tests..."
+                echo "Running API tests with ReportPortal integration..."
                 sh '''
+                    export RP_UUID=$API_TOKEN
+                    export RP_CONFIG_FILE=$(pwd)/com.epam.rp.api/ReportPortal.config.json
+
+                    echo "Using ReportPortal config: $RP_CONFIG_FILE"
                     $DOTNET_HOME/dotnet test com.epam.rp.api/com.epam.rp.api.csproj \
-                    --configuration Release
+                        --configuration Release \
+                        --logger:"console;verbosity=detailed"
                 '''
             }
         }
@@ -97,7 +111,6 @@ pipeline {
             }
         }
 
-
         stage('Run UI tests') {
             environment {
                 LOGIN = credentials('LOGIN')
@@ -107,8 +120,13 @@ pipeline {
             steps {
                 echo "Running UI tests..."
                 sh '''
+                    export RP_UUID=$API_TOKEN
+                    export RP_CONFIG_FILE=$(pwd)/com.epam.rp.ui/ReportPortal.config.json
+                    
+		    echo "Using ReportPortal config: $RP_CONFIG_FILE"
                     $DOTNET_HOME/dotnet test com.epam.rp.ui/com.epam.rp.ui.csproj \
                     --configuration Release
+                    --logger:"console;verbosity=detailed"
                 '''
             }
         }
