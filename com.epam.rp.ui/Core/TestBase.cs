@@ -18,15 +18,20 @@ public class TestBase
        
     protected LoginPage? LoginPage;
     protected FiltersPage? FiltersPage;
+    
+    private static SlackNotifier? _slackNotifier;
        
     public TestContext TestContext { get; set; } = null!;
 
     [AssemblyInitialize]
-    public static void AssemblyInit(TestContext context)    
+    public static async Task AssemblyInit(TestContext context)    
     {
         Extent = ReportManager.GetExtent(isUI: true);
         
         LoggerService.InitLogger();
+        
+        _slackNotifier = new SlackNotifier();
+        await _slackNotifier.SendMessage($"UI Test Assembly STARTED at {DateTime.Now}");
     }
     
     [TestInitialize]
@@ -115,8 +120,13 @@ public class TestBase
     }
     
     [AssemblyCleanup]
-    public static void AssemblyCleanup()
+    public static async Task AssemblyCleanup()
     {
         ReportManager.FlushReports();
+        
+        if (_slackNotifier != null)
+        {
+            await _slackNotifier.SendMessage($"UI Test Assembly FINISHED at {DateTime.Now}");
+        }
     }
 }

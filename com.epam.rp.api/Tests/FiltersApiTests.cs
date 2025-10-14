@@ -13,16 +13,20 @@ public class FiltersApiTests
     private FiltersApiClient _apiClient = new FiltersApiClient();
     private ExtentReports? _extent;
     private ExtentTest? _test;
+    private SlackNotifier _slackNotifier;
     
     const int InvaliId = 123456789;
     
     [OneTimeSetUp]
-    public void OneTimeSetup()
+    public async Task OneTimeSetup()
     {
         LoggerService.InitLogger();
         _apiClient = new FiltersApiClient();
 
         _extent = ReportManager.GetExtent(isUI: false);
+        
+        _slackNotifier = new SlackNotifier();
+        await _slackNotifier.SendMessage("API Test Run STARTED at " + DateTime.Now);
     }
 
     [SetUp]
@@ -478,8 +482,10 @@ public class FiltersApiTests
     }
     
     [OneTimeTearDown]
-    public void OneTimeTearDown()
+    public async Task OneTimeTearDown()
     {
         ReportManager.FlushReports();
+        
+        await _slackNotifier.SendMessage("API Test Run FINISHED at " + DateTime.Now);
     }
 }
