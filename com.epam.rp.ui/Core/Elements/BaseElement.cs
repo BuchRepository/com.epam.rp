@@ -13,7 +13,7 @@ public class BaseElement
     protected readonly string Name;
     protected readonly WebDriverWait Wait;
 
-    public BaseElement(IWebDriver driver, By locator, string name, int timeout = 10)
+    public BaseElement(IWebDriver driver, By locator, string name, int timeout = 20)
     {
         Driver = driver;
         Locator = locator;
@@ -21,7 +21,25 @@ public class BaseElement
         Wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeout));
     }
 
-    protected IWebElement Element => Driver.FindElement(Locator);
+    protected IWebElement Element
+    {
+        get
+        {
+            try
+            {
+                return Wait.Until(drv =>
+                {
+                    var element = drv.FindElement(Locator);
+                    return element.Displayed ? element : null;
+                });
+            }
+            catch (WebDriverTimeoutException ex)
+            {
+                LoggerService.Error($"Timeout waiting for element '{Name}' by locator: {Locator}. {ex.Message}");
+                throw;
+            }
+        }
+    }
     
     protected IWebElement FluentWait(int timeoutInSeconds = 10, int pollingIntervalMs = 500)
     {
@@ -42,16 +60,23 @@ public class BaseElement
     
     public virtual void ClickButton()
     {
-        try
+        int attempts = 0;
+        while (attempts < 3)
         {
-            FluentWait().Click();
-            LoggerService.Info($"Clicked on element: {Name}");
+            try
+            {
+                FluentWait().Click();
+                LoggerService.Info($"Clicked on element: {Name}");
+                return;
+            }
+            catch (Exception ex)
+            {
+                attempts++;
+                LoggerService.Warn($"Standard click failed for {Name}: {ex.Message}, trying JS click");
+                Thread.Sleep(300);
+            }
         }
-        catch (Exception ex)
-        {
-            LoggerService.Warn($"Standard click failed for {Name}: {ex.Message}, trying JS click");
-            JsClick();
-        }
+        JsClick();
     }
     
     #region JS Executor Methods
