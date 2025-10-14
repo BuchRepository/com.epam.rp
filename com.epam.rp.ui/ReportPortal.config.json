@@ -7,8 +7,8 @@
     }
   },
   "launch": {
-    "name": "API & UI Tests",
-    "description": "Automated tests for API and UI",
+    "name": "UI Tests",
+    "description": "Automated tests for UI",
     "attributes": ["ui", "taf"]
   },
   "logger": {
