@@ -60,7 +60,6 @@ pipeline {
             }
         }
 
-
         // 🔍 Diagnostic stage: check if ReportPortal config exists in output folders
         stage('Check ReportPortal config') {
             steps {
@@ -128,7 +127,7 @@ pipeline {
                     
 		    echo "Using ReportPortal config: $RP_CONFIG_FILE"
                     $DOTNET_HOME/dotnet test com.epam.rp.ui/com.epam.rp.ui.csproj \
-                    --configuration Release
+                    --configuration Release \
                     --logger:"console;verbosity=detailed" \
                     --logger:"reportportal;config=$RP_CONFIG_FILE"
                 '''
