@@ -100,8 +100,7 @@ pipeline {
                     echo "Using ReportPortal config: $RP_CONFIG_FILE"
                     $DOTNET_HOME/dotnet test com.epam.rp.api/com.epam.rp.api.csproj \
                         --configuration Release \
-                        --logger:"console;verbosity=detailed" \
-                        --logger:"reportportal;config=$RP_CONFIG_FILE"
+                        --logger:"console;verbosity=detailed"
                 '''
             }
         }
