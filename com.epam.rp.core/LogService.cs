@@ -47,7 +47,7 @@ namespace com.epam.rp.core
             if (bodyParam != null)
             {
                 string json = JsonConvert.SerializeObject(bodyParam.Value, Formatting.Indented);
-                Info($"Request Body: {bodyParam.Value}");
+                Info($"Request Body: {json}");
             }
 
             Info($"Response Status: {response.StatusCode}");
@@ -57,7 +57,7 @@ namespace com.epam.rp.core
             {
                 foreach (var header in response.Headers)
                 {
-                    var value = header.Value.ToString() ?? "<null>";
+                    var value = header.Value;
                     responseHeaders.Add($"{header.Name}: {value}");
                 }
             }

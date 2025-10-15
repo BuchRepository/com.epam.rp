@@ -19,7 +19,7 @@ public class FiltersApiClient
         _client.AddDefaultHeader("Authorization", $"bearer {ApiToken}");
     }
     
-    private string BuildUrl(string path) => $"{ApiPrefix}{Project}/{path}";
+    private static string BuildUrl(string path) => $"{ApiPrefix}{Project}/{path}";
     
         public async Task<RestResponse> GetFiltersAsync()
         {

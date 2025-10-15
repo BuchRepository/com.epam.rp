@@ -12,21 +12,21 @@ namespace com.epam.rp.ui.Core;
 [TestClass]
 public class TestBase
 {
-    protected IWebDriver? Driver;
-    protected static ExtentReports? Extent;
-    protected ExtentTest? Test;
+    private IWebDriver? _driver;
+    private static ExtentReports? _extent;
+    private ExtentTest? _test;
        
     protected LoginPage? LoginPage;
     protected FiltersPage? FiltersPage;
     
     private static SlackNotifier? _slackNotifier;
        
-    public TestContext TestContext { get; set; } = null!;
+    private TestContext TestContext { get; set; } = null!;
 
     [AssemblyInitialize]
     public static async Task AssemblyInit(TestContext context)    
     {
-        Extent = ReportManager.GetExtent(isUI: true);
+        _extent = ReportManager.GetExtent(isUI: true);
         
         LoggerService.InitLogger();
         
@@ -37,20 +37,20 @@ public class TestBase
     [TestInitialize]
     public void SetUp()
     {
-        Test = Extent!.CreateTest(TestContext.TestName);
+        _test = _extent!.CreateTest(TestContext.TestName);
         
         string browser = TestContext.Properties.Contains("browser")
             ? TestContext.Properties["browser"]?.ToString() ?? "chrome"
             : "chrome";
 
-        Driver = DriverFactory.CreateDriver(browser, uniqueProfile: true);
-        if (Driver == null)
+        _driver = DriverFactory.CreateDriver(browser, uniqueProfile: true);
+        if (_driver == null)
             throw new InvalidOperationException("Driver initialization failed.");
 
-        Driver.Navigate().GoToUrl("https://rp.epam.com");
+        _driver.Navigate().GoToUrl("https://rp.epam.com");
 
-        LoginPage = new LoginPage(Driver);
-        FiltersPage = new FiltersPage(Driver);
+        LoginPage = new LoginPage(_driver);
+        FiltersPage = new FiltersPage(_driver);
     }
 
     [TestCleanup]
@@ -58,52 +58,52 @@ public class TestBase
     {
         var outcome = TestContext.CurrentTestOutcome;
 
-        if (outcome == UnitTestOutcome.Failed && Driver is not null)
+        if (outcome == UnitTestOutcome.Failed && _driver is not null)
         {
             try
             {
                 string? screenshotPath = ScreenshotHelper.TakeScreenshot(
-                    Driver, 
+                    _driver, 
                     Log.Logger, 
                     TestContext.TestName
                 );
 
                 if (!string.IsNullOrEmpty(screenshotPath))
                 {
-                    Test!.Fail("Test Failed").AddScreenCaptureFromPath(screenshotPath);
+                    _test!.Fail("Test Failed").AddScreenCaptureFromPath(screenshotPath);
                     LoggerService.Info($"Screenshot saved: {screenshotPath}");
                 }
                 else
                 {
-                    Test!.Fail("Test Failed - no screenshot available");
+                    _test!.Fail("Test Failed - no screenshot available");
                 }
             }
             catch (Exception e)
             {
                 LoggerService.Error("Failed to take screenshot on test failure", e);
-                Test!.Fail("Test Failed - screenshot error: " + e.Message);
+                _test!.Fail("Test Failed - screenshot error: " + e.Message);
             }
         }
         
         else if (outcome == UnitTestOutcome.Passed)
         {
-            Test!.Pass("Test Passed");
+            _test!.Pass("Test Passed");
         }
         else
         {
-            Test!.Skip("Test Skipped");
+            _test!.Skip("Test Skipped");
         }   
 
         try
         {
-            Driver?.Quit();
-            Driver?.Dispose();
+            _driver?.Quit();
+            _driver?.Dispose();
         }
         catch (Exception ex)
         {
             LoggerService.Error("Error while disposing driver", ex);
         }
-        Driver = null;
+        _driver = null;
         
         if (!string.IsNullOrEmpty(DriverFactory.LastProfilePath) &&
             Directory.Exists(DriverFactory.LastProfilePath))

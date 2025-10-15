@@ -23,7 +23,7 @@ public static class DriverFactory
         }
     }
     
-    private static IWebDriver CreateRemoteDriver(string browser, string gridUrl)
+    private static RemoteWebDriver CreateRemoteDriver(string browser, string gridUrl)
     {
         ICapabilities capabilities;
 

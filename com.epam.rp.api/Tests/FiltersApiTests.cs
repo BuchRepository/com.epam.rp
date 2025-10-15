@@ -47,7 +47,7 @@ public class FiltersApiTests
         var filtersResponse = JsonConvert.DeserializeObject<FiltersResponse>(response.Content!)!;
         Assert.That(filtersResponse, Is.Not.Null, "Response deserialization failed.");
         
-        Assert.That(filtersResponse.Content.Count, Is.GreaterThan(0), "No filters found.");
+        Assert.That(filtersResponse.Content, Has.Count.GreaterThan(0 ), "No filters found.");
         Assert.That(filtersResponse.Content[0].Name, Is.Not.Null.And.Not.Empty, "Filter Name is null or empty.");
 
         LoggerService.Info($"First filter name: {filtersResponse.Content[0].Name}");

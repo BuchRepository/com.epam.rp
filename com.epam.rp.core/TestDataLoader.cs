@@ -17,9 +17,8 @@ namespace com.epam.rp.core
             var json = File.ReadAllText(filePath);
             var allData = JsonConvert.DeserializeObject<Dictionary<string, List<T>>>(json);
 
-            if (allData != null && allData.ContainsKey(testName))
+            if (allData != null && allData.TryGetValue(testName, out var originalList))
             {
-                var originalList = allData[testName];
                 var copies = originalList
                     .Select(item => JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(item))!)
                     .ToList();
