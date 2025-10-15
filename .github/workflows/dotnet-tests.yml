@@ -18,14 +18,19 @@ jobs:
       - run: dotnet build com.epam.rp.sln --configuration Release --no-restore
 
       - name: Create appsettings.json from secrets
+        env:
+          LOGIN: ${{ secrets.TEST_LOGIN }}
+          PASSWORD: ${{ secrets.TEST_PASSWORD }}
+          API_TOKEN: ${{ secrets.API_TOKEN }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: |
           mkdir -p com.epam.rp.api/bin/Release/net8.0/
           cat > com.epam.rp.api/bin/Release/net8.0/appsettings.json <<EOL
           {
-            "LOGIN": "${{ secrets.TEST_LOGIN }}",
-            "PASSWORD": "${{ secrets.TEST_PASSWORD }}",
-            "API_TOKEN": "${{ secrets.API_TOKEN }}",
-            "SLACK_WEBHOOK_URL": "${{ secrets.SLACK_WEBHOOK_URL }}"
+            "LOGIN": "$LOGIN",
+            "PASSWORD": "$PASSWORD",
+            "API_TOKEN": "$API_TOKEN",
+            "SLACK_WEBHOOK_URL": "$SLACK_WEBHOOK_URL"
           }
           EOL
 
