@@ -20,13 +20,23 @@ jobs:
       - name: SonarQube begin analysis
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
+          GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
+          GITHUB_HEAD_REF: ${{ github.head_ref }}
+          GITHUB_BASE_REF: ${{ github.base_ref }}
         run: |
           dotnet tool install --global dotnet-sonarscanner --version 5.9.0
           export PATH="$HOME/.dotnet/tools:$PATH"
 
-          PR_KEY=${{ github.event.pull_request.number || "" }}
-          PR_BRANCH=${{ github.head_ref || "" }}
-          PR_BASE=${{ github.base_ref || "" }}
+          PR_KEY="${GITHUB_PR_NUMBER:-}"
+          PR_BRANCH="${GITHUB_HEAD_REF:-}"
+          PR_BASE="${GITHUB_BASE_REF:-}"
+
+          echo "SonarQube analysis started..."
+          echo "Event name: $GITHUB_EVENT_NAME"
+          echo "PR key: $PR_KEY"
+          echo "PR branch: $PR_BRANCH"
+          echo "PR base: $PR_BASE"
 
           dotnet-sonarscanner begin \
             /k:"BuchRepository_com.epam.rp" \
@@ -111,17 +121,26 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore com.epam.rp.sln
 
-      # --- SonarQube Analysis Begin ---
       - name: SonarQube begin analysis
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
+          GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
+          GITHUB_HEAD_REF: ${{ github.head_ref }}
+          GITHUB_BASE_REF: ${{ github.base_ref }}
         run: |
           dotnet tool install --global dotnet-sonarscanner --version 5.9.0
           export PATH="$HOME/.dotnet/tools:$PATH"
 
-          PR_KEY=${{ github.event.pull_request.number || "" }}
-          PR_BRANCH=${{ github.head_ref || "" }}
-          PR_BASE=${{ github.base_ref || "" }}
+          PR_KEY="${GITHUB_PR_NUMBER:-}"
+          PR_BRANCH="${GITHUB_HEAD_REF:-}"
+          PR_BASE="${GITHUB_BASE_REF:-}"
+
+          echo "SonarQube analysis started..."
+          echo "Event name: $GITHUB_EVENT_NAME"
+          echo "PR key: $PR_KEY"
+          echo "PR branch: $PR_BRANCH"
+          echo "PR base: $PR_BASE"
 
           dotnet-sonarscanner begin \
             /k:"BuchRepository_com.epam.rp" \
