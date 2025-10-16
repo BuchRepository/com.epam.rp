@@ -18,7 +18,7 @@ public class FiltersApiTests
     const int InvaliId = 123456789;
     
     [OneTimeSetUp]
-    public async Task OneTimeSetup()
+    public void OneTimeSetup()
     {
         LoggerService.InitLogger();
         _apiClient = new FiltersApiClient();
@@ -26,7 +26,7 @@ public class FiltersApiTests
         _extent = ReportManager.GetExtent(isUI: false);
         
         _slackNotifier = new SlackNotifier();
-        await _slackNotifier.SendMessage("API Test Run STARTED at " + DateTime.Now);
+        _slackNotifier.SendMessage("API Test Run STARTED at " + DateTime.Now);
     }
 
     [SetUp]

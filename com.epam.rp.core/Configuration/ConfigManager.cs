@@ -4,11 +4,16 @@ namespace com.epam.rp.core.Configuration;
 
 public static class ConfigManager
 {
-    private static readonly IConfigurationRoot Config = new ConfigurationBuilder()
-        .SetBasePath(Directory.GetCurrentDirectory())
-        .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-        .AddEnvironmentVariables()
-        .Build();
+    private static readonly IConfigurationRoot Config;
+    
+    static ConfigManager()
+    {
+        Config = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+            .AddEnvironmentVariables()
+            .Build();
+    }
     
     public static string? Login => Config["LOGIN"];
     public static string? Password => Config["PASSWORD"];

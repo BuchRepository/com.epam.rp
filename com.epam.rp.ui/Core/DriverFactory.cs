@@ -23,7 +23,7 @@ public static class DriverFactory
         }
     }
     
-    private static RemoteWebDriver CreateRemoteDriver(string browser, string gridUrl)
+    private static IWebDriver CreateRemoteDriver(string browser, string gridUrl)
     {
         ICapabilities capabilities;
 
@@ -68,7 +68,6 @@ public static class DriverFactory
                 options.AddArgument("--no-sandbox");
                 options.AddArgument("--disable-dev-shm-usage");
                 options.AddArgument("--disable-gpu");
-                options.AddArgument("--window-size=1920,1080");
 
                 if (uniqueProfile)
                 {
