@@ -15,7 +15,35 @@ jobs:
         with:
           dotnet-version: 8.0.x
       - run: dotnet restore com.epam.rp.sln
+
+      # --- SonarQube Analysis Begin ---
+      - name: SonarQube begin analysis
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          dotnet tool install --global dotnet-sonarscanner --version 5.9.0
+          export PATH="$HOME/.dotnet/tools:$PATH"
+
+          PR_KEY=${{ github.event.pull_request.number || "" }}
+          PR_BRANCH=${{ github.head_ref || "" }}
+          PR_BASE=${{ github.base_ref || "" }}
+
+          dotnet-sonarscanner begin \
+            /k:"BuchRepository_com.epam.rp" \
+            /o:"buchrepository" \
+            /d:sonar.host.url="https://sonarcloud.io" \
+            /d:sonar.login="$SONAR_TOKEN" \
+            $( [ -n "$PR_KEY" ] && echo "/d:sonar.pullrequest.key=$PR_KEY /d:sonar.pullrequest.branch=$PR_BRANCH /d:sonar.pullrequest.base=$PR_BASE /d:sonar.pullrequest.provider=GitHub" )
+      # --- SonarQube Analysis End ---
+
       - run: dotnet build com.epam.rp.sln --configuration Release --no-restore
+
+      - name: SonarQube end analysis
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          export PATH="$HOME/.dotnet/tools:$PATH"
+          dotnet-sonarscanner end /d:sonar.login="$SONAR_TOKEN"
 
       - name: Create appsettings.json from secrets
         env:
@@ -83,8 +111,35 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore com.epam.rp.sln
 
+      # --- SonarQube Analysis Begin ---
+      - name: SonarQube begin analysis
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          dotnet tool install --global dotnet-sonarscanner --version 5.9.0
+          export PATH="$HOME/.dotnet/tools:$PATH"
+
+          PR_KEY=${{ github.event.pull_request.number || "" }}
+          PR_BRANCH=${{ github.head_ref || "" }}
+          PR_BASE=${{ github.base_ref || "" }}
+
+          dotnet-sonarscanner begin \
+            /k:"BuchRepository_com.epam.rp" \
+            /o:"buchrepository" \
+            /d:sonar.host.url="https://sonarcloud.io" \
+            /d:sonar.login="$SONAR_TOKEN" \
+            $( [ -n "$PR_KEY" ] && echo "/d:sonar.pullrequest.key=$PR_KEY /d:sonar.pullrequest.branch=$PR_BRANCH /d:sonar.pullrequest.base=$PR_BASE /d:sonar.pullrequest.provider=GitHub" )
+      # --- SonarQube Analysis End ---
+
       - name: Build solution
         run: dotnet build com.epam.rp.sln --configuration Release --no-restore
+
+      - name: SonarQube end analysis
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          export PATH="$HOME/.dotnet/tools:$PATH"
+          dotnet-sonarscanner end /d:sonar.login="$SONAR_TOKEN"
 
       - name: Create appsettings.json from secrets
         run: |

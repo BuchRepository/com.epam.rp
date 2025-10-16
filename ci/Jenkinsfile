@@ -70,20 +70,16 @@ pipeline {
         }
 
         stage('SonarQube Analysis') {
+            environment {
+                PATH = "/Users/sergiibuchkivskyi/.dotnet/tools:$PATH"
+            }
             steps {
                 withCredentials([string(credentialsId: 'SONAR_QUBE_TOKEN', variable: 'SONAR_QUBE_TOKEN')]) {
-                    script {
-                        def prKey = env.CHANGE_ID ?: ""
-                        def prBranch = env.CHANGE_BRANCH ?: ""
-                        def prTarget = env.CHANGE_TARGET ?: ""
-
-                        sh """
-                            dotnet-sonarscanner begin /o:"buchrepository" /k:"BuchRepository_com.epam.rp" /d:sonar.login=$SONAR_QUBE_TOKEN \
-                                ${prKey ? "/d:sonar.pullrequest.key=$prKey /d:sonar.pullrequest.branch=$prBranch /d:sonar.pullrequest.base=$prTarget /d:sonar.pullrequest.provider=GitHub /d:sonar.pullrequest.github.repository=buchrepository/com.epam.rp" : ""}
-                            $DOTNET_HOME/dotnet build com.epam.rp.sln
-                            dotnet-sonarscanner end /d:sonar.login=$SONAR_QUBE_TOKEN
-                        """
-                    }
+                    sh '''
+                        dotnet-sonarscanner begin /o:"buchrepository" /k:"BuchRepository_com.epam.rp" /d:sonar.login=$SONAR_QUBE_TOKEN
+                        $DOTNET_HOME/dotnet build
+                        dotnet-sonarscanner end /d:sonar.login=$SONAR_QUBE_TOKEN
+                    '''
                 }
             }
         }
