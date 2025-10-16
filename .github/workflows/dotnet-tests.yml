@@ -70,7 +70,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           export PATH="$HOME/.dotnet/tools:$PATH"
-          dotnet-sonarscanner end /d:sonar.login="$SONAR_TOKEN"
+          dotnet-sonarscanner end /d:sonar.token="$SONAR_TOKEN"
 
       - name: Run API tests
         run: dotnet test com.epam.rp.api/com.epam.rp.api.csproj --configuration Release
@@ -184,7 +184,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           export PATH="$HOME/.dotnet/tools:$PATH"
-          dotnet-sonarscanner end /d:sonar.login="$SONAR_TOKEN"
+          dotnet-sonarscanner end /d:sonar.token="$SONAR_TOKEN"
 
       - name: Debug Selenium Hub
         run: |
