@@ -25,7 +25,7 @@ public class LaunchesPage : BasePage
         _moreOptions = By.XPath("//div[text()='More']");
     }
     
-    private static By FilterByName(string name) => By.XPath($"//span[text()='{name}']");
+    private By FilterByName(string name) => By.XPath($"//span[text()='{name}']");
     
     public void AddFilter(string filterName, string parameter, string quantity)
     {
