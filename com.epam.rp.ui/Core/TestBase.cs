@@ -21,7 +21,7 @@ public class TestBase
     
     private static SlackNotifier? _slackNotifier;
        
-    private TestContext TestContext { get; set; } = null!;
+    public TestContext TestContext { get; set; } = null!;
 
     [AssemblyInitialize]
     public static async Task AssemblyInit(TestContext context)    
