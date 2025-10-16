@@ -39,7 +39,7 @@ jobs:
           echo "PR base: $PR_BASE"
 
           dotnet-sonarscanner begin \
-            /k:"BuchRepository_com.epam.rp" \
+            /k:"BuchRepository_com.epam.rp.ui" \
             /o:"buchrepository" \
             /d:sonar.host.url="https://sonarcloud.io" \
             /d:sonar.login="$SONAR_TOKEN" \
@@ -143,7 +143,7 @@ jobs:
           echo "PR base: $PR_BASE"
 
           dotnet-sonarscanner begin \
-            /k:"BuchRepository_com.epam.rp" \
+            /k:"BuchRepository_com.epam.rp.api" \
             /o:"buchrepository" \
             /d:sonar.host.url="https://sonarcloud.io" \
             /d:sonar.login="$SONAR_TOKEN" \
@@ -152,6 +152,14 @@ jobs:
 
       - name: Build solution
         run: dotnet build com.epam.rp.sln --configuration Release --no-restore
+
+      - name: Test with coverage
+        run: |
+          dotnet test com.epam.rp.sln --no-build --configuration Release \
+            /p:CollectCoverage=true \
+            /p:CoverletOutputFormat=opencover \
+            /p:CoverletOutput=TestResults/coverage.opencover.xml
+        shell: bash
 
       - name: SonarQube end analysis
         env:
