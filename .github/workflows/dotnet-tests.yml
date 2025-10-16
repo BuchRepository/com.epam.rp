@@ -59,7 +59,7 @@ jobs:
             /k:"BuchRepository_com.epam.rp" \
             /o:"buchrepository" \
             /d:sonar.host.url="https://sonarcloud.io" \
-            /d:sonar.login="$SONAR_TOKEN" \
+            /d:sonar.token="$SONAR_TOKEN" \
             $( [ -n "$PR_KEY" ] && echo "/d:sonar.pullrequest.key=$PR_KEY /d:sonar.pullrequest.branch=$PR_BRANCH /d:sonar.pullrequest.base=$PR_BASE /d:sonar.pullrequest.provider=GitHub" )
       # --- SonarQube Analysis End ---
 
@@ -172,7 +172,7 @@ jobs:
             /k:"BuchRepository_com.epam.rp" \
             /o:"buchrepository" \
             /d:sonar.host.url="https://sonarcloud.io" \
-            /d:sonar.login="$SONAR_TOKEN" \
+            /d:sonar.token="$SONAR_TOKEN" \
             $( [ -n "$PR_KEY" ] && echo "/d:sonar.pullrequest.key=$PR_KEY /d:sonar.pullrequest.branch=$PR_BRANCH /d:sonar.pullrequest.base=$PR_BASE /d:sonar.pullrequest.provider=GitHub" )
       # --- SonarQube Analysis End ---
 

@@ -60,25 +60,17 @@ public class BaseElement
     
     public virtual void ClickButton()
     {
-        int attempts = 0;
-        while (attempts < 3)
+        try
         {
-            try
-            {
-                FluentWait().Click();
-                LoggerService.Info($"Clicked on element: {Name}");
-                return;
-            }
-            catch (Exception ex)
-            {
-                attempts++;
-                LoggerService.Warn($"Standard click failed for {Name}: {ex.Message}, trying JS click");
-                Thread.Sleep(300);
-            }
+            FluentWait().Click();
+            LoggerService.Info($"Clicked on element: {Name}");
         }
-        JsClick();
+        catch (Exception ex)
+        {
+            LoggerService.Warn($"Standard click failed for {Name}: {ex.Message}, trying JS click");
+            JsClick();
+        }
     }
-    
     #region JS Executor Methods
     
     private IJavaScriptExecutor Js => (IJavaScriptExecutor)Driver;
