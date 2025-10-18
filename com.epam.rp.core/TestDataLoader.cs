@@ -15,17 +15,21 @@ namespace com.epam.rp.core
                 throw new FileNotFoundException($"Test data file not found: {filePath}");
             
             var json = File.ReadAllText(filePath);
-            var allData = JsonConvert.DeserializeObject<Dictionary<string, List<T>>>(json);
-
-            if (allData != null && allData.TryGetValue(testName, out var originalList))
+            
+            Dictionary<string, List<T>>? allData;
+            try
             {
-                var copies = originalList
-                    .Select(item => JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(item))!)
-                    .ToList();
-                return copies;
+                allData = JsonConvert.DeserializeObject<Dictionary<string, List<T>>>(json);
+            }
+            catch (JsonException ex)
+            {
+                throw new JsonException($"Failed to deserialize test data file '{filePath}'. Check JSON format.", ex);
             }
 
-            return new List<T>();
+            if (allData == null)
+                throw new JsonException($"Test data file '{filePath}' is empty or invalid.");
+
+            return allData.TryGetValue(testName, out var list) ? list.ToList() : new List<T>();
         }
     }
 }

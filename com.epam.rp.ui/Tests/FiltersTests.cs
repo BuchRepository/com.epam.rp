@@ -1,8 +1,9 @@
 using com.epam.rp.core;
 using com.epam.rp.core.Configuration;
+using com.epam.rp.core.Models;
 using com.epam.rp.ui.Business.Enums;
 using com.epam.rp.ui.Core;
-using TestDataLoader = com.epam.rp.ui.Core.TestDataLoader;
+using TestDataLoader = com.epam.rp.core.TestDataLoader;
 
 [assembly: Parallelize(Workers = 5, Scope = ExecutionScope.MethodLevel)]
 
@@ -23,7 +24,7 @@ public class FiltersTests : TestBase
     
     public static IEnumerable<object[]> AddFilterData()
     {
-        var testData = TestDataLoader.LoadTestData<dynamic>("TestData.json", "AddFilter");
+        var testData = TestDataLoader.LoadTestData<FilterTestData>("TestData.json", "AddFilter");
         foreach (var item in testData)
         {
             yield return new object[] { item }; 
@@ -32,7 +33,7 @@ public class FiltersTests : TestBase
     
     [TestMethod]
     [DynamicData(nameof(AddFilterData), DynamicDataSourceType.Method)]
-    public void UserCanAddFilter(dynamic data)
+    public void UserCanAddFilter(FilterTestData data)
     {
         string filterName = $"{data.filterName}_{Guid.NewGuid():N}";
         string parameter = data.parameter;
@@ -50,7 +51,7 @@ public class FiltersTests : TestBase
         Assert.IsTrue(FiltersPage!.IsFilterVisible(filterName), $"Filter '{filterName}' should be visible after adding.");
 
         FiltersPage!.DeleteFilter(filterName);
-        Assert.IsTrue(FiltersPage!.IsFilterVisible(filterName), $"Filter '{filterName}' should be deleted.");
+        Assert.IsFalse(FiltersPage!.IsFilterVisible(filterName), $"Filter '{filterName}' should be deleted.");
     }
     /*
     public static IEnumerable<object[]> RemoveFilterData()
