@@ -11,7 +11,7 @@ public abstract class BasePage
     protected readonly IWebDriver Driver;
     protected readonly WebDriverWait Wait;
 
-    protected BasePage(IWebDriver driver, int defaultTimeout = 5)
+    protected BasePage(IWebDriver driver, int defaultTimeout = 10)
     {
         Driver = driver;
         Wait = new WebDriverWait(driver, TimeSpan.FromSeconds(defaultTimeout));

@@ -128,6 +128,19 @@ public class FiltersPage : BasePage
     {
         try
         {
+            var elements = Driver.FindElements(FilterByName(filterName));
+
+            if (!elements.Any())
+            {
+                LoggerService.Warn($"No elements found for filter '{filterName}'");
+                return false;
+            }
+
+            foreach (var el in elements)
+            {
+                LoggerService.Info($"Found element text: '{el.Text}'");
+            }
+            
             FindVisible(FilterByName(filterName));
             return true;
         }
