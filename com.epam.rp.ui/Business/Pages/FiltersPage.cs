@@ -127,6 +127,10 @@ public class FiltersPage : BasePage
     {
         try
         {
+            Driver.Navigate().Refresh();
+            LoggerService.Info($"Refreshing page to check if filter '{filterName}' is visible");
+            Thread.Sleep(2000);
+            
             var elements = Driver.FindElements(FilterByName(filterName));
 
             if (!elements.Any())

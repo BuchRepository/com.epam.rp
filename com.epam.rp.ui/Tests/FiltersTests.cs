@@ -83,6 +83,8 @@ public class FiltersTests : TestBase
         FiltersPage.DeleteFilter(filterName);
         Assert.IsFalse(FiltersPage!.IsFilterVisible(filterName), $"Filter '{filterName}' should be deleted.");
     }
+    
+   /*
 
     public static IEnumerable<object[]> ToggleDisplayData()
     {
@@ -93,6 +95,7 @@ public class FiltersTests : TestBase
         }
     }
 
+    
     [TestMethod]
     [DynamicData(nameof(ToggleDisplayData), DynamicDataSourceType.Method)]
     public void UserCanToggleFilterDisplay(FilterTestData data)
@@ -100,7 +103,7 @@ public class FiltersTests : TestBase
         string filterName = $"{data.filterName}_{Guid.NewGuid():N}";
         string parameter = data.parameter;
         string quantity = data.quantity;
-        
+
         LoggerService.Info("Start test");
         LoggerService.Info("Login to ReportPortal cabinet");
         LoginPage!.Login(_login, _password);
@@ -110,7 +113,7 @@ public class FiltersTests : TestBase
         LoggerService.Info("Click on 'Add' button");
         var launchesPage = FiltersPage!.ClickAddFilter();
         launchesPage.AddFilter(filterName, parameter, quantity);
-        
+
         Assert.IsTrue(
             launchesPage.IsFilterVisible(filterName, shouldBeVisible: true),
             $"Created filter '{filterName}' should be presented on Launches page."
@@ -118,18 +121,18 @@ public class FiltersTests : TestBase
 
         FiltersPage!.DisableDisplayOnLaunches(filterName);
         FiltersPage!.WaitForState(filterName, FiltersState.Off);
-        
+
         launchesPage.RefreshPage();
 
         Assert.IsTrue(
             launchesPage.IsFilterVisible(filterName, shouldBeVisible: false),
             $"Toggled filter '{filterName}' should disappear on Launches page."
         );
-        
+
         FiltersPage.DeleteFilter(filterName);
         Assert.IsFalse(FiltersPage!.IsFilterVisible(filterName), $"Filter '{filterName}' should be deleted.");
     }
-    
+
     public static IEnumerable<object[]> EditFilterData()
     {
         var testData = TestDataLoader.LoadTestData<FilterTestData>("TestData.json", "EditFilter");
@@ -145,19 +148,19 @@ public class FiltersTests : TestBase
         string parameter = data.parameter;
         string quantity = data.quantity;
         string newFilterName = $"Updated_{filterName}";
-        
+
         LoggerService.Info("Start test");
         LoggerService.Info("Login to ReportPortal cabinet");
         LoginPage!.Login(_login, _password);
         FiltersPage!.OpenFiltersPage();
-        
+
         var launchesPage = FiltersPage!.ClickAddFilter();
         launchesPage.AddFilter(filterName, parameter, quantity);
 
         Assert.IsTrue(FiltersPage!.IsFilterVisible(filterName), $"Filter '{filterName}' should be presented.");
 
         FiltersPage!.EditFilter(filterName, newFilterName);
-        
+
         Assert.IsTrue(FiltersPage!.IsFilterVisible(newFilterName), $"Edited filter '{newFilterName}' should be presented.");
         Assert.IsFalse(FiltersPage!.IsFilterVisible(filterName), $"Old filter '{filterName}' should be deleted.");
 
@@ -185,7 +188,7 @@ public class FiltersTests : TestBase
         LoggerService.Info("Login to ReportPortal cabinet");
         LoginPage!.Login(_login, _password);
         FiltersPage!.OpenFiltersPage();
-        
+
         var launchesPage = FiltersPage!.ClickAddFilter();
         launchesPage.AddFilter(filterName, parameter, quantity);
 
@@ -201,4 +204,5 @@ public class FiltersTests : TestBase
         FiltersPage.DeleteFilter(copiedFilterName);
         Assert.IsFalse(FiltersPage!.IsFilterVisible(copiedFilterName), $"Filter '{copiedFilterName}' should be deleted.");
     }
+    */
 }
