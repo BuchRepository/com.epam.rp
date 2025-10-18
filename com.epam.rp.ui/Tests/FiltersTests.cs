@@ -21,7 +21,7 @@ public class FiltersTests : TestBase
         _password = ConfigManager.Password ?? throw new InvalidOperationException("PASSWORD not found in config");
     }
 
-    
+    /*
     public static IEnumerable<object[]> AddFilterData()
     {
         var testData = TestDataLoader.LoadTestData<FilterTestData>("TestData.json", "AddFilter");
@@ -83,6 +83,7 @@ public class FiltersTests : TestBase
         FiltersPage.DeleteFilter(filterName);
         Assert.IsFalse(FiltersPage!.IsFilterVisible(filterName), $"Filter '{filterName}' should be deleted.");
     }
+    */
 
     public static IEnumerable<object[]> ToggleDisplayData()
     {

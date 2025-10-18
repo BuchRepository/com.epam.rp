@@ -93,21 +93,46 @@ public class FiltersPage : BasePage
         }
     }
     
+    /*
     private Checkbox GetDisplayOnLaunchesCheckbox(string filterName)
     {
         return new Checkbox(Driver, ToggleByName(filterName), $"Display on Launches for '{filterName}'");
+    } */
+    
+    public bool GetFilterDisplayStatus(string filterName)
+    {
+        var statusLocator = ToggleByName(filterName);
+
+        try
+        {
+            var statusElement = FindVisible(statusLocator);
+            var statusText = statusElement.Text.Trim().ToUpperInvariant();
+            LoggerService.Info($"Display status for '{filterName}' is '{statusText}'");
+
+            return statusText == "ON";
+        }
+        catch (WebDriverTimeoutException)
+        {
+            LoggerService.Warn($"Timeout: could not find display status element for '{filterName}'");
+            return false;
+        }
     }
+
 
     public void EnableDisplayOnLaunches(string filterName)
     {
-        var checkbox = GetDisplayOnLaunchesCheckbox(filterName);
-        checkbox.Check();
+        if (GetFilterDisplayStatus(filterName) == false)
+        {
+            FindClickable(ToggleByName(filterName)).Click();
+        }
     }
 
     public void DisableDisplayOnLaunches(string filterName)
     {
-        var checkbox = GetDisplayOnLaunchesCheckbox(filterName);
-        checkbox.Uncheck();
+        if (GetFilterDisplayStatus(filterName))
+        {
+            FindClickable(ToggleByName(filterName)).Click();
+        }
     }
 
     public void WaitForState(string filterName, FiltersState state)

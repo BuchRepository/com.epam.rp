@@ -82,6 +82,7 @@ public static class DriverFactory
                     Directory.CreateDirectory(profilePath);
                     options.AddArgument($"--user-data-dir={profilePath}");
                     options.AddArgument("--disable-extensions");
+                    options.AddArgument("--window-size=1920,1080");
                     LastProfilePath = profilePath;
                 }
 

@@ -43,7 +43,7 @@ public class TestBase
             ? TestContext.Properties["browser"]?.ToString() ?? "chrome"
             : "chrome";
 
-        Driver = DriverFactory.CreateDriver(browser, uniqueProfile: true);
+        Driver = DriverFactory.CreateDriver(browser, uniqueProfile: false);
         if (Driver == null)
             throw new InvalidOperationException("Driver initialization failed.");
 
