@@ -20,8 +20,15 @@ public abstract class BasePage
     protected IWebElement Find(By locator) => 
         Wait.Until(ExpectedConditions.ElementExists(locator));
         
+    //protected IWebElement FindVisible(By locator) => 
+      //  Wait.Until(ExpectedConditions.ElementIsVisible(locator));
+    
     protected IWebElement FindVisible(By locator) => 
-        Wait.Until(ExpectedConditions.ElementIsVisible(locator));
+        Wait.Until(driver => 
+        {
+            var el = driver.FindElement(locator);
+            return el.Displayed ? el : null;
+        });
         
     protected IWebElement FindClickable(By locator) => 
         Wait.Until(ExpectedConditions.ElementToBeClickable(locator));
