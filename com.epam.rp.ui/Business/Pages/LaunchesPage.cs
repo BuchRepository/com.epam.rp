@@ -64,19 +64,6 @@ public class LaunchesPage : BasePage
             LoggerService.Info($"Refreshing page to check if filter '{filterName}' is visible");
             Thread.Sleep(2000);
             
-            var elements = Driver.FindElements(FilterByName(filterName));
-
-            if (!elements.Any())
-            {
-                LoggerService.Warn($"No elements found for filter '{filterName}'");
-                return false;
-            }
-
-            foreach (var el in elements)
-            {
-                LoggerService.Info($"Found element text: '{el.Text}'");
-            }
-            
             FindVisible(FilterByName(filterName));
             return true;
         }
