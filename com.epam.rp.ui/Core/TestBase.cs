@@ -48,9 +48,28 @@ public class TestBase
             throw new InvalidOperationException("Driver initialization failed.");
 
         Driver.Navigate().GoToUrl("https://rp.epam.com");
+        
+        ClearBrowserData(Driver);
+
+        Driver.Navigate().Refresh();
 
         LoginPage = new LoginPage(Driver);
         FiltersPage = new FiltersPage(Driver);
+    }
+    
+    private void ClearBrowserData(IWebDriver driver)
+    {
+        try
+        {
+            driver.Manage().Cookies.DeleteAllCookies();
+            ((IJavaScriptExecutor)driver).ExecuteScript(
+                "window.localStorage.clear(); window.sessionStorage.clear();");
+            LoggerService.Info("Browser data cleared (cookies, localStorage, sessionStorage).");
+        }
+        catch (Exception ex)
+        {
+            LoggerService.Error("Failed to clear browser data", ex);
+        }
     }
 
     [TestCleanup]
