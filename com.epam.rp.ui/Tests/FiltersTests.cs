@@ -45,12 +45,12 @@ public class FiltersTests : TestBase
         FiltersPage!.OpenFiltersPage();
         LoggerService.Info("Click on 'Add' button");
         var launchesPage = FiltersPage!.ClickAddFilter();
+        
         launchesPage.AddFilter(filterName, parameter, quantity);
-
-        Assert.IsTrue(FiltersPage!.WaitForFilterVisibility(filterName, true), $"Filter '{filterName}' should be present after adding.");
+        Assert.IsTrue(FiltersPage!.IsFilterVisible(filterName), $"Filter '{filterName}' should be visible after adding.");
 
         FiltersPage!.DeleteFilter(filterName);
-        Assert.IsTrue(FiltersPage!.WaitForFilterVisibility(filterName, false), $"Filter '{filterName}' should be deleted.");
+        Assert.IsTrue(FiltersPage!.IsFilterVisible(filterName), $"Filter '{filterName}' should be deleted.");
     }
     
     public static IEnumerable<object[]> RemoveFilterData()

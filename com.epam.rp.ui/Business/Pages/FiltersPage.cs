@@ -46,6 +46,36 @@ public class FiltersPage : BasePage
         _confirmDeleteFilterButton.ClickButton();
     }
     
+    /*
+    public bool WaitForFilterVisibility(string filterName, bool shouldExist = true)
+    {
+        try
+        {
+            return Wait.Until(driver =>
+            {
+                var elements = driver.FindElements(FilterByName(filterName));
+                if (shouldExist)
+                {
+                    return elements.Any(e => e.Displayed);
+                }
+                else
+                {
+                    return elements.Count == 0;
+                }
+            });
+        }
+        catch (WebDriverTimeoutException)
+        {
+            LoggerService.Warn($"Filter '{filterName}' did not reach state {shouldExist}. Retrying once...");
+            Thread.Sleep(2000);
+
+            var elements = Driver.FindElements(FilterByName(filterName));
+            var isVisible = elements.Any(e => e.Displayed);
+            return isVisible == shouldExist;
+        }
+    }
+    */
+    
     public bool WaitForFilterVisibility(string filterName, bool shouldExist = true)
     {
         try
@@ -92,5 +122,23 @@ public class FiltersPage : BasePage
         LoggerService.Info("Enter new filter name");
         _filterNameInput.Type(newName);
         _updateButton.ClickButton();
+    }
+    
+    public bool IsFilterVisible(string filterName)
+    {
+        try
+        {
+            return FindVisible(FilterByName(filterName)).Displayed;
+        }
+        catch (WebDriverTimeoutException)
+        {
+            LoggerService.Warn($"Filter '{filterName}' is not visible.");
+            return false;
+        }
+        catch (NoSuchElementException)
+        {
+            LoggerService.Warn($"Filter '{filterName}' does not exist.");
+            return false;
+        }
     }
 }
