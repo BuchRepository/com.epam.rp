@@ -73,8 +73,7 @@ public class FiltersPage : BasePage
             var isVisible = elements.Any(e => e.Displayed);
             return isVisible == shouldExist;
         }
-    }
-    */
+    }*/
     
     public bool WaitForFilterVisibility(string filterName, bool shouldExist = true)
     {
@@ -126,9 +125,6 @@ public class FiltersPage : BasePage
     
     public bool IsFilterVisible(string filterName)
     {
-        Driver.Navigate().Refresh();
-        LoggerService.Info($"Refreshing page to check if filter '{filterName}' is visible");
-        Thread.Sleep(5000);
         try
         {
             var elements = Driver.FindElements(FilterByName(filterName));

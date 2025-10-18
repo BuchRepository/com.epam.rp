@@ -2,7 +2,9 @@
   "AddFilter": [
     {"filterName": "Automation bugs_01_", "parameter": "Automation Bug", "quantity": "1"},
     {"filterName": "Product bugs_02_", "parameter": "Product Bug", "quantity": "1"},
-    {"filterName": "System issues_03_", "parameter": "System Issue", "quantity": "1"}
+    {"filterName": "System issues_03_", "parameter": "System Issue", "quantity": "1"},
+    {"filterName": "To investigate group", "parameter": "To Investigate","quantity": "1"},
+    {"filterName": "Launches with failures", "parameter": "Failed", "quantity": "1"}
   ],
   "RemoveFilter": [
     {"filterName": "Automation bugs_1", "parameter": "Automation Bug", "quantity": "1"},

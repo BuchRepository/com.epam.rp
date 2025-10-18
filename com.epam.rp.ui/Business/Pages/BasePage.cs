@@ -19,9 +19,6 @@ public abstract class BasePage
 
     protected IWebElement Find(By locator) => 
         Wait.Until(ExpectedConditions.ElementExists(locator));
-        
-    //protected IWebElement FindVisible(By locator) => 
-      //  Wait.Until(ExpectedConditions.ElementIsVisible(locator));
     
     protected IWebElement FindVisible(By locator) => 
         Wait.Until(driver => 

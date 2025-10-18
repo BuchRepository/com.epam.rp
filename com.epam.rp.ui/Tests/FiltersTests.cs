@@ -53,10 +53,10 @@ public class FiltersTests : TestBase
         FiltersPage!.DeleteFilter(filterName);
         Assert.IsFalse(FiltersPage!.IsFilterVisible(filterName), $"Filter '{filterName}' should be deleted.");
     }
-    /*
+    
     public static IEnumerable<object[]> RemoveFilterData()
     {
-        var testData = TestDataLoader.LoadTestData<dynamic>("TestData.json", "RemoveFilter");
+        var testData = TestDataLoader.LoadTestData<FilterTestData>("TestData.json", "RemoveFilter");
         foreach (var item in testData)
         {
             yield return new object[] { item };
@@ -65,7 +65,7 @@ public class FiltersTests : TestBase
     
     [TestMethod]
     [DynamicData(nameof(RemoveFilterData), DynamicDataSourceType.Method)]
-    public void UserCanRemoveFilter(dynamic data)
+    public void UserCanRemoveFilter(FilterTestData data)
     {
         string filterName = $"{data.filterName}_{Guid.NewGuid():N}";
         string parameter = data.parameter;
@@ -81,13 +81,12 @@ public class FiltersTests : TestBase
         launchesPage.AddFilter(filterName, parameter, quantity);
        
         FiltersPage.DeleteFilter(filterName);
-        Assert.IsTrue(FiltersPage!.WaitForFilterVisibility(filterName, false),
-            $"Filter '{filterName}' should be deleted.");
+        Assert.IsFalse(FiltersPage!.IsFilterVisible(filterName), $"Filter '{filterName}' should be deleted.");
     }
 
     public static IEnumerable<object[]> ToggleDisplayData()
     {
-        var testData = TestDataLoader.LoadTestData<dynamic>("TestData.json", "ToggleDisplay");
+        var testData = TestDataLoader.LoadTestData<FilterTestData>("TestData.json", "ToggleDisplay");
         foreach (var item in testData)
         {
             yield return new object[] { item };
@@ -96,7 +95,7 @@ public class FiltersTests : TestBase
 
     [TestMethod]
     [DynamicData(nameof(ToggleDisplayData), DynamicDataSourceType.Method)]
-    public void UserCanToggleFilterDisplay(dynamic data)
+    public void UserCanToggleFilterDisplay(FilterTestData data)
     {
         string filterName = $"{data.filterName}_{Guid.NewGuid():N}";
         string parameter = data.parameter;
@@ -128,20 +127,19 @@ public class FiltersTests : TestBase
         );
         
         FiltersPage.DeleteFilter(filterName);
-        Assert.IsTrue(FiltersPage!.WaitForFilterVisibility(filterName, false),
-            $"Filter '{filterName}' should be deleted.");
+        Assert.IsFalse(FiltersPage!.IsFilterVisible(filterName), $"Filter '{filterName}' should be deleted.");
     }
     
     public static IEnumerable<object[]> EditFilterData()
     {
-        var testData = TestDataLoader.LoadTestData<dynamic>("TestData.json", "EditFilter");
+        var testData = TestDataLoader.LoadTestData<FilterTestData>("TestData.json", "EditFilter");
         foreach (var item in testData)
             yield return new object[] { item };
     }
 
     [TestMethod]
     [DynamicData(nameof(EditFilterData), DynamicDataSourceType.Method)]
-    public void UserCanEditFilter(dynamic data)
+    public void UserCanEditFilter(FilterTestData data)
     {
         string filterName = $"{data.filterName}_{Guid.NewGuid():N}";
         string parameter = data.parameter;
@@ -156,27 +154,27 @@ public class FiltersTests : TestBase
         var launchesPage = FiltersPage!.ClickAddFilter();
         launchesPage.AddFilter(filterName, parameter, quantity);
 
-        Assert.IsTrue(FiltersPage!.WaitForFilterVisibility(filterName, true), $"Filter '{filterName}' should be present.");
+        Assert.IsTrue(FiltersPage!.IsFilterVisible(filterName), $"Filter '{filterName}' should be presented.");
 
         FiltersPage!.EditFilter(filterName, newFilterName);
         
-        Assert.IsTrue(FiltersPage!.WaitForFilterVisibility(newFilterName, true), $"Edited filter '{newFilterName}' should be present.");
-        Assert.IsFalse(FiltersPage!.WaitForFilterVisibility(filterName, true), $"Old filter '{filterName}' should no longer exist.");
+        Assert.IsTrue(FiltersPage!.IsFilterVisible(newFilterName), $"Edited filter '{newFilterName}' should be presented.");
+        Assert.IsFalse(FiltersPage!.IsFilterVisible(filterName), $"Old filter '{filterName}' should be deleted.");
 
         FiltersPage.DeleteFilter(newFilterName);
-        Assert.IsTrue(FiltersPage!.WaitForFilterVisibility(newFilterName, false), $"Filter '{newFilterName}' should be deleted.");
+        Assert.IsFalse(FiltersPage!.IsFilterVisible(newFilterName), $"Filter '{newFilterName}' should be deleted.");
     }
 
     public static IEnumerable<object[]> CopyFilterData()
     {
-        var testData = TestDataLoader.LoadTestData<dynamic>("TestData.json", "CopyFilter");
+        var testData = TestDataLoader.LoadTestData<FilterTestData>("TestData.json", "CopyFilter");
         foreach (var item in testData)
             yield return new object[] { item };
     }
 
     [TestMethod]
     [DynamicData(nameof(CopyFilterData), DynamicDataSourceType.Method)]
-    public void UserCanCopyFilter(dynamic data)
+    public void UserCanCopyFilter(FilterTestData data)
     {
         string filterName = $"{data.filterName}_{Guid.NewGuid():N}";
         string parameter = data.parameter;
@@ -191,15 +189,16 @@ public class FiltersTests : TestBase
         var launchesPage = FiltersPage!.ClickAddFilter();
         launchesPage.AddFilter(filterName, parameter, quantity);
 
-        Assert.IsTrue(FiltersPage!.WaitForFilterVisibility(filterName, true), $"Filter '{filterName}' should be present.");
+        Assert.IsTrue(FiltersPage!.IsFilterVisible(filterName), $"Filter '{filterName}' should be present.");
 
         launchesPage.ClickFilterByName(filterName);
         launchesPage.CopyFilter();
 
-        Assert.IsTrue(FiltersPage!.WaitForFilterVisibility(copiedFilterName, true), $"Copied filter '{copiedFilterName}' should be present.");
+        Assert.IsTrue(FiltersPage!.IsFilterVisible(copiedFilterName), $"Copied filter '{copiedFilterName}' should be present.");
 
         FiltersPage.DeleteFilter(filterName);
+        Assert.IsFalse(FiltersPage!.IsFilterVisible(filterName), $"Filter '{filterName}' should be deleted.");
         FiltersPage.DeleteFilter(copiedFilterName);
+        Assert.IsFalse(FiltersPage!.IsFilterVisible(copiedFilterName), $"Filter '{copiedFilterName}' should be deleted.");
     }
-    */
 }
