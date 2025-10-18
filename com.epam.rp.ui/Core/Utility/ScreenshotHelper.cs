@@ -23,7 +23,7 @@ public static class ScreenshotHelper
             }
             
             string runId = Environment.GetEnvironmentVariable("GITHUB_RUN_ID") ?? "local";
-            string browser = Environment.GetEnvironmentVariable("BROWSER") ?? "default";
+            string browser = Environment.GetEnvironmentVariable("BROWSER") ?? "default-1";
             string runDir = Path.Combine(screenshotsDir, runId, browser);
             Directory.CreateDirectory(runDir);
 
