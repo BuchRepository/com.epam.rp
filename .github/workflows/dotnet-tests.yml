@@ -199,6 +199,9 @@ jobs:
         run: |
           ls -R com.epam.rp.ui | grep appsettings || echo "No appsettings found!"
 
+      - name: Clean screenshots folder
+        run: rm -rf ./com.epam.rp.ui/bin/Release/net8.0/screenshots/* || true
+
       - name: Run UI tests in ${{ matrix.browser }}
         run: |
           dotnet test com.epam.rp.ui/com.epam.rp.ui.csproj \
@@ -219,7 +222,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: screenshots-${{ matrix.browser }}
-          path: ./com.epam.rp.ui/bin/Release/net8.0/screenshots/*.png
+          path: ./com.epam.rp.ui/bin/Release/net8.0/screenshots/**/*.png
           if-no-files-found: ignore
 
       - name: List files in Release folder

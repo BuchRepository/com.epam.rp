@@ -9,15 +9,19 @@ public static class ScreenshotHelper
         try
         {
             string screenshotsDir = Path.Combine(AppContext.BaseDirectory, "screenshots");
-            Directory.CreateDirectory(screenshotsDir);
+            string runId = Environment.GetEnvironmentVariable("GITHUB_RUN_ID") ?? "local";
+            string runDir = Path.Combine(screenshotsDir, runId);
+            Directory.CreateDirectory(runDir);
 
-            string fileName = $"{scenarioName ?? "screenshot"}_{Guid.NewGuid():N}.png";
-            string fullPath = Path.Combine(screenshotsDir, fileName);
+            string timestamp = DateTime.UtcNow.ToString("yyyyMMdd_HHmmss_fff");
+            string fileName = $"{scenarioName ?? "screenshot"}_{timestamp}_{Guid.NewGuid():N}.png";
+            string fullPath = Path.Combine(runDir, fileName);
 
             var screenshot = ((ITakesScreenshot)driver).GetScreenshot();
             screenshot.SaveAsFile(fullPath);
 
-            logger.Information($"Screenshot saved: {fullPath}");
+            logger.Information($"Screenshot saved: {fullPath}, URL: {driver.Url}, Scenario: {scenarioName}");
+
             return fullPath;
         }
         catch (Exception ex)
