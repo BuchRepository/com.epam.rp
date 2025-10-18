@@ -32,6 +32,8 @@ public static class DriverFactory
             case "firefox":
                 var firefoxOptions = new FirefoxOptions();
                 firefoxOptions.AddArgument("-headless");
+                firefoxOptions.AddArgument("--width=1920");
+                firefoxOptions.AddArgument("--height=1080");
                 capabilities = firefoxOptions.ToCapabilities();
                 break;
             case "chrome":
@@ -59,7 +61,11 @@ public static class DriverFactory
         switch (browser.ToLower())
         {
             case "firefox":
-                driver = new FirefoxDriver();
+                var firefoxOptions = new FirefoxOptions();
+                firefoxOptions.AddArgument("-headless");
+                firefoxOptions.AddArgument("--width=1920");
+                firefoxOptions.AddArgument("--height=1080");
+                driver = new FirefoxDriver(firefoxOptions);
                 break;
 
             case "chrome":
@@ -68,6 +74,7 @@ public static class DriverFactory
                 options.AddArgument("--no-sandbox");
                 options.AddArgument("--disable-dev-shm-usage");
                 options.AddArgument("--disable-gpu");
+                options.AddArgument("--window-size=1920,1080");
 
                 if (uniqueProfile)
                 {
