@@ -56,43 +56,38 @@ public class LaunchesPage : BasePage
     private void SaveFilter() => _saveButton.ClickButton();
     private void ConfirmAddFilter() => _addFilterButton.ClickButton();
 
-    public bool IsFilterVisible(string filterName, bool shouldBeVisible = true)
+    public bool IsFilterVisible(string filterName)
     {
-        var locator = By.XPath($"//span[contains(@class,'filter') and normalize-space(text())='{filterName}']");
-    
         try
         {
-            return Wait.Until(drv =>
-            {
-                try
-                {
-                    var elems = drv.FindElements(locator);
-                    if (elems.Count == 0) 
-                    {
-                        LoggerService.Info($"Filter '{filterName}' not found in DOM.");
-                        return !shouldBeVisible; 
-                    }
-                    
-                    bool isDisplayed = elems.Any(e => e.Displayed && e.Enabled && e.Size.Height > 0 && e.Size.Width > 0);
-                    
-                    if (isDisplayed)
-                        LoggerService.Info($"Filter '{filterName}' is currently visible.");
-                    else
-                        LoggerService.Info($"Filter '{filterName}' is currently hidden.");
+            Driver.Navigate().Refresh();
+            LoggerService.Info($"Refreshing page to check if filter '{filterName}' is visible");
+            Thread.Sleep(2000);
+            
+            var elements = Driver.FindElements(FilterByName(filterName));
 
-                    return shouldBeVisible ? isDisplayed : !isDisplayed;
-                }
-                catch (StaleElementReferenceException)
-                {
-                    LoggerService.Warn($"StaleElementReferenceException encountered for filter '{filterName}', retrying...");
-                    return !shouldBeVisible;
-                }
-            });
+            if (!elements.Any())
+            {
+                LoggerService.Warn($"No elements found for filter '{filterName}'");
+                return false;
+            }
+
+            foreach (var el in elements)
+            {
+                LoggerService.Info($"Found element text: '{el.Text}'");
+            }
+            
+            FindVisible(FilterByName(filterName));
+            return true;
         }
         catch (WebDriverTimeoutException)
         {
-            var state = shouldBeVisible ? "visible" : "hidden";
-            LoggerService.Error($"Timeout waiting for filter '{filterName}' to be {state}.");
+            LoggerService.Warn($"Filter '{filterName}' is not visible.");
+            return false;
+        }
+        catch (NoSuchElementException)
+        {
+            LoggerService.Warn($"Filter '{filterName}' does not exist.");
             return false;
         }
     }

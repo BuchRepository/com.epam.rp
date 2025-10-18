@@ -112,18 +112,13 @@ public class FiltersTests : TestBase
         launchesPage.AddFilter(filterName, parameter, quantity);
 
         Assert.IsTrue(
-            launchesPage.IsFilterVisible(filterName, shouldBeVisible: true),
-            $"Created filter '{filterName}' should be presented on Launches page."
+            launchesPage.IsFilterVisible(filterName), $"Created filter '{filterName}' should be presented on Launches page."
         );
 
         FiltersPage!.DisableDisplayOnLaunches(filterName);
         FiltersPage!.WaitForState(filterName, FiltersState.Off);
 
-        launchesPage.RefreshPage();
-
-        Assert.IsTrue(
-            launchesPage.IsFilterVisible(filterName, shouldBeVisible: false),
-            $"Toggled filter '{filterName}' should disappear on Launches page."
+        Assert.IsFalse(launchesPage.IsFilterVisible(filterName), $"Toggled filter '{filterName}' should not be presented on Launches page."
         );
 
         FiltersPage.DeleteFilter(filterName);
