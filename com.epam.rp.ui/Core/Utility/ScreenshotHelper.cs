@@ -9,6 +9,19 @@ public static class ScreenshotHelper
         try
         {
             string screenshotsDir = Path.Combine(AppContext.BaseDirectory, "screenshots");
+
+            if (!Directory.Exists(screenshotsDir))
+            {
+                Directory.CreateDirectory(screenshotsDir);
+            }
+            else
+            {
+                foreach (var dir in Directory.GetDirectories(screenshotsDir))
+                    Directory.Delete(dir, true);
+                foreach (var file in Directory.GetFiles(screenshotsDir))
+                    File.Delete(file);
+            }
+            
             string runId = Environment.GetEnvironmentVariable("GITHUB_RUN_ID") ?? "local";
             string runDir = Path.Combine(screenshotsDir, runId);
             Directory.CreateDirectory(runDir);
