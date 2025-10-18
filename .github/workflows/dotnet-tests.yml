@@ -200,7 +200,7 @@ jobs:
           ls -R com.epam.rp.ui | grep appsettings || echo "No appsettings found!"
 
       - name: Clean screenshots folder
-        run: rm -rf ./com.epam.rp.ui/bin/Release/net8.0/screenshots/* || true
+        run: rm -rf ./com.epam.rp.ui/bin/Release/net8.0/screenshots/** || true
 
       - name: Run UI tests in ${{ matrix.browser }}
         run: |
