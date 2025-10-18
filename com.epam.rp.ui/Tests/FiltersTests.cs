@@ -83,8 +83,6 @@ public class FiltersTests : TestBase
         FiltersPage.DeleteFilter(filterName);
         Assert.IsFalse(FiltersPage!.IsFilterVisible(filterName), $"Filter '{filterName}' should be deleted.");
     }
-    
-   /*
 
     public static IEnumerable<object[]> ToggleDisplayData()
     {
@@ -94,7 +92,6 @@ public class FiltersTests : TestBase
             yield return new object[] { item };
         }
     }
-
     
     [TestMethod]
     [DynamicData(nameof(ToggleDisplayData), DynamicDataSourceType.Method)]
@@ -133,6 +130,7 @@ public class FiltersTests : TestBase
         Assert.IsFalse(FiltersPage!.IsFilterVisible(filterName), $"Filter '{filterName}' should be deleted.");
     }
 
+    /*
     public static IEnumerable<object[]> EditFilterData()
     {
         var testData = TestDataLoader.LoadTestData<FilterTestData>("TestData.json", "EditFilter");

@@ -1,34 +1,34 @@
 {
   "AddFilter": [
-    {"filterName": "Automation bugs_01_", "parameter": "Automation Bug", "quantity": "1"},
-    {"filterName": "Product bugs_02_", "parameter": "Product Bug", "quantity": "1"},
-    {"filterName": "System issues_03_", "parameter": "System Issue", "quantity": "1"},
+    {"filterName": "Automation bugs", "parameter": "Automation Bug", "quantity": "1"},
+    {"filterName": "Product bugs", "parameter": "Product Bug", "quantity": "1"},
+    {"filterName": "System issues", "parameter": "System Issue", "quantity": "1"},
     {"filterName": "To investigate group", "parameter": "To Investigate","quantity": "1"},
     {"filterName": "Launches with failures", "parameter": "Failed", "quantity": "1"}
   ],
   "RemoveFilter": [
-    {"filterName": "Automation bugs_1", "parameter": "Automation Bug", "quantity": "1"},
+    {"filterName": "Automation bugs", "parameter": "Automation Bug", "quantity": "1"},
     {"filterName": "Product bugs", "parameter": "Product Bug", "quantity": "1"},
     {"filterName": "System issues", "parameter": "System Issue", "quantity": "1"},
     {"filterName": "To investigate group", "parameter": "To Investigate","quantity": "1"},
     {"filterName": "Launches with failures", "parameter": "Failed", "quantity": "1"}
   ],
   "EditFilter": [
-    {"filterName": "Automation bugs_2", "parameter": "Automation Bug", "quantity": "1"},
+    {"filterName": "Automation bugs", "parameter": "Automation Bug", "quantity": "1"},
     {"filterName": "Product bugs", "parameter": "Product Bug", "quantity": "1"},
     {"filterName": "System issues", "parameter": "System Issue", "quantity": "1"},
     {"filterName": "To investigate group", "parameter": "To Investigate","quantity": "1"},
     {"filterName": "Launches with failures", "parameter": "Failed", "quantity": "1"}
   ],
   "CopyFilter": [
-    {"filterName": "Automation bugs_3", "parameter": "Automation Bug", "quantity": "1"},
+    {"filterName": "Automation bugs", "parameter": "Automation Bug", "quantity": "1"},
     {"filterName": "Product bugs", "parameter": "Product Bug", "quantity": "1"},
     {"filterName": "System issues", "parameter": "System Issue", "quantity": "1"},
     {"filterName": "To investigate group", "parameter": "To Investigate","quantity": "1"},
     {"filterName": "Launches with failures", "parameter": "Failed", "quantity": "1"}
   ],
   "ToggleDisplay": [
-    {"filterName": "Automation bugs_4", "parameter": "Automation Bug", "quantity": "1"},
+    {"filterName": "Automation bugs", "parameter": "Automation Bug", "quantity": "1"},
     {"filterName": "Product bugs", "parameter": "Product Bug", "quantity": "1"},
     {"filterName": "System issues", "parameter": "System Issue", "quantity": "1"},
     {"filterName": "To investigate group", "parameter": "To Investigate","quantity": "1"},
