@@ -1,7 +1,7 @@
 {
   "server": {
     "url": "https://rp.epam.com",
-    "project": "test_user_personal",
+    "project": "sergii_buchkivskyi_personal",
     "authentication": {
       "uuid": ""  
     }
