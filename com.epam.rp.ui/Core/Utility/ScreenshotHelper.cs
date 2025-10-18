@@ -23,7 +23,8 @@ public static class ScreenshotHelper
             }
             
             string runId = Environment.GetEnvironmentVariable("GITHUB_RUN_ID") ?? "local";
-            string runDir = Path.Combine(screenshotsDir, runId);
+            string browser = Environment.GetEnvironmentVariable("BROWSER") ?? "default";
+            string runDir = Path.Combine(screenshotsDir, runId, browser);
             Directory.CreateDirectory(runDir);
 
             string timestamp = DateTime.UtcNow.ToString("yyyyMMdd_HHmmss_fff");
