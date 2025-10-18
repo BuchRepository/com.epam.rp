@@ -121,7 +121,7 @@ public class FiltersPage : BasePage
 
     public void EnableDisplayOnLaunches(string filterName)
     {
-        if (GetFilterDisplayStatus(filterName) == false)
+        if (Find(StateByName(filterName, FiltersState.Off)).Text.Trim().ToUpperInvariant() == "OFF")
         {
             FindClickable(ToggleByName(filterName)).Click();
         }
@@ -129,7 +129,7 @@ public class FiltersPage : BasePage
 
     public void DisableDisplayOnLaunches(string filterName)
     {
-        if (GetFilterDisplayStatus(filterName))
+        if (Find(StateByName(filterName, FiltersState.On)).Text.Trim().ToUpperInvariant() == "ON")
         {
             FindClickable(ToggleByName(filterName)).Click();
         }
