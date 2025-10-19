@@ -60,9 +60,12 @@ public class LaunchesPage : BasePage
     {
         try
         {
+            Driver.Navigate().Refresh();
             Thread.Sleep(2000);
-            var el = Find(FilterByName(filterName));
+            LoggerService.Info($"Current URL before assert: {Driver.Url}");
 
+            var el = Find(FilterByName(filterName));
+            LoggerService.Info($"Current URL before assert: {Driver.Url}");
             if (el.Displayed)
             {
                 LoggerService.Info($"Filter '{filterName}' is visible.");
