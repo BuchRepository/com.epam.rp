@@ -13,6 +13,7 @@ public class LaunchesPage : BasePage
     private readonly Input _enterQuantityInput;
     private readonly By _filtersMenuInput;
     private readonly By _moreOptions;
+    private readonly By _launchesMenuItem;
 
     public LaunchesPage(IWebDriver driver) : base(driver)
     {
@@ -23,9 +24,15 @@ public class LaunchesPage : BasePage
         _enterQuantityInput = new Input(driver, By.XPath("//input[@placeholder='Enter quantity']"), "Enter quantity input");
         _filtersMenuInput= By.XPath("//a[contains(@href,'/filters')]");
         _moreOptions = By.XPath("//div[text()='More']");
+        _launchesMenuItem = By.XPath("//a[contains(@href,'/filters')]");
     }
     
     private By FilterByName(string name) => By.XPath($"//span[text()='{name}']");
+    
+    public void OpenLaunchesPage()
+    {
+        Click(_launchesMenuItem);
+    } 
     
     public void AddFilter(string filterName, string parameter, string quantity)
     {
@@ -61,8 +68,6 @@ public class LaunchesPage : BasePage
     {
         try
         {
-            LoggerService.Info($"Current URL: {Driver.Url}");
-            Driver.Navigate().Refresh();
             Thread.Sleep(2000);
             LoggerService.Info($"Current URL before assert: {Driver.Url}");
 

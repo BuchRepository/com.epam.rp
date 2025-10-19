@@ -114,7 +114,7 @@ public class FiltersTests : TestBase
         launchesPage.AddFilter(filterName, parameter, quantity);
         
         FiltersPage!.DisableDisplayOnLaunches(filterName);
-        launchesPage = FiltersPage!.WaitForState(filterName, FiltersState.Off);
+        launchesPage.OpenLaunchesPage();
         
         Assert.IsFalse(launchesPage.IsFilterVisible(filterName), $"Toggled filter '{filterName}' should not be presented on Launches page."
         );
