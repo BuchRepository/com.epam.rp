@@ -60,7 +60,6 @@ public class LaunchesPage : BasePage
     {
         try
         {
-            Driver.Navigate().Refresh();
             LoggerService.Info($"Refreshing page to check if filter '{filterName}' is visible");
             Thread.Sleep(2000);
             

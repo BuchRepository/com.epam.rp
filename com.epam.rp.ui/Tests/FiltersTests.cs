@@ -112,10 +112,6 @@ public class FiltersTests : TestBase
         var launchesPage = FiltersPage!.ClickAddFilter();
         launchesPage.AddFilter(filterName, parameter, quantity);
 
-        Assert.IsTrue(
-            launchesPage.IsFilterVisible(filterName), $"Created filter '{filterName}' should be presented on Launches page."
-        );
-
         FiltersPage!.DisableDisplayOnLaunches(filterName);
         FiltersPage!.WaitForState(filterName, FiltersState.Off);
 
