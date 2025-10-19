@@ -127,6 +127,12 @@ public class FiltersPage : BasePage
             Click(ToggleByName(filterName));
         }
     }
+    
+    public string StateTextOfFilterToggle(string filterName)
+    {
+        var stateOfFilterToggle= Find(ToggleStateByFilterName(filterName));
+        return stateOfFilterToggle.Text.Trim().ToUpperInvariant();
+    }
 
     public void DisableDisplayOnLaunches(string filterName)
     {
@@ -141,6 +147,7 @@ public class FiltersPage : BasePage
             {
                 LoggerService.Info($"Disabling Display on Launches for '{filterName}'");
                 Click(ToggleByName(filterName));
+                LoggerService.Info($"State of element after click for '{filterName}' is '{StateTextOfFilterToggle(filterName)}'");
             }
             else
             {
