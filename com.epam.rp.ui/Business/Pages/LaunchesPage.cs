@@ -60,6 +60,7 @@ public class LaunchesPage : BasePage
     {
         try
         {
+            Thread.Sleep(2000);
             var el = Find(FilterByName(filterName));
 
             if (el.Displayed)
