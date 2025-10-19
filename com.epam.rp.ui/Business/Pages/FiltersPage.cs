@@ -39,9 +39,6 @@ public class FiltersPage : BasePage
     public LaunchesPage ClickAddFilter()
     {
         _addFilterButton.ClickButton();
-        Wait.Until(driver => driver.Url.Contains("/launches/all"));
-
-        LoggerService.Info($"Navigated to Launches page: {Driver.Url}");
         return new LaunchesPage(Driver);
     }
     
@@ -169,9 +166,10 @@ public class FiltersPage : BasePage
     }
 
 
-    public void WaitForState(string filterName, FiltersState state)
+    public LaunchesPage WaitForState(string filterName, FiltersState state)
     {
         FindVisible(StateByName(filterName, state));
+        return new LaunchesPage(Driver);
     }
     
     public void EditFilter(string oldName, string newName)
@@ -212,5 +210,11 @@ public class FiltersPage : BasePage
             LoggerService.Error($"Unexpected error checking filter '{filterName}': {ex.Message}");
             return false;
         }
+    }
+    
+    public void GoToFilters()
+    {
+        Driver.Navigate().GoToUrl("https://rp.epam.com/ui/#sergii_buchkivskyi_personal/filters");
+        Wait.Until(driver => driver.Url.Contains("/filters"));
     }
 }

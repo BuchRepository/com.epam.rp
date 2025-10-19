@@ -2,6 +2,7 @@ using com.epam.rp.core;
 using com.epam.rp.core.Configuration;
 using com.epam.rp.core.Models;
 using com.epam.rp.ui.Business.Enums;
+using com.epam.rp.ui.Business.Pages;
 using com.epam.rp.ui.Core;
 using TestDataLoader = com.epam.rp.core.TestDataLoader;
 
@@ -111,9 +112,9 @@ public class FiltersTests : TestBase
         LoggerService.Info("Click on 'Add' button");
         var launchesPage = FiltersPage!.ClickAddFilter();
         launchesPage.AddFilter(filterName, parameter, quantity);
-
+        
         FiltersPage!.DisableDisplayOnLaunches(filterName);
-        FiltersPage!.WaitForState(filterName, FiltersState.Off);
+        launchesPage = FiltersPage!.WaitForState(filterName, FiltersState.Off);
         
         Assert.IsFalse(launchesPage.IsFilterVisible(filterName), $"Toggled filter '{filterName}' should not be presented on Launches page."
         );
