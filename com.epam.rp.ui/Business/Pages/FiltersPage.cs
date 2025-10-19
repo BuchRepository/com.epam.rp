@@ -2,6 +2,7 @@ using com.epam.rp.core;
 using com.epam.rp.ui.Business.Enums;
 using com.epam.rp.ui.Core.Elements;
 using OpenQA.Selenium;
+using SeleniumExtras.WaitHelpers;
 
 namespace com.epam.rp.ui.Business.Pages;
 
@@ -38,6 +39,9 @@ public class FiltersPage : BasePage
     public LaunchesPage ClickAddFilter()
     {
         _addFilterButton.ClickButton();
+        Wait.Until(driver => driver.Url.Contains("/launches/all"));
+
+        LoggerService.Info($"Navigated to Launches page: {Driver.Url}");
         return new LaunchesPage(Driver);
     }
     
