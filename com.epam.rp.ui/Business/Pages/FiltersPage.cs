@@ -38,6 +38,7 @@ public class FiltersPage : BasePage
     
     public LaunchesPage ClickAddFilter()
     {
+        LoggerService.Info($"Current URL: {Driver.Url}");
         _addFilterButton.ClickButton();
         return new LaunchesPage(Driver);
     }
@@ -139,6 +140,7 @@ public class FiltersPage : BasePage
     {
         try
         {
+            LoggerService.Info($"Current URL: {Driver.Url}");
             var stateOfFilterToggle= Find(ToggleStateByFilterName(filterName));
             var currentState = stateOfFilterToggle.Text.Trim().ToUpperInvariant();
 
@@ -168,6 +170,7 @@ public class FiltersPage : BasePage
 
     public LaunchesPage WaitForState(string filterName, FiltersState state)
     {
+        LoggerService.Info($"Current URL: {Driver.Url}");
         FindVisible(StateByName(filterName, state));
         return new LaunchesPage(Driver);
     }

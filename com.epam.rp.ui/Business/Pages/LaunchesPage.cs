@@ -29,6 +29,7 @@ public class LaunchesPage : BasePage
     
     public void AddFilter(string filterName, string parameter, string quantity)
     {
+        LoggerService.Info($"Current URL: {Driver.Url}");
         LoggerService.Info("Select specific parameter and quantity");
         SelectParameter(parameter, quantity);
         SaveFilter();
@@ -60,6 +61,7 @@ public class LaunchesPage : BasePage
     {
         try
         {
+            LoggerService.Info($"Current URL: {Driver.Url}");
             Driver.Navigate().Refresh();
             Thread.Sleep(2000);
             LoggerService.Info($"Current URL before assert: {Driver.Url}");
