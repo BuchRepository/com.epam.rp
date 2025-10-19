@@ -123,7 +123,7 @@ public class FiltersPage : BasePage
     {
         if (Find(StateByName(filterName, FiltersState.Off)).Text.Trim().ToUpperInvariant() == "OFF")
         {
-            FindClickable(ToggleByName(filterName)).Click();
+            Click(ToggleByName(filterName));
         }
     }
 
@@ -131,7 +131,7 @@ public class FiltersPage : BasePage
     {
         if (Find(StateByName(filterName, FiltersState.On)).Text.Trim().ToUpperInvariant() == "ON")
         {
-            FindClickable(ToggleByName(filterName)).Click();
+            Click(ToggleByName(filterName));
         }
     }
 
