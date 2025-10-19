@@ -60,24 +60,34 @@ public class LaunchesPage : BasePage
     {
         try
         {
-            LoggerService.Info($"Refreshing page to check if filter '{filterName}' is visible");
-            Thread.Sleep(2000);
-            
-            FindVisible(FilterByName(filterName));
-            return true;
-        }
-        catch (WebDriverTimeoutException)
-        {
-            LoggerService.Warn($"Filter '{filterName}' is not visible.");
+            var el = Find(FilterByName(filterName));
+
+            if (el.Displayed)
+            {
+                LoggerService.Info($"Filter '{filterName}' is visible.");
+                return true;
+            }
+
+            LoggerService.Warn($"Filter '{filterName}' exists but is not visible.");
             return false;
         }
         catch (NoSuchElementException)
         {
-            LoggerService.Warn($"Filter '{filterName}' does not exist.");
+            LoggerService.Warn($"Filter '{filterName}' not found in DOM.");
+            return false;
+        }
+        catch (WebDriverTimeoutException)
+        {
+            LoggerService.Warn($"Timeout while searching for filter '{filterName}'.");
+            return false;
+        }
+        catch (Exception ex)
+        {
+            LoggerService.Error($"Unexpected error checking filter '{filterName}': {ex.Message}");
             return false;
         }
     }
-
+    
     public void ClickFilterByName(string filterName)
     {
         Click(FilterByName(filterName));

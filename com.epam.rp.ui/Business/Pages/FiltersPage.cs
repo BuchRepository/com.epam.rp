@@ -152,34 +152,30 @@ public class FiltersPage : BasePage
     {
         try
         {
-            Driver.Navigate().Refresh();
-            LoggerService.Info($"Refreshing page to check if filter '{filterName}' is visible");
-            Thread.Sleep(2000);
-            
-            var elements = Driver.FindElements(FilterByName(filterName));
+            var el = Find(FilterByName(filterName));
 
-            if (!elements.Any())
+            if (el.Displayed)
             {
-                LoggerService.Warn($"No elements found for filter '{filterName}'");
-                return false;
+                LoggerService.Info($"Filter '{filterName}' is visible.");
+                return true;
             }
 
-            foreach (var el in elements)
-            {
-                LoggerService.Info($"Found element text: '{el.Text}'");
-            }
-            
-            FindVisible(FilterByName(filterName));
-            return true;
-        }
-        catch (WebDriverTimeoutException)
-        {
-            LoggerService.Warn($"Filter '{filterName}' is not visible.");
+            LoggerService.Warn($"Filter '{filterName}' exists but is not visible.");
             return false;
         }
         catch (NoSuchElementException)
         {
-            LoggerService.Warn($"Filter '{filterName}' does not exist.");
+            LoggerService.Warn($"Filter '{filterName}' not found in DOM.");
+            return false;
+        }
+        catch (WebDriverTimeoutException)
+        {
+            LoggerService.Warn($"Timeout while searching for filter '{filterName}'.");
+            return false;
+        }
+        catch (Exception ex)
+        {
+            LoggerService.Error($"Unexpected error checking filter '{filterName}': {ex.Message}");
             return false;
         }
     }
