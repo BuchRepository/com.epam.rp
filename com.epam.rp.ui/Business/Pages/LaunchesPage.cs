@@ -64,6 +64,7 @@ public class LaunchesPage : BasePage
     private void SaveFilter() => _saveButton.ClickButton();
     private void ConfirmAddFilter() => _addFilterButton.ClickButton();
 
+        /*
     public bool IsFilterVisible(string filterName)
     {
         try
@@ -72,7 +73,6 @@ public class LaunchesPage : BasePage
             LoggerService.Info($"Current URL before assert: {Driver.Url}");
 
             var el = Find(FilterByName(filterName));
-            LoggerService.Info($"Current URL before assert: {Driver.Url}");
             if (el.Displayed)
             {
                 LoggerService.Info($"Filter '{filterName}' is visible.");
@@ -98,6 +98,7 @@ public class LaunchesPage : BasePage
             return false;
         }
     }
+    */
     
     public void ClickFilterByName(string filterName)
     {

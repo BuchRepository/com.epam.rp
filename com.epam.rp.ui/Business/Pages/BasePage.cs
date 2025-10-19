@@ -125,6 +125,61 @@ public abstract class BasePage
         }
     }
     
+    public bool IsFilterVisible(string filterName)
+{
+    try
+    {
+        Thread.Sleep(1500);
+        string currentUrl = Driver.Url;
+        LoggerService.Info($"Checking visibility of filter '{filterName}' on {currentUrl}");
+
+        if (currentUrl.Contains("/filters"))
+        {
+            var filterLocator = By.XPath($"//span[text()='{filterName}']");
+            var el = Find(filterLocator);
+
+            if (el.Displayed)
+            {
+                LoggerService.Info($"Filter '{filterName}' is visible on Filters page.");
+                return true;
+            }
+            LoggerService.Warn($"Filter '{filterName}' exists but is hidden on Filters page.");
+            return false;
+        }
+
+        else if (currentUrl.Contains("/launches"))
+        {
+            var filterLocator = By.XPath($"//span[contains(text(),'{filterName}')]");
+            var elements = Driver.FindElements(filterLocator);
+
+            bool visible = elements.Any(e => e.Displayed);
+            LoggerService.Info(visible
+                ? $"Filter '{filterName}' is visible on Launches page."
+                : $"Filter '{filterName}' is not visible on Launches page.");
+            return visible;
+        }
+
+        LoggerService.Warn($"Unknown page context while checking filter '{filterName}'. URL: {currentUrl}");
+        return false;
+    }
+    catch (NoSuchElementException)
+    {
+        LoggerService.Warn($"Filter '{filterName}' not found in DOM.");
+        return false;
+    }
+    catch (WebDriverTimeoutException)
+    {
+        LoggerService.Warn($"Timeout while searching for filter '{filterName}'.");
+        return false;
+    }
+    catch (Exception ex)
+    {
+        LoggerService.Error($"Unexpected error checking filter '{filterName}': {ex.Message}");
+        return false;
+    }
+}
+
+    
     public void RefreshPage()
     {
         Driver.Navigate().Refresh();
