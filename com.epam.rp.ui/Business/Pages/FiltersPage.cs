@@ -183,6 +183,7 @@ public class FiltersPage : BasePage
         _updateButton.ClickButton();
     }
     
+    /*
     public bool IsFilterVisible(string filterName)
     {
         try
@@ -214,6 +215,7 @@ public class FiltersPage : BasePage
             return false;
         }
     }
+    */
     
     public void GoToFilters()
     {
