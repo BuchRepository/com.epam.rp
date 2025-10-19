@@ -11,7 +11,7 @@ public class LaunchesPage : BasePage
     private readonly Button _cloneButton;
     private readonly Input _filterNameInput;
     private readonly Input _enterQuantityInput;
-    private readonly By _filtersMenuInput;
+    private readonly By _filtersMenuItem;
     private readonly By _moreOptions;
     private readonly By _launchesMenuItem;
 
@@ -22,7 +22,7 @@ public class LaunchesPage : BasePage
         _cloneButton = new Button(driver, By.XPath("//button[@title='Clone']"), "Clone button");
         _filterNameInput = new Input(driver, By.XPath("//input[@placeholder='Enter filter name']"), "Filter name input");
         _enterQuantityInput = new Input(driver, By.XPath("//input[@placeholder='Enter quantity']"), "Enter quantity input");
-        _filtersMenuInput= By.XPath("//a[contains(@href,'/filters')]");
+        _filtersMenuItem= By.XPath("//a[contains(@href,'/filters')]");
         _moreOptions = By.XPath("//div[text()='More']");
         _launchesMenuItem = By.XPath("//a[contains(@href,'launches') and contains(@class,'sidebarButton')]");
     }
@@ -34,6 +34,12 @@ public class LaunchesPage : BasePage
         Click(_launchesMenuItem);
     } 
     
+    public void OpenFiltersPage()
+    {
+        Click(_filtersMenuItem);
+        LoggerService.Info($"Current URL: {Driver.Url}");
+    } 
+    
     public void AddFilter(string filterName, string parameter, string quantity)
     {
         LoggerService.Info($"Current URL: {Driver.Url}");
@@ -43,7 +49,7 @@ public class LaunchesPage : BasePage
         EnterFilterName(filterName);
         ConfirmAddFilter();
         LoggerService.Info("Back to 'Filters' page");
-        Click(_filtersMenuInput);
+        Click(_filtersMenuItem);
     }
     
     private void SelectParameter(string parameter, string quantity)
@@ -111,6 +117,6 @@ public class LaunchesPage : BasePage
         SaveFilter();
         ConfirmAddFilter();
         LoggerService.Info("Back to 'Filters' page");
-        Click(_filtersMenuInput);
+        Click(_filtersMenuItem);
     }
 }

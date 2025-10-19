@@ -118,7 +118,8 @@ public class FiltersTests : TestBase
         
         Assert.IsFalse(launchesPage.IsFilterVisible(filterName), $"Toggled filter '{filterName}' should not be presented on Launches page."
         );
-
+        
+        launchesPage.OpenFiltersPage();
         FiltersPage.DeleteFilter(filterName);
         Assert.IsFalse(FiltersPage!.IsFilterVisible(filterName), $"Filter '{filterName}' should be deleted.");
     }

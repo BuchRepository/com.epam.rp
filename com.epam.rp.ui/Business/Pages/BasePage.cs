@@ -138,21 +138,19 @@ public abstract class BasePage
             var filterLocator = By.XPath($"//span[text()='{filterName}']");
             var el = Find(filterLocator);
 
-            if (el.Displayed)
-            {
-                LoggerService.Info($"Filter '{filterName}' is visible on Filters page.");
-                return true;
-            }
-            LoggerService.Warn($"Filter '{filterName}' exists but is hidden on Filters page.");
-            return false;
+            bool visible = el.Displayed;
+            LoggerService.Info(visible
+                ? $"Filter '{filterName}' is visible on Filters page."
+                : $"Filter '{filterName}' is not visible on Filters page.");
+            return visible;
         }
 
-        else if (currentUrl.Contains("/launches"))
+        if(currentUrl.Contains("/launches"))
         {
             var filterLocator = By.XPath($"//span[contains(text(),'{filterName}')]");
-            var elements = Driver.FindElements(filterLocator);
+            var el = Find(filterLocator);
 
-            bool visible = elements.Any(e => e.Displayed);
+            bool visible = el.Displayed;
             LoggerService.Info(visible
                 ? $"Filter '{filterName}' is visible on Launches page."
                 : $"Filter '{filterName}' is not visible on Launches page.");
