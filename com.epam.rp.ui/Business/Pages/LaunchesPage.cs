@@ -24,7 +24,7 @@ public class LaunchesPage : BasePage
         _enterQuantityInput = new Input(driver, By.XPath("//input[@placeholder='Enter quantity']"), "Enter quantity input");
         _filtersMenuInput= By.XPath("//a[contains(@href,'/filters')]");
         _moreOptions = By.XPath("//div[text()='More']");
-        _launchesMenuItem = By.XPath("//a[contains(@href,'/filters')]");
+        _launchesMenuItem = By.XPath("//a[contains(@href,'launches') and contains(@class,'sidebarButton')]");
     }
     
     private By FilterByName(string name) => By.XPath($"//span[text()='{name}']");
