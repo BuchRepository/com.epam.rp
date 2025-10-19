@@ -28,6 +28,7 @@ public class FiltersPage : BasePage
     private By ToggleByName(string name) => By.XPath($"//span[text()='{name}']/following::span[contains(@class,'inputSwitcher')][1]");
     private By StateByName(string name, FiltersState state) => 
         By.XPath($"//span[text()='{name}']/following::span[text()='{state.ToString().ToUpper()}'][1]");
+    private By ToggleStateByFilterName(string name) => By.XPath($"//span[text()='{name}']/following::span[contains(@class,'displayFilter')][1]");
     
     public void OpenFiltersPage()
     {
@@ -129,11 +130,33 @@ public class FiltersPage : BasePage
 
     public void DisableDisplayOnLaunches(string filterName)
     {
-        if (Find(StateByName(filterName, FiltersState.On)).Text.Trim().ToUpperInvariant() == "ON")
+        try
         {
-            Click(ToggleByName(filterName));
+            var stateOfFilterToggle= Find(ToggleStateByFilterName(filterName));
+            var currentState = stateOfFilterToggle.Text.Trim().ToUpperInvariant();
+
+            LoggerService.Info($"Current Display on Launches state for '{filterName}' is '{currentState}'");
+
+            if (currentState == "ON")
+            {
+                LoggerService.Info($"Disabling Display on Launches for '{filterName}'");
+                Click(ToggleByName(filterName));
+            }
+            else
+            {
+                LoggerService.Info($"Display on Launches already OFF for '{filterName}', no action taken");
+            }
+        }
+        catch (NoSuchElementException)
+        {
+            LoggerService.Warn($"Could not find state element for filter '{filterName}'");
+        }
+        catch (Exception ex)
+        {
+            LoggerService.Error($"Error disabling Display on Launches for '{filterName}': {ex.Message}");
         }
     }
+
 
     public void WaitForState(string filterName, FiltersState state)
     {
