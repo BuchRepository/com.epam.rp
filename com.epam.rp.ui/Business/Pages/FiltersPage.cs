@@ -34,7 +34,7 @@ public class FiltersPage : BasePage
     public void OpenFiltersPage()
     {
         _filtersMenuItem.ClickButton();
-    } 
+    }
     
     public LaunchesPage ClickAddFilter()
     {
@@ -121,14 +121,14 @@ public class FiltersPage : BasePage
         }
     }
 
-
+/*
     public void EnableDisplayOnLaunches(string filterName)
     {
         if (Find(StateByName(filterName, FiltersState.Off)).Text.Trim().ToUpperInvariant() == "OFF")
         {
             Click(ToggleByName(filterName));
         }
-    }
+    }*/
     
     public string StateTextOfFilterToggle(string filterName)
     {
@@ -136,15 +136,13 @@ public class FiltersPage : BasePage
         return stateOfFilterToggle.Text.Trim().ToUpperInvariant();
     }
 
-    public void DisableDisplayOnLaunches(string filterName)
+    public LaunchesPage DisableDisplayOnLaunches(string filterName)
     {
         try
         {
-            LoggerService.Info($"Current URL: {Driver.Url}");
-            var stateOfFilterToggle= Find(ToggleStateByFilterName(filterName));
-            var currentState = stateOfFilterToggle.Text.Trim().ToUpperInvariant();
+            var currentState = StateTextOfFilterToggle(filterName);
 
-            LoggerService.Info($"Current Display on Launches state for '{filterName}' is '{currentState}'");
+            LoggerService.Info($"Current state of '{filterName}' is '{currentState}'");
 
             if (currentState == "ON")
             {
@@ -165,6 +163,39 @@ public class FiltersPage : BasePage
         {
             LoggerService.Error($"Error disabling Display on Launches for '{filterName}': {ex.Message}");
         }
+        
+        return new LaunchesPage(Driver);
+    }
+
+    public LaunchesPage EnableDisplayOnLaunches(string filterName)
+    {
+        try
+        {
+            var currentState = StateTextOfFilterToggle(filterName);
+
+            LoggerService.Info($"Current state of '{filterName}' is '{currentState}'");
+
+            if (currentState == "OFF")
+            {
+                LoggerService.Info($"Enabling Display on Launches for '{filterName}'");
+                Click(ToggleByName(filterName));
+                LoggerService.Info($"State of element after click for '{filterName}' is '{StateTextOfFilterToggle(filterName)}'");
+            }
+            else
+            {
+                LoggerService.Info($"Display on Launches already ONN for '{filterName}', no action taken");
+            }
+        }
+        catch (NoSuchElementException)
+        {
+            LoggerService.Warn($"Could not find state element for filter '{filterName}'");
+        }
+        catch (Exception ex)
+        {
+            LoggerService.Error($"Error enabling Display on Launches for '{filterName}': {ex.Message}");
+        }
+        
+        return new LaunchesPage(Driver);
     }
 
 
@@ -181,45 +212,5 @@ public class FiltersPage : BasePage
         LoggerService.Info("Enter new filter name");
         _filterNameInput.Type(newName);
         _updateButton.ClickButton();
-    }
-    
-    /*
-    public bool IsFilterVisible(string filterName)
-    {
-        try
-        {
-            var el = Find(FilterByName(filterName));
-
-            if (el.Displayed)
-            {
-                LoggerService.Info($"Filter '{filterName}' is visible.");
-                return true;
-            }
-
-            LoggerService.Warn($"Filter '{filterName}' exists but is not visible.");
-            return false;
-        }
-        catch (NoSuchElementException)
-        {
-            LoggerService.Warn($"Filter '{filterName}' not found in DOM.");
-            return false;
-        }
-        catch (WebDriverTimeoutException)
-        {
-            LoggerService.Warn($"Timeout while searching for filter '{filterName}'.");
-            return false;
-        }
-        catch (Exception ex)
-        {
-            LoggerService.Error($"Unexpected error checking filter '{filterName}': {ex.Message}");
-            return false;
-        }
-    }
-    */
-    
-    public void GoToFilters()
-    {
-        Driver.Navigate().GoToUrl("https://rp.epam.com/ui/#sergii_buchkivskyi_personal/filters");
-        Wait.Until(driver => driver.Url.Contains("/filters"));
     }
 }
