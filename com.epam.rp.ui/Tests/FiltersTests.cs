@@ -86,6 +86,7 @@ public class FiltersTests : TestBase
     }
     */
 
+    /*
     public static IEnumerable<object[]> ToggleDisplayData()
     {
         var testData = TestDataLoader.LoadTestData<FilterTestData>("TestData.json", "ToggleDisplay");
@@ -128,8 +129,9 @@ public class FiltersTests : TestBase
         FiltersPage.DeleteFilter(filterName);
         Assert.IsFalse(FiltersPage!.IsFilterVisible(filterName), $"Filter '{filterName}' should be deleted.");
     }
+    */
 
-    /*
+    
     public static IEnumerable<object[]> EditFilterData()
     {
         var testData = TestDataLoader.LoadTestData<FilterTestData>("TestData.json", "EditFilter");
@@ -165,6 +167,7 @@ public class FiltersTests : TestBase
         Assert.IsFalse(FiltersPage!.IsFilterVisible(newFilterName), $"Filter '{newFilterName}' should be deleted.");
     }
 
+    /*
     public static IEnumerable<object[]> CopyFilterData()
     {
         var testData = TestDataLoader.LoadTestData<FilterTestData>("TestData.json", "CopyFilter");

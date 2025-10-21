@@ -172,7 +172,7 @@ public class FiltersPage : BasePage
         }
     }
 
-    public LaunchesPage EnableDisplayOnLaunches(string filterName)
+    public void EnableDisplayOnLaunches(string filterName)
     {
         try
         {
@@ -188,7 +188,7 @@ public class FiltersPage : BasePage
             }
             else
             {
-                LoggerService.Info($"Display on Launches already ONN for '{filterName}', no action taken");
+                LoggerService.Info($"Display on Launches already ON for '{filterName}', no action taken");
             }
         }
         catch (NoSuchElementException)
@@ -199,14 +199,11 @@ public class FiltersPage : BasePage
         {
             LoggerService.Error($"Error enabling Display on Launches for '{filterName}': {ex.Message}");
         }
-        
-        return new LaunchesPage(Driver);
     }
 
 
     public LaunchesPage WaitForState(string filterName, FiltersState state)
     {
-        LoggerService.Info($"Current URL: {Driver.Url}");
         FindVisible(StateByName(filterName, state));
         return new LaunchesPage(Driver);
     }
