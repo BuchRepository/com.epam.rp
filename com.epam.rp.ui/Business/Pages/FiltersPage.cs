@@ -9,6 +9,7 @@ namespace com.epam.rp.ui.Business.Pages;
 public class FiltersPage : BasePage
 {
     private readonly Button _filtersMenuItem;
+    private readonly Button _launchesMenuItem;
     private readonly Button _addFilterButton;
     private readonly Button _updateButton;
     private readonly Button _confirmDeleteFilterButton;
@@ -17,6 +18,7 @@ public class FiltersPage : BasePage
     public FiltersPage(IWebDriver driver) : base(driver)
     {
         _filtersMenuItem = new Button(driver, By.XPath("//a[contains(@href,'/filters')]"), "Filters menu item");
+        _launchesMenuItem = new Button(driver, By.XPath("//a[contains(@href,'launches') and contains(@class,'sidebarButton')]"), "Launches menu item");
         _addFilterButton = new Button(driver, By.XPath("//span[text()='Add Filter']"), "Add Filter button");
         _updateButton = new Button(driver, By.XPath("//button[text()='Update']"), "Update filter button");
         _confirmDeleteFilterButton = new Button(driver, By.XPath("//button[text()='Delete']"), "Confirm Delete Filter button");
@@ -35,6 +37,11 @@ public class FiltersPage : BasePage
     {
         _filtersMenuItem.ClickButton();
     }
+    
+    public void OpenLaunchesPage()
+    {
+        _launchesMenuItem.ClickButton();
+    } 
     
     public LaunchesPage ClickAddFilter()
     {
@@ -136,7 +143,7 @@ public class FiltersPage : BasePage
         return stateOfFilterToggle.Text.Trim().ToUpperInvariant();
     }
 
-    public LaunchesPage DisableDisplayOnLaunches(string filterName)
+    public void DisableDisplayOnLaunches(string filterName)
     {
         try
         {
@@ -163,8 +170,6 @@ public class FiltersPage : BasePage
         {
             LoggerService.Error($"Error disabling Display on Launches for '{filterName}': {ex.Message}");
         }
-        
-        return new LaunchesPage(Driver);
     }
 
     public LaunchesPage EnableDisplayOnLaunches(string filterName)

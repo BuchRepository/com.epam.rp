@@ -37,7 +37,6 @@ public class LaunchesPage : BasePage
     public void OpenFiltersPage()
     {
         Click(_filtersMenuItem);
-        LoggerService.Info($"Current URL: {Driver.Url}");
     } 
     
     public void AddFilter(string filterName, string parameter, string quantity)
