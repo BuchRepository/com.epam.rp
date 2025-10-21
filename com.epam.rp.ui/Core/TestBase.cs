@@ -26,7 +26,7 @@ public class TestBase
     [AssemblyInitialize]
     public static async Task AssemblyInit(TestContext context)    
     {
-        Extent = ReportManager.GetExtent(isUI: true);
+        Extent = ReportManager.GetExtent(isUi: true);
         
         LoggerService.InitLogger();
         

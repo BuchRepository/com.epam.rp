@@ -1,6 +1,4 @@
-using System.Net.Http;
 using System.Text;
-using System.Threading.Tasks;
 using com.epam.rp.core.Configuration;
 
 namespace com.epam.rp.core.Utility;

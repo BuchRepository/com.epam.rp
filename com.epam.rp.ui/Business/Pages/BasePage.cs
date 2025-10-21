@@ -176,7 +176,6 @@ public abstract class BasePage
         return false;
     }
 }
-
     
     public void RefreshPage()
     {

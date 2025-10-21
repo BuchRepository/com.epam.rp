@@ -11,7 +11,7 @@ public class FiltersApiClient
     private const string BaseUrl = "https://rp.epam.com/";
     private const string Project = "test_user_personal";
     private const string ApiPrefix = "api/v1/"; 
-    private static readonly string ApiToken = ConfigManager.ApiToken!;
+    private static readonly string ApiToken = ConfigManager.ApiToken;
 
     public FiltersApiClient()
     {

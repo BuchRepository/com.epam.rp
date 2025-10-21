@@ -12,6 +12,6 @@ public static class ConfigManager
     
     public static string? Login => Config["LOGIN"];
     public static string? Password => Config["PASSWORD"];
-    public static string? ApiToken => Config["API_TOKEN"] ?? throw new InvalidOperationException("ApiToken not set");
-    public static string? SlackWebhookUrl => Config["SLACK_WEBHOOK_URL"] ?? throw new InvalidOperationException("Slack Webhook Url not set");
+    public static string ApiToken => Config["API_TOKEN"] ?? throw new InvalidOperationException("ApiToken not set");
+    public static string SlackWebhookUrl => Config["SLACK_WEBHOOK_URL"] ?? throw new InvalidOperationException("Slack Webhook Url not set");
 }

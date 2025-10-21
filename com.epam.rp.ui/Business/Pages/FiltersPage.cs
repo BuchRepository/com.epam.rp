@@ -25,13 +25,10 @@ public class FiltersPage : BasePage
         _filterNameInput = new Input(driver, By.XPath("//input[@placeholder='Enter filter name']"), "Filter name input");
     }
     
-    private By FilterByName(string name) => By.XPath($"//span[contains(@class,'filterName__name') and text()='{name}']");
     private By EditButtonByName(string name) => By.XPath($"//span[text()='{name}']/following::span[contains(@class,'filterName__pencil')][1]");
     private By DeleteButtonByName(string name) => By.XPath($"//span[text()='{name}']/following::div[contains(@class, 'deleteFilterButton')][1]");
     private By ToggleByName(string name) => By.XPath($"//span[text()='{name}']/following::span[contains(@class,'inputSwitcher')][1]");
-    private By StateByName(string name, FiltersState state) => 
-        By.XPath($"//span[text()='{name}']/following::span[text()='{state.ToString().ToUpper()}'][1]");
-    private By ToggleStateByFilterName(string name) => By.XPath($"//span[text()='{name}']/following::span[contains(@class,'displayFilter')][1]");
+    private By FilterToggleStateLocator(string name) => By.XPath($"//span[text()='{name}']/following::span[contains(@class,'displayFilter')][1]");
     
     public void OpenFiltersPage()
     {
@@ -56,110 +53,32 @@ public class FiltersPage : BasePage
         _confirmDeleteFilterButton.ClickButton();
     }
     
-    /*
-    public bool WaitForFilterVisibility(string filterName, bool shouldExist = true)
+    public string GetFilterToggleState(string filterName)
     {
-        try
-        {
-            return Wait.Until(driver =>
-            {
-                var elements = driver.FindElements(FilterByName(filterName));
-                if (shouldExist)
-                {
-                    return elements.Any(e => e.Displayed);
-                }
-                else
-                {
-                    return elements.Count == 0;
-                }
-            });
-        }
-        catch (WebDriverTimeoutException)
-        {
-            LoggerService.Warn($"Filter '{filterName}' did not reach state {shouldExist}. Retrying once...");
-            Thread.Sleep(2000);
-
-            var elements = Driver.FindElements(FilterByName(filterName));
-            var isVisible = elements.Any(e => e.Displayed);
-            return isVisible == shouldExist;
-        }
-    }*/
-    
-    public bool WaitForFilterVisibility(string filterName, bool shouldExist = true)
-    {
-        try
-        {
-            return Wait.Until(driver =>
-            {
-                var elements = driver.FindElements(FilterByName(filterName));
-                var isVisible = elements.Any(e => e.Displayed);
-                return isVisible == shouldExist;
-            });
-        }
-        catch (WebDriverTimeoutException)
-        {
-            LoggerService.Warn($"Filter '{filterName}' did not reach state {shouldExist}");
-            return false;
-        }
-    }
-    
-    /*
-    private Checkbox GetDisplayOnLaunchesCheckbox(string filterName)
-    {
-        return new Checkbox(Driver, ToggleByName(filterName), $"Display on Launches for '{filterName}'");
-    } */
-    
-    public bool GetFilterDisplayStatus(string filterName)
-    {
-        var statusLocator = ToggleByName(filterName);
-
-        try
-        {
-            var statusElement = FindVisible(statusLocator);
-            var statusText = statusElement.Text.Trim().ToUpperInvariant();
-            LoggerService.Info($"Display status for '{filterName}' is '{statusText}'");
-
-            return statusText == "ON";
-        }
-        catch (WebDriverTimeoutException)
-        {
-            LoggerService.Warn($"Timeout: could not find display status element for '{filterName}'");
-            return false;
-        }
-    }
-
-/*
-    public void EnableDisplayOnLaunches(string filterName)
-    {
-        if (Find(StateByName(filterName, FiltersState.Off)).Text.Trim().ToUpperInvariant() == "OFF")
-        {
-            Click(ToggleByName(filterName));
-        }
-    }*/
-    
-    public string StateTextOfFilterToggle(string filterName)
-    {
-        var stateOfFilterToggle= Find(ToggleStateByFilterName(filterName));
+        var stateOfFilterToggle= Find(FilterToggleStateLocator(filterName));
         return stateOfFilterToggle.Text.Trim().ToUpperInvariant();
     }
 
-    public void DisableDisplayOnLaunches(string filterName)
+    public void SetStateOfFilter(string filterName, FiltersState targetState)
     {
         try
         {
-            var currentState = StateTextOfFilterToggle(filterName);
+            var currentState = GetFilterToggleState(filterName).ToUpperInvariant();
+            var desiredState = targetState.ToString().ToUpper();
 
-            LoggerService.Info($"Current state of '{filterName}' is '{currentState}'");
+            LoggerService.Info($"Current state of '{filterName}' is '{currentState}', target state is '{desiredState}'");
 
-            if (currentState == "ON")
+            if (currentState != desiredState)
             {
-                LoggerService.Info($"Disabling Display on Launches for '{filterName}'");
+                LoggerService.Info($"Changing Display on Launches for '{filterName}' from '{currentState}' to '{desiredState}'");
                 Click(ToggleByName(filterName));
-                LoggerService.Info($"State of element after click for '{filterName}' is '{StateTextOfFilterToggle(filterName)}'");
+
+                var newState = GetFilterToggleState(filterName);
+                LoggerService.Info($"State of element after click for '{filterName}' is '{newState}'");
             }
             else
             {
-                LoggerService.Info($"Display on Launches already OFF for '{filterName}', no action taken");
+                LoggerService.Info($"Display on Launches for '{filterName}' is already '{desiredState}', no action taken");
             }
         }
         catch (NoSuchElementException)
@@ -168,44 +87,8 @@ public class FiltersPage : BasePage
         }
         catch (Exception ex)
         {
-            LoggerService.Error($"Error disabling Display on Launches for '{filterName}': {ex.Message}");
+            LoggerService.Error($"Error setting Display on Launches for '{filterName}' to '{targetState.ToString().ToUpper()}': {ex.Message}");
         }
-    }
-
-    public void EnableDisplayOnLaunches(string filterName)
-    {
-        try
-        {
-            var currentState = StateTextOfFilterToggle(filterName);
-
-            LoggerService.Info($"Current state of '{filterName}' is '{currentState}'");
-
-            if (currentState == "OFF")
-            {
-                LoggerService.Info($"Enabling Display on Launches for '{filterName}'");
-                Click(ToggleByName(filterName));
-                LoggerService.Info($"State of element after click for '{filterName}' is '{StateTextOfFilterToggle(filterName)}'");
-            }
-            else
-            {
-                LoggerService.Info($"Display on Launches already ON for '{filterName}', no action taken");
-            }
-        }
-        catch (NoSuchElementException)
-        {
-            LoggerService.Warn($"Could not find state element for filter '{filterName}'");
-        }
-        catch (Exception ex)
-        {
-            LoggerService.Error($"Error enabling Display on Launches for '{filterName}': {ex.Message}");
-        }
-    }
-
-
-    public LaunchesPage WaitForState(string filterName, FiltersState state)
-    {
-        FindVisible(StateByName(filterName, state));
-        return new LaunchesPage(Driver);
     }
     
     public void EditFilter(string oldName, string newName)

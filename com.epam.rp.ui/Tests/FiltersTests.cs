@@ -2,7 +2,6 @@ using com.epam.rp.core;
 using com.epam.rp.core.Configuration;
 using com.epam.rp.core.Models;
 using com.epam.rp.ui.Business.Enums;
-using com.epam.rp.ui.Business.Pages;
 using com.epam.rp.ui.Core;
 using TestDataLoader = com.epam.rp.core.TestDataLoader;
 
@@ -21,8 +20,7 @@ public class FiltersTests : TestBase
         _login = ConfigManager.Login ?? throw new InvalidOperationException("LOGIN not found in config");
         _password = ConfigManager.Password ?? throw new InvalidOperationException("PASSWORD not found in config");
     }
-
-    /*
+    
     public static IEnumerable<object[]> AddFilterData()
     {
         var testData = TestDataLoader.LoadTestData<FilterTestData>("TestData.json", "AddFilter");
@@ -36,9 +34,9 @@ public class FiltersTests : TestBase
     [DynamicData(nameof(AddFilterData), DynamicDataSourceType.Method)]
     public void UserCanAddFilter(FilterTestData data)
     {
-        string filterName = $"{data.filterName}_{Guid.NewGuid():N}";
-        string parameter = data.parameter;
-        string quantity = data.quantity;
+        string filterName = $"{data.FilterName}_{Guid.NewGuid():N}";
+        string parameter = data.Parameter;
+        string quantity = data.Quantity;
         
         LoggerService.Info("Start test");
         LoggerService.Info("Login to ReportPortal cabinet");
@@ -68,9 +66,9 @@ public class FiltersTests : TestBase
     [DynamicData(nameof(RemoveFilterData), DynamicDataSourceType.Method)]
     public void UserCanRemoveFilter(FilterTestData data)
     {
-        string filterName = $"{data.filterName}_{Guid.NewGuid():N}";
-        string parameter = data.parameter;
-        string quantity = data.quantity;
+        string filterName = $"{data.FilterName}_{Guid.NewGuid():N}";
+        string parameter = data.Parameter;
+        string quantity = data.Quantity;
        
         LoggerService.Info("Start test");
         LoggerService.Info("Login to ReportPortal cabinet");
@@ -84,9 +82,7 @@ public class FiltersTests : TestBase
         FiltersPage.DeleteFilter(filterName);
         Assert.IsFalse(FiltersPage!.IsFilterVisible(filterName), $"Filter '{filterName}' should be deleted.");
     }
-    */
-
-    /*
+    
     public static IEnumerable<object[]> ToggleDisplayData()
     {
         var testData = TestDataLoader.LoadTestData<FilterTestData>("TestData.json", "ToggleDisplay");
@@ -100,9 +96,9 @@ public class FiltersTests : TestBase
     [DynamicData(nameof(ToggleDisplayData), DynamicDataSourceType.Method)]
     public void UserCanToggleFilterDisplay(FilterTestData data)
     {
-        string filterName = $"{data.filterName}_{Guid.NewGuid():N}";
-        string parameter = data.parameter;
-        string quantity = data.quantity;
+        string filterName = $"{data.FilterName}_{Guid.NewGuid():N}";
+        string parameter = data.Parameter;
+        string quantity = data.Quantity;
 
         LoggerService.Info("Start test");
         LoggerService.Info("Login to ReportPortal cabinet");
@@ -114,13 +110,13 @@ public class FiltersTests : TestBase
         var launchesPage = FiltersPage!.ClickAddFilter();
         launchesPage.AddFilter(filterName, parameter, quantity);
         
-        FiltersPage!.DisableDisplayOnLaunches(filterName);
+        FiltersPage!.SetStateOfFilter(filterName, FiltersState.Off );
         launchesPage.OpenLaunchesPage();
         
         Assert.IsFalse(launchesPage.IsFilterVisible(filterName), $"Toggled filter '{filterName}' should not be presented on Launches page.");
         
         launchesPage.OpenFiltersPage();
-        FiltersPage!.EnableDisplayOnLaunches(filterName);
+        FiltersPage!.SetStateOfFilter(filterName, FiltersState.On);
         
         FiltersPage!.OpenLaunchesPage();
         Assert.IsTrue(launchesPage.IsFilterVisible(filterName), $"Toggled filter '{filterName}' should be presented on Launches page.");
@@ -129,9 +125,7 @@ public class FiltersTests : TestBase
         FiltersPage.DeleteFilter(filterName);
         Assert.IsFalse(FiltersPage!.IsFilterVisible(filterName), $"Filter '{filterName}' should be deleted.");
     }
-    */
-
-    /*
+    
     public static IEnumerable<object[]> EditFilterData()
     {
         var testData = TestDataLoader.LoadTestData<FilterTestData>("TestData.json", "EditFilter");
@@ -143,9 +137,9 @@ public class FiltersTests : TestBase
     [DynamicData(nameof(EditFilterData), DynamicDataSourceType.Method)]
     public void UserCanEditFilter(FilterTestData data)
     {
-        string filterName = $"{data.filterName}_{Guid.NewGuid():N}";
-        string parameter = data.parameter;
-        string quantity = data.quantity;
+        string filterName = $"{data.FilterName}_{Guid.NewGuid():N}";
+        string parameter = data.Parameter;
+        string quantity = data.Quantity;
         string newFilterName = $"Updated_{filterName}";
 
         LoggerService.Info("Start test");
@@ -166,8 +160,6 @@ public class FiltersTests : TestBase
         FiltersPage.DeleteFilter(newFilterName);
         Assert.IsFalse(FiltersPage!.IsFilterVisible(newFilterName), $"Filter '{newFilterName}' should be deleted.");
     }
-    */
-
     
     public static IEnumerable<object[]> CopyFilterData()
     {
@@ -180,9 +172,9 @@ public class FiltersTests : TestBase
     [DynamicData(nameof(CopyFilterData), DynamicDataSourceType.Method)]
     public void UserCanCopyFilter(FilterTestData data)
     {
-        string filterName = $"{data.filterName}_{Guid.NewGuid():N}";
-        string parameter = data.parameter;
-        string quantity = data.quantity;
+        string filterName = $"{data.FilterName}_{Guid.NewGuid():N}";
+        string parameter = data.Parameter;
+        string quantity = data.Quantity;
         string copiedFilterName = $"Copy {filterName}";
 
         LoggerService.Info("Start test");
@@ -205,5 +197,4 @@ public class FiltersTests : TestBase
         FiltersPage.DeleteFilter(copiedFilterName);
         Assert.IsFalse(FiltersPage!.IsFilterVisible(copiedFilterName), $"Filter '{copiedFilterName}' should be deleted.");
     }
-    
 }

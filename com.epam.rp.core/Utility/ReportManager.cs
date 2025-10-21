@@ -8,9 +8,9 @@ namespace com.epam.rp.core.Utility
         private static ExtentReports? _uiExtent;
         private static ExtentReports? _apiExtent;
 
-        public static ExtentReports GetExtent(bool isUI = true)
+        public static ExtentReports GetExtent(bool isUi = true)
         {
-            if (isUI)
+            if (isUi)
             {
                 if (_uiExtent == null)
                     _uiExtent = CreateExtent("ExtentReports_UI.html");

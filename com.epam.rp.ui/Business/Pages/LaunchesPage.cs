@@ -68,42 +68,6 @@ public class LaunchesPage : BasePage
     private void EnterFilterName(string filterName) => _filterNameInput.Type(filterName);
     private void SaveFilter() => _saveButton.ClickButton();
     private void ConfirmAddFilter() => _addFilterButton.ClickButton();
-
-        /*
-    public bool IsFilterVisible(string filterName)
-    {
-        try
-        {
-            Thread.Sleep(2000);
-            LoggerService.Info($"Current URL before assert: {Driver.Url}");
-
-            var el = Find(FilterByName(filterName));
-            if (el.Displayed)
-            {
-                LoggerService.Info($"Filter '{filterName}' is visible.");
-                return true;
-            }
-
-            LoggerService.Warn($"Filter '{filterName}' exists but is not visible.");
-            return false;
-        }
-        catch (NoSuchElementException)
-        {
-            LoggerService.Warn($"Filter '{filterName}' not found in DOM.");
-            return false;
-        }
-        catch (WebDriverTimeoutException)
-        {
-            LoggerService.Warn($"Timeout while searching for filter '{filterName}'.");
-            return false;
-        }
-        catch (Exception ex)
-        {
-            LoggerService.Error($"Unexpected error checking filter '{filterName}': {ex.Message}");
-            return false;
-        }
-    }
-    */
     
     public void ClickFilterByName(string filterName)
     {
