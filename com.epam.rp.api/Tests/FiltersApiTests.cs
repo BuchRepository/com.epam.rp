@@ -14,6 +14,7 @@ public class FiltersApiTests
     private ExtentReports? _extent;
     private ExtentTest? _test;
     private SlackNotifier _slackNotifier;
+    private string? _testName;
     
     const int InvaliId = 123456789;
     
@@ -26,7 +27,8 @@ public class FiltersApiTests
         _extent = ReportManager.GetExtent(isUi: false);
         
         _slackNotifier = new SlackNotifier();
-        await _slackNotifier.SendMessage("API Test Run STARTED at " + DateTime.Now);
+        _testName = TestContext.CurrentContext.Test.MethodName;
+        await _slackNotifier.SendMessage($"Test '{_testName}' has been started");
     }
 
     [SetUp]
@@ -485,7 +487,7 @@ public class FiltersApiTests
     public async Task OneTimeTearDown()
     {
         ReportManager.FlushReports();
-        
-        await _slackNotifier.SendMessage("API Test Run FINISHED at " + DateTime.Now);
+        _testName = TestContext.CurrentContext.Test.Name;
+        await _slackNotifier.SendMessage($"Test '{_testName}' has been finished");
     }
 }

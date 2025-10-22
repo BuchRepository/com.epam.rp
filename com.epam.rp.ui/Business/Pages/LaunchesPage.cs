@@ -1,6 +1,7 @@
 using com.epam.rp.core;
 using com.epam.rp.ui.Core.Elements;
 using OpenQA.Selenium;
+using SeleniumExtras.WaitHelpers;
 
 namespace com.epam.rp.ui.Business.Pages;
 
@@ -28,16 +29,16 @@ public class LaunchesPage : BasePage
     }
     
     private By FilterByName(string name) => By.XPath($"//span[text()='{name}']");
+
+    public void OpenLaunchesPage() => Click(_launchesMenuItem);
     
-    public void OpenLaunchesPage()
-    {
-        Click(_launchesMenuItem);
-    } 
+    public void OpenFiltersPage() => Click(_filtersMenuItem);
     
-    public void OpenFiltersPage()
-    {
-        Click(_filtersMenuItem);
-    } 
+    public void ClickFilterByName(string filterName) => Click(FilterByName(filterName));
+    
+    private void EnterFilterName(string filterName) => _filterNameInput.Type(filterName);
+    private void SaveFilter() => _saveButton.ClickButton();
+    private void ConfirmAddFilter() => _addFilterButton.ClickButton();
     
     public void AddFilter(string filterName, string parameter, string quantity)
     {
@@ -64,14 +65,30 @@ public class LaunchesPage : BasePage
         parameterCheckbox.Check();
         _enterQuantityInput.Type(quantity);
     }
-
-    private void EnterFilterName(string filterName) => _filterNameInput.Type(filterName);
-    private void SaveFilter() => _saveButton.ClickButton();
-    private void ConfirmAddFilter() => _addFilterButton.ClickButton();
     
-    public void ClickFilterByName(string filterName)
+    public bool IsFilterVisible(string filterName)
     {
-        Click(FilterByName(filterName));
+        try
+        {
+            LoggerService.Info($"Checking visibility of filter '{filterName}' on Launches page.");
+
+            var filterLocator = By.XPath($"//span[contains(text(),'{filterName}')]");
+            var element = Wait.Until(ExpectedConditions.ElementExists(filterLocator));
+
+            bool visible = element.Displayed;
+            LoggerService.Info($"Filter '{filterName}' is {(visible ? "visible" : "not visible")} on Launches page.");
+            return visible;
+        }
+        catch (WebDriverTimeoutException)
+        {
+            LoggerService.Warn($"Filter '{filterName}' not visible on Launches page within timeout.");
+            return false;
+        }
+        catch (NoSuchElementException)
+        {
+            LoggerService.Warn($"Filter '{filterName}' not found on Launches page.");
+            return false;
+        }
     }
 
     public void CopyFilter()

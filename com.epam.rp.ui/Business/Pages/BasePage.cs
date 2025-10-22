@@ -20,162 +20,88 @@ public abstract class BasePage
     protected IWebElement Find(By locator) => 
         Wait.Until(ExpectedConditions.ElementExists(locator));
     
-    protected IWebElement FindVisible(By locator) => 
-        Wait.Until(driver => 
-        {
-            var el = driver.FindElement(locator);
-            return el.Displayed ? el : null;
-        });
+    protected IWebElement FindVisible(By locator) =>
+        Wait.Until(ExpectedConditions.ElementIsVisible(locator));
+
         
     protected IWebElement FindClickable(By locator) => 
         Wait.Until(ExpectedConditions.ElementToBeClickable(locator));
         
     public void Click(By locator)
     {
-        int attempts = 0;
-        while (attempts < 3)
+        bool clicked = false;
+
+        for (int attempt = 1; attempt <= 3; attempt++)
         {
             try
             {
-                Wait.Until(driver =>
-                {
-                    try
-                    {
-                        var el = driver.FindElement(locator);
-                        if (el.Displayed && el.Enabled)
-                        {
-                            try
-                            {
-                                el.Click();
-                                return true;
-                            }
-                            catch (ElementClickInterceptedException)
-                            {
-                                Thread.Sleep(200);
-                                return false;
-                            }
-                        }
-                        return false;
-                    }
-                    catch (StaleElementReferenceException)
-                    {
-                        return false;
-                    }
-                });
-            
-                LoggerService.Info($"Successful click on element: {locator}");
-                return;
+                var element = FindClickable(locator);
+                element.Click();
+                LoggerService.Info($"Clicked on element: {locator} (attempt {attempt})");
+                clicked = true;
+                break;
+            }
+            catch (ElementClickInterceptedException)
+            {
+                LoggerService.Warn($"Click intercepted on {locator}, retrying... (attempt {attempt})");
+                Thread.Sleep(200);
             }
             catch (Exception ex)
             {
-                attempts++;
-                LoggerService.Warn($"Attempt {attempts} failed for click on {locator}: {ex.Message}");
-                if (attempts == 3)
-                {
-                    try
-                    {
-                        var element = Driver.FindElement(locator);
-                        ((IJavaScriptExecutor)Driver).ExecuteScript("arguments[0].click();", element);
-                        LoggerService.Info($"JS click succeeded on element: {locator}");
-                        return;
-                    }
-                    catch (Exception e)
-                    {
-                        Log.Error(e, "JS click failed");
-                    }
-                }
+                LoggerService.Warn($"Attempt {attempt} failed for click on {locator}: {ex.Message}");
+            }
+        }
+
+        if (!clicked)
+        {
+            try
+            {
+                var element = Driver.FindElement(locator);
+                ((IJavaScriptExecutor)Driver).ExecuteScript("arguments[0].click();", element);
+                LoggerService.Info($"Fallback JS click succeeded on element: {locator}");
+            }
+            catch (Exception e)
+            {
+                LoggerService.Error($"Fallback JS click failed on {locator}", e);
+                throw;
             }
         }
     }
 
     public void Type(By locator, string text)
     {
-        int attempts = 0;
-        while (attempts < 3)
+        for (int attempt = 1; attempt <= 3; attempt++)
         {
             try
             {
-                Wait.Until(_ =>
-                {
-                    try
-                    {
-                        var el = Driver.FindElement(locator);
-                        if (el.Displayed && el.Enabled)
-                        {
-                            el.Clear();
-                            el.SendKeys(text);
-                            return true;
-                        }
-                        return false;
-                    }
-                    catch (StaleElementReferenceException)
-                    {
-                        return false;
-                    }
-                });
+                var element = FindVisible(locator);
 
-                LoggerService.Info($"Successfully typed '{text}' into element: {locator}");
-                return;
+                if (element.Enabled)
+                {
+                    element.Clear();
+                    element.SendKeys(text);
+                    LoggerService.Info($"Typed '{text}' into element: {locator}");
+                    return;
+                }
+
+                LoggerService.Warn($"Element {locator} is not enabled (attempt {attempt})");
+            }
+            catch (StaleElementReferenceException)
+            {
+                LoggerService.Warn($"Stale element {locator}, retrying (attempt {attempt})...");
+            }
+            catch (WebDriverTimeoutException)
+            {
+                LoggerService.Warn($"Timeout locating element {locator} (attempt {attempt})");
             }
             catch (Exception ex)
             {
-                attempts++;
-                LoggerService.Warn($"Attempt {attempts} failed for typing into {locator}: {ex.Message}");
+                LoggerService.Warn($"Attempt {attempt} failed to type into {locator}: {ex.Message}");
             }
+            Thread.Sleep(300);
         }
+        throw new WebDriverTimeoutException($"Failed to type into element {locator} after 3 attempts.");
     }
-    
-    public bool IsFilterVisible(string filterName)
-{
-    try
-    {
-        Thread.Sleep(1500);
-        string currentUrl = Driver.Url;
-        LoggerService.Info($"Checking visibility of filter '{filterName}' on {currentUrl}");
-
-        if (currentUrl.Contains("/filters"))
-        {
-            var filterLocator = By.XPath($"//span[text()='{filterName}']");
-            var el = Find(filterLocator);
-
-            bool visible = el.Displayed;
-            LoggerService.Info(visible
-                ? $"Filter '{filterName}' is visible on Filters page."
-                : $"Filter '{filterName}' is not visible on Filters page.");
-            return visible;
-        }
-
-        if(currentUrl.Contains("/launches"))
-        {
-            var filterLocator = By.XPath($"//span[contains(text(),'{filterName}')]");
-            var el = Find(filterLocator);
-
-            bool visible = el.Displayed;
-            LoggerService.Info(visible
-                ? $"Filter '{filterName}' is visible on Launches page."
-                : $"Filter '{filterName}' is not visible on Launches page.");
-            return visible;
-        }
-
-        LoggerService.Warn($"Unknown page context while checking filter '{filterName}'. URL: {currentUrl}");
-        return false;
-    }
-    catch (NoSuchElementException)
-    {
-        LoggerService.Warn($"Filter '{filterName}' not found in DOM.");
-        return false;
-    }
-    catch (WebDriverTimeoutException)
-    {
-        LoggerService.Warn($"Timeout while searching for filter '{filterName}'.");
-        return false;
-    }
-    catch (Exception ex)
-    {
-        LoggerService.Error($"Unexpected error checking filter '{filterName}': {ex.Message}");
-        return false;
-    }
-}
     
     public void RefreshPage()
     {

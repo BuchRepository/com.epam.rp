@@ -91,6 +91,32 @@ public class FiltersPage : BasePage
         }
     }
     
+    public bool IsFilterVisible(string filterName)
+    {
+        try
+        {
+            LoggerService.Info($"Checking visibility of filter '{filterName}' on Filters page.");
+
+            var filterLocator = By.XPath($"//span[text()='{filterName}']");
+            var element = Wait.Until(ExpectedConditions.ElementExists(filterLocator));
+
+            bool visible = element.Displayed;
+            LoggerService.Info($"Filter '{filterName}' is {(visible ? "visible" : "not visible")} on Filters page.");
+            return visible;
+        }
+        catch (WebDriverTimeoutException)
+        {
+            LoggerService.Warn($"Filter '{filterName}' not visible on Filters page within timeout.");
+            return false;
+        }
+        catch (NoSuchElementException)
+        {
+            LoggerService.Warn($"Filter '{filterName}' not found on Filters page.");
+            return false;
+        }
+    }
+
+    
     public void EditFilter(string oldName, string newName)
     {
         Click(EditButtonByName(oldName));
