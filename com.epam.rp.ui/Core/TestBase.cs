@@ -25,7 +25,7 @@ public class TestBase
     public TestContext TestContext { get; set; } = null!;
 
     [AssemblyInitialize]
-    public void AssemblyInit(TestContext context)    
+    public static void AssemblyInit(TestContext context)    
     {
         Extent = ReportManager.GetExtent(isUi: true);
         
@@ -144,7 +144,7 @@ public class TestBase
     }
     
     [AssemblyCleanup]
-    public void AssemblyCleanup()
+    public static void AssemblyCleanup()
     {
         ReportManager.FlushReports();
     }
