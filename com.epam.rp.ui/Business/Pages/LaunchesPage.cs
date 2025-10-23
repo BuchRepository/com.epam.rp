@@ -29,11 +29,8 @@ public class LaunchesPage : BasePage
     }
     
     private By FilterByName(string name) => By.XPath($"//span[text()='{name}']");
-
     public void OpenLaunchesPage() => Click(_launchesMenuItem);
-    
     public void OpenFiltersPage() => Click(_filtersMenuItem);
-    
     public void ClickFilterByName(string filterName) => Click(FilterByName(filterName));
     
     private void EnterFilterName(string filterName) => _filterNameInput.Type(filterName);

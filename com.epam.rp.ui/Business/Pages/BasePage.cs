@@ -22,8 +22,7 @@ public abstract class BasePage
     
     protected IWebElement FindVisible(By locator) =>
         Wait.Until(ExpectedConditions.ElementIsVisible(locator));
-
-        
+    
     protected IWebElement FindClickable(By locator) => 
         Wait.Until(ExpectedConditions.ElementToBeClickable(locator));
         
@@ -66,45 +65,5 @@ public abstract class BasePage
                 throw;
             }
         }
-    }
-
-    public void Type(By locator, string text)
-    {
-        for (int attempt = 1; attempt <= 3; attempt++)
-        {
-            try
-            {
-                var element = FindVisible(locator);
-
-                if (element.Enabled)
-                {
-                    element.Clear();
-                    element.SendKeys(text);
-                    LoggerService.Info($"Typed '{text}' into element: {locator}");
-                    return;
-                }
-
-                LoggerService.Warn($"Element {locator} is not enabled (attempt {attempt})");
-            }
-            catch (StaleElementReferenceException)
-            {
-                LoggerService.Warn($"Stale element {locator}, retrying (attempt {attempt})...");
-            }
-            catch (WebDriverTimeoutException)
-            {
-                LoggerService.Warn($"Timeout locating element {locator} (attempt {attempt})");
-            }
-            catch (Exception ex)
-            {
-                LoggerService.Warn($"Attempt {attempt} failed to type into {locator}: {ex.Message}");
-            }
-            Thread.Sleep(300);
-        }
-        throw new WebDriverTimeoutException($"Failed to type into element {locator} after 3 attempts.");
-    }
-    
-    public void RefreshPage()
-    {
-        Driver.Navigate().Refresh();
     }
 }

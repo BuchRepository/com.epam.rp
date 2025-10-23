@@ -29,10 +29,10 @@ public class FiltersPage : BasePage
     private By DeleteButtonByName(string name) => By.XPath($"//span[text()='{name}']/following::div[contains(@class, 'deleteFilterButton')][1]");
     private By ToggleByName(string name) => By.XPath($"//span[text()='{name}']/following::span[contains(@class,'inputSwitcher')][1]");
     private By FilterToggleStateLocator(string name) => By.XPath($"//span[text()='{name}']/following::span[contains(@class,'displayFilter')][1]");
+    private By FilterByName(string name) => By.XPath($"//span[text()='{name}']");
     
     public void OpenFiltersPage() => _filtersMenuItem.ClickButton();
     public void OpenLaunchesPage() => _launchesMenuItem.ClickButton();
-    private By FilterByName(string name) => By.XPath($"//span[text()='{name}']");
     
     public LaunchesPage ClickAddFilter()
     {
