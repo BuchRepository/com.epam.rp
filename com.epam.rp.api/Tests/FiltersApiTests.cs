@@ -16,7 +16,7 @@ public class FiltersApiTests
     private SlackNotifier _slackNotifier;
     private string? _testName;
     
-    const int InvaliId = 123456789;
+    const int InvalidId = 123456789;
     
     [OneTimeSetUp]
     public void OneTimeSetup()
@@ -104,7 +104,7 @@ public class FiltersApiTests
     [Test]
     public async Task GetFilterById_Negative_NotFound()
     {
-        var response = await _apiClient.GetFilterByIdAsync(InvaliId);
+        var response = await _apiClient.GetFilterByIdAsync(InvalidId);
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
     }
 
@@ -299,7 +299,7 @@ public class FiltersApiTests
            }
        };
         
-        var response = await _apiClient.UpdateFilterByIdAsync(InvaliId, updateBody);
+        var response = await _apiClient.UpdateFilterByIdAsync(InvalidId, updateBody);
 
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
     }
@@ -383,7 +383,7 @@ public class FiltersApiTests
             {
                 new UpdateFilterElement()
                 {
-                    Id = InvaliId,
+                    Id = InvalidId,
                     Name = $"TestFilter_{Guid.NewGuid()}",
                     Type = "launch",
                     Conditions = new List<FilterCondition>
@@ -457,7 +457,7 @@ public class FiltersApiTests
     [Test]
     public async Task DeleteFilter_Negative_NotFound()
     {
-        var response = await _apiClient.DeleteFilterAsync(InvaliId);
+        var response = await _apiClient.DeleteFilterAsync(InvalidId);
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
     }
     

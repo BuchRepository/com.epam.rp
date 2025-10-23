@@ -195,20 +195,8 @@ jobs:
             sleep 2
           done
 
-      - name: Check appsettings
-        run: |
-          ls -R com.epam.rp.ui | grep appsettings || echo "No appsettings found!"
-
       - name: Clean screenshots folder
-        run: rm -rf ./com.epam.rp.ui/bin/Release/net8.0/screenshots/* || true
-
-      - name: Check screenshots folder
-        run: |
-          if [ -z "$(ls -A ./com.epam.rp.ui/bin/Release/net8.0/screenshots/)" ]; then
-            echo "Screenshot folder is empty"
-          else
-            echo "Screenshot folder contains files"
-          fi
+        run: rm -rf com.epam.rp.ui/bin/Release/net8.0/screenshots || true
 
       - name: Run UI tests in ${{ matrix.browser }}
         run: |

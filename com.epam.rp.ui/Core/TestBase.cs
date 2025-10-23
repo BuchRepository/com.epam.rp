@@ -20,16 +20,18 @@ public class TestBase
     protected FiltersPage? FiltersPage;
     
     private static SlackNotifier? _slackNotifier;
-    private string? _testName;
        
     public TestContext TestContext { get; set; } = null!;
 
     [AssemblyInitialize]
-    public static void AssemblyInit(TestContext context)    
+    public static async Task AssemblyInit(TestContext context)    
     {
         Extent = ReportManager.GetExtent(isUi: true);
         
         LoggerService.InitLogger();
+        
+        _slackNotifier = new SlackNotifier();
+        await _slackNotifier.SendMessage($"UI tests started at {DateTime.Now}");
     }
     
     [TestInitialize]
@@ -53,10 +55,6 @@ public class TestBase
 
         LoginPage = new LoginPage(Driver);
         FiltersPage = new FiltersPage(Driver);
-        
-        _slackNotifier = new SlackNotifier();
-        _testName = TestContext.TestName;
-        Task.Run(() => _slackNotifier.SendMessage($"Test '{_testName}' has been started"));
     }
     
     private void ClearBrowserData(IWebDriver driver)
@@ -138,14 +136,13 @@ public class TestBase
                 LoggerService.Error("Error while deleting profile directory", ex);
             }
         }
-        
-        _testName = TestContext.TestName;
-        Task.Run(() => _slackNotifier?.SendMessage($"Test '{_testName}' has been finished"));
     }
     
     [AssemblyCleanup]
-    public static void AssemblyCleanup()
+    public static async Task AssemblyCleanup()
     {
         ReportManager.FlushReports();
+        _slackNotifier = new SlackNotifier();
+        await _slackNotifier.SendMessage($"UI tests finished at {DateTime.Now}");
     }
 }
