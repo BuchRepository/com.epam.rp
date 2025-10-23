@@ -19,23 +19,23 @@ public class FiltersApiTests
     const int InvaliId = 123456789;
     
     [OneTimeSetUp]
-    public async Task OneTimeSetup()
+    public void OneTimeSetup()
     {
         LoggerService.InitLogger();
         _apiClient = new FiltersApiClient();
 
         _extent = ReportManager.GetExtent(isUi: false);
+    }
+
+    [SetUp]
+    public async Task Setup()
+    {
+        _test = _extent!.CreateTest(TestContext.CurrentContext.Test.Name);
+        LoggerService.Info($"Starting test: {TestContext.CurrentContext.Test.Name}");
         
         _slackNotifier = new SlackNotifier();
         _testName = TestContext.CurrentContext.Test.MethodName;
         await _slackNotifier.SendMessage($"Test '{_testName}' has been started");
-    }
-
-    [SetUp]
-    public void Setup()
-    {
-        _test = _extent!.CreateTest(TestContext.CurrentContext.Test.Name);
-        LoggerService.Info($"Starting test: {TestContext.CurrentContext.Test.Name}");
     }
 
     [Test]
@@ -462,7 +462,7 @@ public class FiltersApiTests
     }
     
     [TearDown]
-    public void TearDown()
+    public async Task TearDown()
     {
         var outcome = TestContext.CurrentContext.Result.Outcome.Status;
 
@@ -481,13 +481,14 @@ public class FiltersApiTests
         }
 
         _extent!.Flush();
+        
+        _testName = TestContext.CurrentContext.Test.MethodName;
+        await _slackNotifier.SendMessage($"Test '{_testName}' has been finished");
     }
     
     [OneTimeTearDown]
-    public async Task OneTimeTearDown()
+    public void OneTimeTearDown()
     {
         ReportManager.FlushReports();
-        _testName = TestContext.CurrentContext.Test.Name;
-        await _slackNotifier.SendMessage($"Test '{_testName}' has been finished");
     }
 }

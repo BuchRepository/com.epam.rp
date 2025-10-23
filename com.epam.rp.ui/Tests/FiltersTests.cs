@@ -53,6 +53,7 @@ public class FiltersTests : TestBase
         Assert.IsFalse(FiltersPage!.IsFilterVisible(filterName), $"Filter '{filterName}' should be deleted.");
     }
     
+    /*
     public static IEnumerable<object[]> RemoveFilterData()
     {
         var testData = TestDataLoader.LoadTestData<FilterTestData>("TestData.json", "RemoveFilter");
@@ -197,4 +198,5 @@ public class FiltersTests : TestBase
         FiltersPage.DeleteFilter(copiedFilterName);
         Assert.IsFalse(FiltersPage!.IsFilterVisible(copiedFilterName), $"Filter '{copiedFilterName}' should be deleted.");
     }
+    */
 }

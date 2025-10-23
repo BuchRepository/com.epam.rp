@@ -30,15 +30,9 @@ public class FiltersPage : BasePage
     private By ToggleByName(string name) => By.XPath($"//span[text()='{name}']/following::span[contains(@class,'inputSwitcher')][1]");
     private By FilterToggleStateLocator(string name) => By.XPath($"//span[text()='{name}']/following::span[contains(@class,'displayFilter')][1]");
     
-    public void OpenFiltersPage()
-    {
-        _filtersMenuItem.ClickButton();
-    }
-    
-    public void OpenLaunchesPage()
-    {
-        _launchesMenuItem.ClickButton();
-    } 
+    public void OpenFiltersPage() => _filtersMenuItem.ClickButton();
+    public void OpenLaunchesPage() => _launchesMenuItem.ClickButton();
+    private By FilterByName(string name) => By.XPath($"//span[text()='{name}']");
     
     public LaunchesPage ClickAddFilter()
     {
@@ -95,12 +89,10 @@ public class FiltersPage : BasePage
     {
         try
         {
+            Thread.Sleep(1500);
             LoggerService.Info($"Checking visibility of filter '{filterName}' on Filters page.");
 
-            var filterLocator = By.XPath($"//span[text()='{filterName}']");
-            var element = Wait.Until(ExpectedConditions.ElementExists(filterLocator));
-
-            bool visible = element.Displayed;
+            bool visible = FindVisible(FilterByName(filterName)).Displayed;
             LoggerService.Info($"Filter '{filterName}' is {(visible ? "visible" : "not visible")} on Filters page.");
             return visible;
         }
@@ -115,7 +107,6 @@ public class FiltersPage : BasePage
             return false;
         }
     }
-
     
     public void EditFilter(string oldName, string newName)
     {

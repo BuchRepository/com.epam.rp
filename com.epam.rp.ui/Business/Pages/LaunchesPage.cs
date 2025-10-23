@@ -70,12 +70,10 @@ public class LaunchesPage : BasePage
     {
         try
         {
+            Thread.Sleep(1500);
             LoggerService.Info($"Checking visibility of filter '{filterName}' on Launches page.");
 
-            var filterLocator = By.XPath($"//span[contains(text(),'{filterName}')]");
-            var element = Wait.Until(ExpectedConditions.ElementExists(filterLocator));
-
-            bool visible = element.Displayed;
+            bool visible = FindVisible(FilterByName(filterName)).Displayed;
             LoggerService.Info($"Filter '{filterName}' is {(visible ? "visible" : "not visible")} on Launches page.");
             return visible;
         }
