@@ -30,6 +30,20 @@ jobs:
             "PASSWORD": "$PASSWORD",
             "API_TOKEN": "$API_TOKEN",
             "SLACK_WEBHOOK_URL": "$SLACK_WEBHOOK_URL"
+            "Serilog": {
+              "Using": ["Serilog.Sinks.Console", "Serilog.Sinks.File"],
+              "MinimumLevel": {
+                "Default": "Information",
+                "Override": {
+                  "Microsoft": "Warning",
+                  "System": "Warning"
+                }
+              },
+              "WriteTo": [
+                { "Name": "Console" },
+                { "Name": "File", "Args": { "path": "${{ github.workspace }}/logs/logfile.log", "restrictedToMinimumLevel": "Information" } }
+              ]
+            }
           }
           EOL
 
@@ -181,9 +195,6 @@ jobs:
             sleep 2
           done
 
-      - name: Clean screenshots folder
-        run: rm -rf com.epam.rp.ui/bin/Release/net8.0/screenshots || true
-
       - name: Run UI tests in ${{ matrix.browser }}
         run: |
           dotnet test com.epam.rp.ui/com.epam.rp.ui.csproj \
@@ -198,11 +209,6 @@ jobs:
         run: |
           export PATH="$HOME/.dotnet/tools:$PATH"
           dotnet-sonarscanner end
-
-      - name: List screenshots
-        run: |
-          echo "Searching for screenshots..."
-          find . -type f -name "*.png" || echo "No screenshots found"
 
       - name: Upload screenshots
         if: always()

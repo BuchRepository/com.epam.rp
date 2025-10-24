@@ -9,13 +9,12 @@ public static class ScreenshotHelper
         try
         {
             string screenshotsDir = Path.Combine(AppContext.BaseDirectory, "screenshots");
-            string runDir = Path.Combine(screenshotsDir);
 
-            Directory.CreateDirectory(runDir);
+            Directory.CreateDirectory(screenshotsDir);
 
             string timestamp = DateTime.UtcNow.ToString("yyyyMMdd");
             string fileName = $"{scenarioName ?? "screenshot"}_{timestamp}_{Guid.NewGuid():N}.png";
-            string fullPath = Path.Combine(runDir, fileName);
+            string fullPath = Path.Combine(screenshotsDir, fileName);
 
             var screenshot = ((ITakesScreenshot)driver).GetScreenshot();
             screenshot.SaveAsFile(fullPath);
