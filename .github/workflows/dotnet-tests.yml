@@ -213,12 +213,17 @@ jobs:
           export PATH="$HOME/.dotnet/tools:$PATH"
           dotnet-sonarscanner end
 
+      - name: List screenshots
+        run: |
+          echo "Searching for screenshots..."
+          find . -type f -name "*.png" || echo "No screenshots found"
+
       - name: Upload screenshots
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: screenshots-${{ matrix.browser }}
-          path: ./com.epam.rp.ui/bin/Release/net8.0/screenshots/**/*.png
+          path: '**/screenshots/**/*.png'
           if-no-files-found: ignore
 
       - name: List files in Release folder
