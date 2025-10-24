@@ -7,114 +7,64 @@ namespace com.epam.rp.ui.Core;
 
 public static class DriverFactory
 {
-    public static string? LastProfilePath { get; private set; }
-
-    public static IWebDriver CreateDriver(string browser = "chrome", bool uniqueProfile = false)
+    public static IWebDriver CreateDriver(string browser = "chrome")
     {
         var runRemote = Environment.GetEnvironmentVariable("RUN_REMOTE")?.ToLower() == "true";
         var gridUrl = Environment.GetEnvironmentVariable("SELENIUM_GRID_URL") ?? "http://localhost:4444/wd/hub";
-        if (runRemote)
-        {
-            return CreateRemoteDriver(browser, gridUrl);
-        }
-        else
-        {
-            return CreateLocalDriver(browser, uniqueProfile);
-        }
-    }
-    
-    private static IWebDriver CreateRemoteDriver(string browser, string gridUrl)
-    {
-        ICapabilities capabilities;
 
+        return runRemote
+            ? CreateRemoteDriver(browser, gridUrl)
+            : CreateLocalDriver(browser);
+    }
+
+    private static IWebDriver CreateLocalDriver(string browser)
+    {
         switch (browser.ToLower())
         {
             case "firefox":
                 var firefoxOptions = new FirefoxOptions();
-                firefoxOptions.AddArgument("-headless");
-                firefoxOptions.AddArgument("--width=1920");
-                firefoxOptions.AddArgument("--height=1080");
-                capabilities = firefoxOptions.ToCapabilities();
-                break;
+                firefoxOptions.AddArguments("-headless", "--width=1920", "--height=1080");
+                return new FirefoxDriver(firefoxOptions);
+
             case "chrome":
                 var chromeOptions = new ChromeOptions();
-                chromeOptions.AddArgument("--headless=new");
-                chromeOptions.AddArgument("--no-sandbox");
-                chromeOptions.AddArgument("--disable-dev-shm-usage");
-                chromeOptions.AddArgument("--disable-gpu");
-                chromeOptions.AddArgument("--window-size=1920,1080");
-                capabilities = chromeOptions.ToCapabilities();
-                break;
-            
-            default:
-                throw new NotSupportedException($"Browser '{browser}' is not supported.");
-        }
-        
-        return new RemoteWebDriver(new Uri(gridUrl), capabilities, TimeSpan.FromSeconds(180));
-    }
-        
-    private static IWebDriver CreateLocalDriver(string browser, bool uniqueProfile)
-    {
-        IWebDriver driver;
-        string? profilePath;
+                chromeOptions.AddArguments("--headless=new", "--no-sandbox", "--disable-dev-shm-usage",
+                    "--disable-gpu", "--window-size=1920,1080");
 
-        switch (browser.ToLower())
-        {
-            case "firefox":
-                var firefoxOptions = new FirefoxOptions();
-                firefoxOptions.AddArgument("-headless");
-                firefoxOptions.AddArgument("--width=1920");
-                firefoxOptions.AddArgument("--height=1080");
-                driver = new FirefoxDriver(firefoxOptions);
-                break;
-
-            case "chrome":
-                var options = new ChromeOptions();
-                options.AddArgument("--headless=new");
-                options.AddArgument("--no-sandbox");
-                options.AddArgument("--disable-dev-shm-usage");
-                options.AddArgument("--disable-gpu");
-                options.AddArgument("--window-size=1920,1080");
-
-                if (uniqueProfile)
-                {
-                    profilePath = Path.Combine(Path.GetTempPath(), $"chrome_profile_{Guid.NewGuid():N}");
-                    Directory.CreateDirectory(profilePath);
-                    options.AddArgument($"--user-data-dir={profilePath}");
-                    options.AddArgument("--disable-extensions");
-                    options.AddArgument("--window-size=1920,1080");
-                    LastProfilePath = profilePath;
-                }
-
-                var service = CreateDriverServiceWithRetry();
+                var service = ChromeDriverService.CreateDefaultService();
                 service.HideCommandPromptWindow = true;
-                driver = new ChromeDriver(service, options, TimeSpan.FromSeconds(120));
-                break;
+                return new ChromeDriver(service, chromeOptions, TimeSpan.FromSeconds(120));
 
             default:
                 throw new NotSupportedException($"Browser '{browser}' is not supported locally.");
         }
+    }
 
-        return driver;
-    } 
-    
-    private static ChromeDriverService CreateDriverServiceWithRetry(int retries = 5)
+    private static IWebDriver CreateRemoteDriver(string browser, string gridUrl)
     {
-        for (int i = 0; i < retries; i++)
+        DriverOptions options = browser.ToLower() switch
         {
-            try
+            "firefox" => new FirefoxOptions
             {
-                var service = ChromeDriverService.CreateDefaultService();
-                service.Port = new Random().Next(49152, 65535);
-                return service;
-            }
-            catch
+                AcceptInsecureCertificates = true
+            },
+            "chrome" => new ChromeOptions
             {
-                if (i == retries - 1) throw;
-                Thread.Sleep(200);
-            }
+                AcceptInsecureCertificates = true
+            },
+            _ => throw new NotSupportedException($"Browser '{browser}' is not supported.")
+        };
+
+        if (browser.Equals("chrome", StringComparison.OrdinalIgnoreCase))
+        {
+            ((ChromeOptions)options).AddArguments("--headless=new", "--no-sandbox", "--disable-dev-shm-usage",
+                "--disable-gpu", "--window-size=1920,1080");
+        }
+        else if (browser.Equals("firefox", StringComparison.OrdinalIgnoreCase))
+        {
+            ((FirefoxOptions)options).AddArguments("-headless", "--width=1920", "--height=1080");
         }
 
-        throw new WebDriverException("Failed to create ChromeDriverService with unique port.");
+        return new RemoteWebDriver(new Uri(gridUrl), options.ToCapabilities(), TimeSpan.FromSeconds(180));
     }
 }

@@ -15,39 +15,49 @@ public class TestBase
     private IWebDriver? Driver;
     private static ExtentReports? Extent;
     private ExtentTest? Test;
-       
+    private static SlackNotifier? _slackNotifier;
+    
     protected LoginPage? LoginPage;
     protected FiltersPage? FiltersPage;
-    
-    private static SlackNotifier? _slackNotifier;
        
     public TestContext TestContext { get; set; } = null!;
 
     [AssemblyInitialize]
-    public static async Task AssemblyInit(TestContext context)    
+    public static void AssemblyInit(TestContext context)    
     {
         Extent = ReportManager.GetExtent(isUi: true);
-        
         LoggerService.InitLogger();
         
         _slackNotifier = new SlackNotifier();
-        await _slackNotifier.SendMessage($"UI tests started at {DateTime.Now}");
+        Task.Run(() => _slackNotifier.SendMessage($"UI tests started at {DateTime.Now}"));
     }
     
     [TestInitialize]
     public void SetUp()
     {
         Test = Extent!.CreateTest(TestContext.TestName);
-        
         string browser = TestContext.Properties.Contains("browser")
             ? TestContext.Properties["browser"]?.ToString() ?? "chrome"
             : "chrome";
 
-        Driver = DriverFactory.CreateDriver(browser, uniqueProfile: false);
+        Driver = DriverFactory.CreateDriver(browser);
         if (Driver == null)
             throw new InvalidOperationException("Driver initialization failed.");
 
-        Driver.Navigate().GoToUrl("https://rp.epam.com");
+        int attempts = 0;
+        while (attempts < 3)
+        {
+            try
+            {
+                Driver.Navigate().GoToUrl("https://rp.epam.com");
+                break;
+            }
+            catch (WebDriverException)
+            {
+                attempts++;
+                Thread.Sleep(2000);
+            }
+        }
         
         ClearBrowserData(Driver);
 
@@ -73,20 +83,15 @@ public class TestBase
     }
 
     [TestCleanup]
-    public void CleanUp()   
+    public void CleanUp()
     {
         var outcome = TestContext.CurrentTestOutcome;
 
-        if (outcome == UnitTestOutcome.Failed && Driver is not null)
+        try
         {
-            try
+            if (outcome == UnitTestOutcome.Failed && Driver is not null)
             {
-                string? screenshotPath = ScreenshotHelper.TakeScreenshot(
-                    Driver, 
-                    Log.Logger, 
-                    TestContext.TestName
-                );
-
+                string? screenshotPath = ScreenshotHelper.TakeScreenshot(Driver, Log.Logger, TestContext.TestName);
                 if (!string.IsNullOrEmpty(screenshotPath))
                 {
                     Test!.Fail("Test Failed").AddScreenCaptureFromPath(screenshotPath);
@@ -97,52 +102,38 @@ public class TestBase
                     Test!.Fail("Test Failed - no screenshot available");
                 }
             }
-            catch (Exception e)
+            else if (outcome == UnitTestOutcome.Passed)
             {
-                LoggerService.Error("Failed to take screenshot on test failure", e);
-                Test!.Fail("Test Failed - screenshot error: " + e.Message);
+                Test!.Pass("Test Passed");
+            }
+            else
+            {
+                Test!.Skip("Test Skipped");
             }
         }
-        
-        else if (outcome == UnitTestOutcome.Passed)
+        catch (Exception e)
         {
-            Test!.Pass("Test Passed");
+            LoggerService.Error("Error during test cleanup", e);
         }
-        else
-        {
-            Test!.Skip("Test Skipped");
-        }   
-
-        try
-        {
-            Driver?.Quit();
-            Driver?.Dispose();
-        }
-        catch (Exception ex)
-        {
-            LoggerService.Error("Error while disposing driver", ex);
-        }
-        Driver = null;
-        
-        if (!string.IsNullOrEmpty(DriverFactory.LastProfilePath) &&
-            Directory.Exists(DriverFactory.LastProfilePath))
+        finally
         {
             try
             {
-                Directory.Delete(DriverFactory.LastProfilePath, true);
+                Driver?.Quit();
+                Driver?.Dispose();
             }
             catch (Exception ex)
             {
-                LoggerService.Error("Error while deleting profile directory", ex);
+                LoggerService.Error("Error while disposing driver", ex);
             }
+            Driver = null;
         }
     }
     
     [AssemblyCleanup]
-    public static async Task AssemblyCleanup()
+    public static void AssemblyCleanup()
     {
         ReportManager.FlushReports();
-        _slackNotifier = new SlackNotifier();
-        await _slackNotifier.SendMessage($"UI tests finished at {DateTime.Now}");
+        Task.Run(() => _slackNotifier?.SendMessage($"UI tests finished at {DateTime.Now}"));
     }
 }
