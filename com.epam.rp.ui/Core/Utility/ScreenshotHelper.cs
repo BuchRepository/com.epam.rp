@@ -9,12 +9,11 @@ public static class ScreenshotHelper
         try
         {
             string screenshotsDir = Path.Combine(AppContext.BaseDirectory, "screenshots");
-            string runId = Environment.GetEnvironmentVariable("GITHUB_RUN_ID") ?? "local";
-            string runDir = Path.Combine(screenshotsDir, runId);
+            string runDir = Path.Combine(screenshotsDir);
 
             Directory.CreateDirectory(runDir);
 
-            string timestamp = DateTime.UtcNow.ToString("yyyyMMdd_HHmmss_fff");
+            string timestamp = DateTime.UtcNow.ToString("yyyyMMdd");
             string fileName = $"{scenarioName ?? "screenshot"}_{timestamp}_{Guid.NewGuid():N}.png";
             string fullPath = Path.Combine(runDir, fileName);
 
