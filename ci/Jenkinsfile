@@ -129,7 +129,7 @@ pipeline {
                         echo "Creating UI appsettings.json..."
                         mkdir -p com.epam.rp.ui/bin/Release/net8.0/
 
-                        cat > com.epam.rp.ui/bin/Release/net8.0/appsettings.json <<'EOL'
+                        cat > com.epam.rp.ui/bin/Release/net8.0/appsettings.json <<EOL
 {
   "LOGIN": "${LOGIN}",
   "PASSWORD": "${PASSWORD}",
