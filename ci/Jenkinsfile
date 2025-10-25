@@ -119,7 +119,7 @@ pipeline {
             steps {
                 withCredentials([
                     string(credentialsId: 'SAUCE_USERNAME', variable: 'SAUCE_USERNAME'),
-                    string(credentialsId: 'SAUCE_ACCESS_KEY', variable: 'SAUCE_ACCESS_KEY')
+                    string(credentialsId: 'SAUCE_ACCESS_KEY', variable: 'SAUCE_ACCESS_KEY'),
                     string(credentialsId: 'SLACK_WEBHOOK_URL', variable: 'SLACK_WEBHOOK_URL')
                 ]) {
                     sh '''
