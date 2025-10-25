@@ -115,6 +115,29 @@ pipeline {
             }
         }
 
+        stage('Run UI tests on Sauce Labs') {
+            steps {
+                withCredentials([
+                    string(credentialsId: 'SAUCE_USERNAME', variable: 'SAUCE_USERNAME'),
+                    string(credentialsId: 'SAUCE_ACCESS_KEY', variable: 'SAUCE_ACCESS_KEY')
+                ]) {
+                    sh '''
+                        echo "Running UI tests on Sauce Labs..."
+                        echo "Using Sauce username: $SAUCE_USERNAME"
+
+                        export SAUCE_USERNAME=$SAUCE_USERNAME
+                        export SAUCE_ACCESS_KEY=$SAUCE_ACCESS_KEY
+                        export USE_SAUCELABS=true
+                        export RUN_REMOTE=true
+
+                        $DOTNET_HOME/dotnet test com.epam.rp.ui/com.epam.rp.ui.csproj \
+                            --configuration Release \
+                            --logger:"console;verbosity=detailed"
+                    '''
+                }
+            }
+        }
+
         stage('Run UI tests') {
             environment {
                 LOGIN = credentials('LOGIN')

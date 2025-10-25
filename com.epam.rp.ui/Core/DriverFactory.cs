@@ -10,6 +10,11 @@ public static class DriverFactory
     public static IWebDriver CreateDriver(string browser = "chrome")
     {
         var runRemote = Environment.GetEnvironmentVariable("RUN_REMOTE")?.ToLower() == "true";
+        var useSauceLabs = Environment.GetEnvironmentVariable("USE_SAUCELABS")?.ToLower() == "true";
+        
+        if (useSauceLabs)
+            return CreateSauceLabsDriver(browser);
+        
         var gridUrl = Environment.GetEnvironmentVariable("SELENIUM_GRID_URL") ?? "http://localhost:4444/wd/hub";
 
         return runRemote
@@ -39,7 +44,60 @@ public static class DriverFactory
                 throw new NotSupportedException($"Browser '{browser}' is not supported locally.");
         }
     }
+    
+    private static IWebDriver CreateRemoteDriver(string browser, string gridUrl)
+    {
+        DriverOptions options = browser.ToLower() switch
+        {
+            "firefox" => new FirefoxOptions { AcceptInsecureCertificates = true },
+            "chrome" => new ChromeOptions { AcceptInsecureCertificates = true },
+            _ => throw new NotSupportedException($"Browser '{browser}' is not supported.")
+        };
 
+        return new RemoteWebDriver(new Uri(gridUrl), options.ToCapabilities(), TimeSpan.FromSeconds(180));
+    }
+    
+    private static IWebDriver CreateSauceLabsDriver(string browser)
+    {
+        var username = Environment.GetEnvironmentVariable("SAUCE_USERNAME") ?? "USERNAME";
+        var accessKey = Environment.GetEnvironmentVariable("SAUCE_ACCESS_KEY") ?? "ACCESS_KEY";
+        var sauceUrl = $"https://{username}:{accessKey}@ondemand.eu-central-1.saucelabs.com/wd/hub";
+
+        var sauceOptions = new Dictionary<string, object>
+        {
+            ["build"] = $"build-{DateTime.Now:yyyyMMdd-HHmmss}",
+            ["name"] = $"Test Run - {browser}",
+            ["screenResolution"] = "1920x1080",
+            ["seleniumVersion"] = "4.23.0"
+        };
+
+        DriverOptions options;
+        switch (browser.ToLower())
+        {
+            case "chrome":
+                var chromeOptions = new ChromeOptions();
+                chromeOptions.PlatformName = "Windows 11";
+                chromeOptions.BrowserVersion = "latest";
+                chromeOptions.AddAdditionalOption("sauce:options", sauceOptions);
+                options = chromeOptions;
+                break;
+
+            case "firefox":
+                var firefoxOptions = new FirefoxOptions();
+                firefoxOptions.PlatformName = "Windows 11";
+                firefoxOptions.BrowserVersion = "latest";
+                firefoxOptions.AddAdditionalOption("sauce:options", sauceOptions);
+                options = firefoxOptions;
+                break;
+
+            default:
+                throw new NotSupportedException($"Browser '{browser}' is not supported on Sauce Labs.");
+        }
+
+        return new RemoteWebDriver(new Uri(sauceUrl), options.ToCapabilities(), TimeSpan.FromSeconds(180));
+    }
+
+    /*
     private static IWebDriver CreateRemoteDriver(string browser, string gridUrl)
     {
         DriverOptions options = browser.ToLower() switch
@@ -67,4 +125,5 @@ public static class DriverFactory
 
         return new RemoteWebDriver(new Uri(gridUrl), options.ToCapabilities(), TimeSpan.FromSeconds(180));
     }
+    */
 }
