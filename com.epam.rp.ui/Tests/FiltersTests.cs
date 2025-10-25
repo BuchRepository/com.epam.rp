@@ -61,7 +61,6 @@ public class FiltersTests : TestBase
     }
     
     [TestMethod]
-    [Ignore]
     [DynamicData(nameof(RemoveFilterData), DynamicDataSourceType.Method)]
     public void UserCanRemoveFilter(FilterTestData data)
     {
@@ -92,7 +91,6 @@ public class FiltersTests : TestBase
     }
     
     [TestMethod]
-    [Ignore]
     [DynamicData(nameof(ToggleDisplayData), DynamicDataSourceType.Method)]
     public void UserCanToggleFilterDisplay(FilterTestData data)
     {
@@ -134,7 +132,6 @@ public class FiltersTests : TestBase
     }
 
     [TestMethod]
-    [Ignore]
     [DynamicData(nameof(EditFilterData), DynamicDataSourceType.Method)]
     public void UserCanEditFilter(FilterTestData data)
     {
@@ -170,7 +167,6 @@ public class FiltersTests : TestBase
     }
 
     [TestMethod]
-    [Ignore]
     [DynamicData(nameof(CopyFilterData), DynamicDataSourceType.Method)]
     public void UserCanCopyFilter(FilterTestData data)
     {
