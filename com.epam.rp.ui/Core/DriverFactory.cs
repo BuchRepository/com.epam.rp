@@ -12,6 +12,9 @@ public static class DriverFactory
         var runRemote = Environment.GetEnvironmentVariable("RUN_REMOTE")?.ToLower() == "true";
         var useSauceLabs = Environment.GetEnvironmentVariable("USE_SAUCELABS")?.ToLower() == "true";
         
+        Console.WriteLine($"[DEBUG] RUN_REMOTE={Environment.GetEnvironmentVariable("RUN_REMOTE")}");
+        Console.WriteLine($"[DEBUG] USE_SAUCELABS={Environment.GetEnvironmentVariable("USE_SAUCELABS")}");
+        
         if (useSauceLabs)
             return CreateSauceLabsDriver(browser);
         
@@ -62,6 +65,10 @@ public static class DriverFactory
         var username = Environment.GetEnvironmentVariable("SAUCE_USERNAME") ?? "USERNAME";
         var accessKey = Environment.GetEnvironmentVariable("SAUCE_ACCESS_KEY") ?? "ACCESS_KEY";
         var sauceUrl = $"https://{username}:{accessKey}@ondemand.eu-central-1.saucelabs.com/wd/hub";
+        Console.WriteLine($"[SauceLabs] Connecting to: https://{username}:***@ondemand.eu-central-1.saucelabs.com/wd/hub");
+        Console.WriteLine("[INFO] Creating RemoteWebDriver for Sauce Labs...");
+        Console.WriteLine($"[INFO] Browser: {browser}");
+        Console.WriteLine($"[INFO] Platform: Windows 11");
 
         var sauceOptions = new Dictionary<string, object>
         {
