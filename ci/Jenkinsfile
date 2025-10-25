@@ -120,6 +120,7 @@ pipeline {
                 withCredentials([
                     string(credentialsId: 'SAUCE_USERNAME', variable: 'SAUCE_USERNAME'),
                     string(credentialsId: 'SAUCE_ACCESS_KEY', variable: 'SAUCE_ACCESS_KEY')
+                    string(credentialsId: 'SLACK_WEBHOOK_URL', variable: 'SLACK_WEBHOOK_URL')
                 ]) {
                     sh '''
                         echo "Running UI tests on Sauce Labs..."
@@ -129,6 +130,7 @@ pipeline {
                         export SAUCE_ACCESS_KEY=$SAUCE_ACCESS_KEY
                         export USE_SAUCELABS=true
                         export RUN_REMOTE=true
+                        export SLACK_WEBHOOK_URL=$SLACK_WEBHOOK_URL
 
                         $DOTNET_HOME/dotnet test com.epam.rp.ui/com.epam.rp.ui.csproj \
                             --configuration Release \
