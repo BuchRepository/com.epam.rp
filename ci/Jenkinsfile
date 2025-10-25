@@ -115,36 +115,39 @@ pipeline {
             }
         }
 
-	stage('Prepare UI config') {
+        stage('Prepare UI config') {
             steps {
                 withCredentials([
                     string(credentialsId: 'LOGIN', variable: 'LOGIN'),
                     string(credentialsId: 'PASSWORD', variable: 'PASSWORD'),
                     string(credentialsId: 'API_TOKEN', variable: 'API_TOKEN'),
+                    string(credentialsId: 'SLACK_WEBHOOK_URL', variable: 'SLACK_WEBHOOK_URL'),
                     string(credentialsId: 'SAUCE_USERNAME', variable: 'SAUCE_USERNAME'),
-                    string(credentialsId: 'SAUCE_ACCESS_KEY', variable: 'SAUCE_ACCESS_KEY'),
-                    string(credentialsId: 'SLACK_WEBHOOK_URL', variable: 'SLACK_WEBHOOK_URL')
+                    string(credentialsId: 'SAUCE_ACCESS_KEY', variable: 'SAUCE_ACCESS_KEY')
                 ]) {
                     sh '''
                         echo "Creating UI appsettings.json..."
                         mkdir -p com.epam.rp.ui/bin/Release/net8.0/
-                        cat > com.epam.rp.ui/bin/Release/net8.0/appsettings.json <<EOL
-                        {
-                          "LOGIN": "${LOGIN}",
-                          "PASSWORD": "${PASSWORD}",
-                          "API_TOKEN": "${API_TOKEN}",
-                          "SLACK_WEBHOOK_URL": "${SLACK_WEBHOOK_URL}",
-                          "SAUCE_USERNAME": "${SAUCE_USERNAME}",
-                          "SAUCE_ACCESS_KEY": "${SAUCE_ACCESS_KEY}",
-                          "USE_SAUCELABS": "true",
-                          "RUN_REMOTE": "true"
-                        }
-                        EOL
 
-                    '''
-                }
+                        cat > com.epam.rp.ui/bin/Release/net8.0/appsettings.json <<'EOL'
+{
+  "LOGIN": "${LOGIN}",
+  "PASSWORD": "${PASSWORD}",
+  "API_TOKEN": "${API_TOKEN}",
+  "SLACK_WEBHOOK_URL": "${SLACK_WEBHOOK_URL}",
+  "SAUCE_USERNAME": "${SAUCE_USERNAME}",
+  "SAUCE_ACCESS_KEY": "${SAUCE_ACCESS_KEY}",
+  "USE_SAUCELABS": "true",
+  "RUN_REMOTE": "true"
+}
+EOL
+
+                    echo "appsettings.json created"
+                '''
             }
         }
+    }
+
 
         stage('Run UI tests on Sauce Labs') {
             steps {
