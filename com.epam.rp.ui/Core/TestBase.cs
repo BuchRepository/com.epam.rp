@@ -89,6 +89,13 @@ public class TestBase
 
         try
         {
+            if (Environment.GetEnvironmentVariable("USE_SAUCELABS")?.ToLower() == "true" && Driver is IJavaScriptExecutor js)
+            {
+                var result = outcome == UnitTestOutcome.Passed ? "passed" : "failed";
+                js.ExecuteScript($"sauce:job-result={result}");
+                LoggerService.Info($"[SauceLabs] Job marked as {result}");
+            }
+            
             if (outcome == UnitTestOutcome.Failed && Driver is not null)
             {
                 string? screenshotPath = ScreenshotHelper.TakeScreenshot(Driver, Log.Logger, TestContext.TestName);
