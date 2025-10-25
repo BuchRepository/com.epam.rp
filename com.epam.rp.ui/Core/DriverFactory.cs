@@ -73,7 +73,7 @@ public static class DriverFactory
             return CreateLocalDriver(browser);
         }
 
-        var sauceUrl = "https://ondemand.eu-central-1.saucelabs.com/wd/hub";
+        var sauceUrl = "https://ondemand.eu-central-1.saucelabs.com:443/wd/hub";
 
         Console.WriteLine($"[INFO] Creating RemoteWebDriver for Sauce Labs...");
         Console.WriteLine($"[INFO] Browser: {browser}");

@@ -115,61 +115,28 @@ pipeline {
             }
         }
 
-        stage('Prepare UI config') {
-            steps {
-                withCredentials([
-                    string(credentialsId: 'LOGIN', variable: 'LOGIN'),
-                    string(credentialsId: 'PASSWORD', variable: 'PASSWORD'),
-                    string(credentialsId: 'API_TOKEN', variable: 'API_TOKEN'),
-                    string(credentialsId: 'SLACK_WEBHOOK_URL', variable: 'SLACK_WEBHOOK_URL'),
-                    string(credentialsId: 'SAUCE_USERNAME', variable: 'SAUCE_USERNAME'),
-                    string(credentialsId: 'SAUCE_ACCESS_KEY', variable: 'SAUCE_ACCESS_KEY')
-                ]) {
-                    sh '''
-                        echo "Creating UI appsettings.json..."
-                        mkdir -p com.epam.rp.ui/bin/Release/net8.0/
-
-                        cat > com.epam.rp.ui/bin/Release/net8.0/appsettings.json <<EOL
-{
-  "LOGIN": "${LOGIN}",
-  "PASSWORD": "${PASSWORD}",
-  "API_TOKEN": "${API_TOKEN}",
-  "SLACK_WEBHOOK_URL": "${SLACK_WEBHOOK_URL}",
-  "SAUCE_USERNAME": "${SAUCE_USERNAME}",
-  "SAUCE_ACCESS_KEY": "${SAUCE_ACCESS_KEY}",
-  "USE_SAUCELABS": "true",
-  "RUN_REMOTE": "true"
-}
-EOL
-
-                    echo "appsettings.json created"
-                '''
-            }
-        }
-    }
-
 
         stage('Run UI tests on Sauce Labs') {
+            environment {
+                LOGIN = credentials('LOGIN')
+                PASSWORD = credentials('PASSWORD')
+                SLACK_WEBHOOK_URL = credentials('SLACK_WEBHOOK_URL')
+                SAUCE_USERNAME = credentials('SAUCE_USERNAME')
+                SAUCE_ACCESS_KEY = credentials('SAUCE_ACCESS_KEY')
+            }
             steps {
-                withCredentials([
-                    string(credentialsId: 'SAUCE_USERNAME', variable: 'SAUCE_USERNAME'),
-                    string(credentialsId: 'SAUCE_ACCESS_KEY', variable: 'SAUCE_ACCESS_KEY'),
-                    string(credentialsId: 'SLACK_WEBHOOK_URL', variable: 'SLACK_WEBHOOK_URL')
-                ]) {
-                    sh '''
-                        echo "Running UI tests on Sauce Labs..."
+                sh '''
+                    echo "Running UI tests on Sauce Labs..."
 
-                        SAUCE_USERNAME=$SAUCE_USERNAME \
-                        SAUCE_ACCESS_KEY=$SAUCE_ACCESS_KEY \
-                        USE_SAUCELABS=true \
-                        RUN_REMOTE=true \
-                        SLACK_WEBHOOK_URL=$SLACK_WEBHOOK_URL \
-
-                        $DOTNET_HOME/dotnet test com.epam.rp.ui/com.epam.rp.ui.csproj \
-                            --configuration Release \
-                            --logger:"console;verbosity=detailed"
-                    '''
-                }
+                    SAUCE_USERNAME=$SAUCE_USERNAME \
+                    SAUCE_ACCESS_KEY=$SAUCE_ACCESS_KEY \
+                    USE_SAUCELABS=true \
+                    RUN_REMOTE=true \
+                    SLACK_WEBHOOK_URL=$SLACK_WEBHOOK_URL \
+                    $DOTNET_HOME/dotnet test com.epam.rp.ui/com.epam.rp.ui.csproj \
+                        --configuration Release \
+                        --logger:"console;verbosity=detailed"
+                '''
             }
         }
 
