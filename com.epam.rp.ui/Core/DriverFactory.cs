@@ -62,46 +62,62 @@ public static class DriverFactory
     
     private static IWebDriver CreateSauceLabsDriver(string browser)
     {
-        var username = Environment.GetEnvironmentVariable("SAUCE_USERNAME") ?? "USERNAME";
-        var accessKey = Environment.GetEnvironmentVariable("SAUCE_ACCESS_KEY") ?? "ACCESS_KEY";
-        var sauceUrl = $"https://{username}:{accessKey}@ondemand.eu-central-1.saucelabs.com/wd/hub";
-        Console.WriteLine($"[SauceLabs] Connecting to: https://{username}:***@ondemand.eu-central-1.saucelabs.com/wd/hub");
-        Console.WriteLine("[INFO] Creating RemoteWebDriver for Sauce Labs...");
+        var username = Environment.GetEnvironmentVariable("SAUCE_USERNAME");
+        var accessKey = Environment.GetEnvironmentVariable("SAUCE_ACCESS_KEY");
+        var buildTag = Environment.GetEnvironmentVariable("BUILD_TAG") ?? $"jenkins-build-{DateTime.UtcNow:yyyyMMddHHmmss}";
+        var testName = Environment.GetEnvironmentVariable("TEST_NAME") ?? "ReportPortal UI Tests";
+
+        if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(accessKey))
+        {
+            Console.WriteLine("[ERROR] Missing Sauce Labs credentials! Falling back to local driver.");
+            return CreateLocalDriver(browser);
+        }
+
+        var sauceUrl = "https://ondemand.eu-central-1.saucelabs.com/wd/hub";
+
+        Console.WriteLine($"[INFO] Creating RemoteWebDriver for Sauce Labs...");
         Console.WriteLine($"[INFO] Browser: {browser}");
         Console.WriteLine($"[INFO] Platform: Windows 11");
 
         var sauceOptions = new Dictionary<string, object>
         {
-            ["build"] = $"build-{DateTime.Now:yyyyMMdd-HHmmss}",
-            ["name"] = $"Test Run - {browser}",
+            ["username"] = username,
+            ["accessKey"] = accessKey,
+            ["build"] = buildTag,
+            ["name"] = testName,
             ["screenResolution"] = "1920x1080",
             ["seleniumVersion"] = "4.23.0"
         };
 
-        DriverOptions options;
-        switch (browser.ToLower())
+        DriverOptions options = browser.ToLower() switch
         {
-            case "chrome":
-                var chromeOptions = new ChromeOptions();
-                chromeOptions.PlatformName = "Windows 11";
-                chromeOptions.BrowserVersion = "latest";
-                chromeOptions.AddAdditionalOption("sauce:options", sauceOptions);
-                options = chromeOptions;
-                break;
+            "chrome" => new ChromeOptions
+            {
+                PlatformName = "Windows 11",
+                BrowserVersion = "latest"
+            },
+            "firefox" => new FirefoxOptions
+            {
+                PlatformName = "Windows 11",
+                BrowserVersion = "latest"
+            },
+            _ => throw new NotSupportedException($"Browser '{browser}' is not supported on Sauce Labs.")
+        };
 
-            case "firefox":
-                var firefoxOptions = new FirefoxOptions();
-                firefoxOptions.PlatformName = "Windows 11";
-                firefoxOptions.BrowserVersion = "latest";
-                firefoxOptions.AddAdditionalOption("sauce:options", sauceOptions);
-                options = firefoxOptions;
-                break;
+        options.AddAdditionalOption("sauce:options", sauceOptions);
 
-            default:
-                throw new NotSupportedException($"Browser '{browser}' is not supported on Sauce Labs.");
+        try
+        {
+            var driver = new RemoteWebDriver(new Uri(sauceUrl), options.ToCapabilities(), TimeSpan.FromSeconds(180));
+            Console.WriteLine("[INFO] RemoteWebDriver successfully created on Sauce Labs.");
+            return driver;
         }
-
-        return new RemoteWebDriver(new Uri(sauceUrl), options.ToCapabilities(), TimeSpan.FromSeconds(180));
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[ERROR] Failed to create Sauce Labs driver: {ex.Message}");
+            Console.WriteLine("[WARN] Falling back to local driver...");
+            return CreateLocalDriver(browser);
+        }
     }
 
     /*

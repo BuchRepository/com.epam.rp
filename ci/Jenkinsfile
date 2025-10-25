@@ -115,6 +115,37 @@ pipeline {
             }
         }
 
+	stage('Prepare UI config') {
+            steps {
+                withCredentials([
+                    string(credentialsId: 'LOGIN', variable: 'LOGIN'),
+                    string(credentialsId: 'PASSWORD', variable: 'PASSWORD'),
+                    string(credentialsId: 'API_TOKEN', variable: 'API_TOKEN'),
+                    string(credentialsId: 'SAUCE_USERNAME', variable: 'SAUCE_USERNAME'),
+                    string(credentialsId: 'SAUCE_ACCESS_KEY', variable: 'SAUCE_ACCESS_KEY'),
+                    string(credentialsId: 'SLACK_WEBHOOK_URL', variable: 'SLACK_WEBHOOK_URL')
+                ]) {
+                    sh '''
+                        echo "Creating UI appsettings.json..."
+                        mkdir -p com.epam.rp.ui/bin/Release/net8.0/
+                        cat > com.epam.rp.ui/bin/Release/net8.0/appsettings.json <<EOL
+                        {
+                          "LOGIN": "${LOGIN}",
+                          "PASSWORD": "${PASSWORD}",
+                          "API_TOKEN": "${API_TOKEN}",
+                          "SLACK_WEBHOOK_URL": "${SLACK_WEBHOOK_URL}",
+                          "SAUCE_USERNAME": "${SAUCE_USERNAME}",
+                          "SAUCE_ACCESS_KEY": "${SAUCE_ACCESS_KEY}",
+                          "USE_SAUCELABS": "true",
+                          "RUN_REMOTE": "true"
+                        }
+                        EOL
+
+                    '''
+                }
+            }
+        }
+
         stage('Run UI tests on Sauce Labs') {
             steps {
                 withCredentials([
@@ -124,13 +155,12 @@ pipeline {
                 ]) {
                     sh '''
                         echo "Running UI tests on Sauce Labs..."
-                        echo "Using Sauce username: $SAUCE_USERNAME"
 
-                        export SAUCE_USERNAME=$SAUCE_USERNAME
-                        export SAUCE_ACCESS_KEY=$SAUCE_ACCESS_KEY
-                        export USE_SAUCELABS=true
-                        export RUN_REMOTE=true
-                        export SLACK_WEBHOOK_URL=$SLACK_WEBHOOK_URL
+                        SAUCE_USERNAME=$SAUCE_USERNAME \
+                        SAUCE_ACCESS_KEY=$SAUCE_ACCESS_KEY \
+                        USE_SAUCELABS=true \
+                        RUN_REMOTE=true \
+                        SLACK_WEBHOOK_URL=$SLACK_WEBHOOK_URL \
 
                         $DOTNET_HOME/dotnet test com.epam.rp.ui/com.epam.rp.ui.csproj \
                             --configuration Release \
