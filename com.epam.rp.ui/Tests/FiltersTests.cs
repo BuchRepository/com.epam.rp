@@ -5,8 +5,6 @@ using com.epam.rp.ui.Business.Enums;
 using com.epam.rp.ui.Core;
 using TestDataLoader = com.epam.rp.core.TestDataLoader;
 
-[assembly: Parallelize(Workers = 5, Scope = ExecutionScope.MethodLevel)]
-
 namespace com.epam.rp.ui.Tests;
 
 [TestClass]
