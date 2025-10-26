@@ -1,0 +1,228 @@
+name: CI - .NET Tests with Selenium Grid
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  api-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8.0.x
+      - run: dotnet restore com.epam.rp.sln
+
+      - name: Create appsettings.json from secrets
+        env:
+          LOGIN: ${{ secrets.TEST_LOGIN }}
+          PASSWORD: ${{ secrets.TEST_PASSWORD }}
+          API_TOKEN: ${{ secrets.API_TOKEN }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          mkdir -p com.epam.rp.api/bin/Release/net8.0/
+          cat > com.epam.rp.api/bin/Release/net8.0/appsettings.json <<EOL
+          {
+            "LOGIN": "$LOGIN",
+            "PASSWORD": "$PASSWORD",
+            "API_TOKEN": "$API_TOKEN",
+            "SLACK_WEBHOOK_URL": "$SLACK_WEBHOOK_URL"
+            "Serilog": {
+              "Using": ["Serilog.Sinks.Console", "Serilog.Sinks.File"],
+              "MinimumLevel": {
+                "Default": "Information",
+                "Override": {
+                  "Microsoft": "Warning",
+                  "System": "Warning"
+                }
+              },
+              "WriteTo": [
+                { "Name": "Console" },
+                { "Name": "File", "Args": { "path": "${{ github.workspace }}/logs/logfile.log", "restrictedToMinimumLevel": "Information" } }
+              ]
+            }
+          }
+          EOL
+
+      # --- SonarQube Analysis Begin ---
+      - name: SonarQube begin analysis
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
+          GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
+          GITHUB_HEAD_REF: ${{ github.head_ref }}
+          GITHUB_BASE_REF: ${{ github.base_ref }}
+        run: |
+          dotnet tool install --global dotnet-sonarscanner --version 5.9.0
+          export PATH="$HOME/.dotnet/tools:$PATH"
+
+          PR_KEY="${GITHUB_PR_NUMBER:-}"
+          PR_BRANCH="${GITHUB_HEAD_REF:-}"
+          PR_BASE="${GITHUB_BASE_REF:-}"
+
+          echo "SonarQube analysis started..."
+          echo "Event name: $GITHUB_EVENT_NAME"
+          echo "PR key: $PR_KEY"
+          echo "PR branch: $PR_BRANCH"
+          echo "PR base: $PR_BASE"
+
+          dotnet-sonarscanner begin \
+            /k:"BuchRepository_com.epam.rp" \
+            /o:"buchrepository" \
+            /d:sonar.host.url="https://sonarcloud.io" \
+            /d:sonar.token="$SONAR_TOKEN" \
+            $( [ -n "$PR_KEY" ] && echo "/d:sonar.pullrequest.key=$PR_KEY /d:sonar.pullrequest.branch=$PR_BRANCH /d:sonar.pullrequest.base=$PR_BASE /d:sonar.pullrequest.provider=GitHub" )
+      # --- SonarQube Analysis End ---
+
+      - run: dotnet build com.epam.rp.sln --configuration Release --no-restore
+
+      - name: Run API tests
+        run: dotnet test com.epam.rp.api/com.epam.rp.api.csproj --configuration Release
+        continue-on-error: true
+
+      - name: SonarQube end analysis
+        run: |
+          export PATH="$HOME/.dotnet/tools:$PATH"
+          dotnet-sonarscanner end
+
+      - name: Upload API Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-report
+          path: ./com.epam.rp.api/bin/Release/net8.0/index.html
+          if-no-files-found: ignore
+
+  ui-tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        browser: [chrome, firefox]
+    services:
+      selenium-hub:
+        image: selenium/hub:4.23.0
+        ports: [4444:4444]
+      chrome-node:
+        image: selenium/node-chrome:4.23.0
+        env:
+          SE_EVENT_BUS_HOST: selenium-hub
+          SE_EVENT_BUS_PUBLISH_PORT: 4442
+          SE_EVENT_BUS_SUBSCRIBE_PORT: 4443
+      firefox-node:
+        image: selenium/node-firefox:4.23.0
+        env:
+          SE_EVENT_BUS_HOST: selenium-hub
+          SE_EVENT_BUS_PUBLISH_PORT: 4442
+          SE_EVENT_BUS_SUBSCRIBE_PORT: 4443
+    env:
+      SELENIUM_GRID_URL: http://localhost:4444/wd/hub
+      RUN_REMOTE: "true"
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore com.epam.rp.sln
+
+      - name: Create appsettings.json from secrets
+        run: |
+          mkdir -p com.epam.rp.ui/bin/Release/net8.0/
+          cat > com.epam.rp.ui/bin/Release/net8.0/appsettings.json <<EOL
+          {
+            "LOGIN": "${{ secrets.TEST_LOGIN }}",
+            "PASSWORD": "${{ secrets.TEST_PASSWORD }}",
+            "API_TOKEN": "${{ secrets.API_TOKEN }}",
+            "SLACK_WEBHOOK_URL": "${{ secrets.SLACK_WEBHOOK_URL }}"
+          }
+          EOL
+
+      - name: SonarQube begin analysis
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
+          GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
+          GITHUB_HEAD_REF: ${{ github.head_ref }}
+          GITHUB_BASE_REF: ${{ github.base_ref }}
+        run: |
+          dotnet tool install --global dotnet-sonarscanner --version 5.9.0
+          export PATH="$HOME/.dotnet/tools:$PATH"
+
+          PR_KEY="${GITHUB_PR_NUMBER:-}"
+          PR_BRANCH="${GITHUB_HEAD_REF:-}"
+          PR_BASE="${GITHUB_BASE_REF:-}"
+
+          echo "SonarQube analysis started..."
+          echo "Event name: $GITHUB_EVENT_NAME"
+          echo "PR key: $PR_KEY"
+          echo "PR branch: $PR_BRANCH"
+          echo "PR base: $PR_BASE"
+
+          dotnet-sonarscanner begin \
+            /k:"BuchRepository_com.epam.rp" \
+            /o:"buchrepository" \
+            /d:sonar.host.url="https://sonarcloud.io" \
+            /d:sonar.token="$SONAR_TOKEN" \
+            $( [ -n "$PR_KEY" ] && echo "/d:sonar.pullrequest.key=$PR_KEY /d:sonar.pullrequest.branch=$PR_BRANCH /d:sonar.pullrequest.base=$PR_BASE /d:sonar.pullrequest.provider=GitHub" )
+      # --- SonarQube Analysis End ---
+
+      - name: Build solution
+        run: dotnet build com.epam.rp.sln --configuration Release --no-restore
+
+      - name: Debug Selenium Hub
+        run: |
+          docker ps -a || true
+          curl -v http://localhost:4444/status || true
+
+      - name: Wait for Selenium Grid to be ready
+        run: |
+          echo "Waiting for Selenium Grid to start..."
+          for i in {1..30}; do
+            ready=$(curl -s http://localhost:4444/status | jq -r '.value.ready')
+            if [ "$ready" = "true" ]; then
+              echo "Selenium Grid is ready!"
+              break
+            fi
+            echo "Waiting ($i/30)..."
+            sleep 2
+          done
+
+      - name: Run UI tests in ${{ matrix.browser }}
+        run: |
+          dotnet test com.epam.rp.ui/com.epam.rp.ui.csproj \
+            --configuration Release \
+            --no-build \
+            --logger "console;verbosity=detailed" \
+            --logger "trx;LogFileName=test-results-${{ matrix.browser }}.trx" \
+            -- TestRunParameters.Parameter\(name=\"browser\",value=\"${{ matrix.browser }}\"\)
+        continue-on-error: true
+
+      - name: SonarQube end analysis
+        run: |
+          export PATH="$HOME/.dotnet/tools:$PATH"
+          dotnet-sonarscanner end
+
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots-${{ matrix.browser }}
+          path: '**/screenshots/**/*.png'
+          if-no-files-found: ignore
+
+      - name: List files in Release folder
+        run: ls -lah ./com.epam.rp.api/bin/Release/net8.0/ || true && ls -lah ./com.epam.rp.ui/bin/Release/net8.0/ || true
+
+      - name: Upload UI Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-report-${{ matrix.browser }}
+          path: ./com.epam.rp.ui/bin/Release/net8.0/index.html

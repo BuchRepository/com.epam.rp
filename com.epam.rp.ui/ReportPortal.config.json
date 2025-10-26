@@ -1,0 +1,17 @@
+{
+  "server": {
+    "url": "https://rp.epam.com",
+    "project": "sergii_buchkivskyi_personal",
+    "authentication": {
+      "uuid": ""  
+    }
+  },
+  "launch": {
+    "name": "UI Tests",
+    "description": "Automated tests for UI",
+    "attributes": ["ui", "taf"]
+  },
+  "logger": {
+    "minLogLevel": "Info"
+  }
+}

@@ -26,6 +26,8 @@ slnx.sqlite
 *.iws
 *.DotSettings.user
 appsettings.json
+appsettings.local.json
+
 
 # NuGet
 *.nupkg
